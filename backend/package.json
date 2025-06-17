@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "This is express backend",
+  "keywords": [
+    "backend",
+    "backend-ecommerce"
+  ],
+  "license": "ISC",
+  "author": "The RD Group Industries",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cros": "^1.1.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.16.0"
+  }
+}

@@ -1,6 +1,13 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import cros from 'cors';
+import cors from 'cors';
+
+// ROUTES
+import userRoute from "./routes/user.route.js"
+import marketPlace from "./routes/marketplace.route.js"
+import productRoute from "./routes/property.route.js";
+
+// 
 
 dotenv.config();
 
@@ -13,7 +20,7 @@ const origin = [
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cros({
+app.use(cors({
     origin,
     credentials: true
 }));
@@ -25,6 +32,10 @@ app.get('/', async (req, res) => {
         status: 'success'
     });
 })
+
+app.use("/api/users", userRoute)
+app.use("/api/marketplace", marketPlace)
+app.use("/api/property", productRoute)
 
 
 app.listen(PORT, () => {

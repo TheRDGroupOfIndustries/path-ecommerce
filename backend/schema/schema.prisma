@@ -1,6 +1,6 @@
 datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DB_URI")
 }
 
 generator client {
@@ -15,7 +15,7 @@ enum Role {
 }
 
 model User {
-  id                       String    @id @default(cuid()) @map("_id")
+  id                       String    @id @default(cuid())
   email                    String    @unique
   name                     String
   password                 String
@@ -33,7 +33,7 @@ model User {
 
 
 model Marketplace {
-    id                       String    @id @default(cuid()) @map("_id")
+    id                       String    @id @default(cuid())
     name                     String
     description              String
     imageUrl                 String[]
@@ -47,7 +47,7 @@ model Marketplace {
 }
 
 model Property {
-    id                       String    @id @default(cuid()) @map("_id")
+    id                       String    @id @default(cuid())
     name                     String
     description              String
     imageUrl                 String[]
@@ -62,7 +62,7 @@ model Property {
 
 
 model Review {
-    id                       String    @id @default(cuid()) @map("_id")
+    id                       String    @id @default(cuid())
     rating                   Int
     comment                  String?
     userId                   String
@@ -77,7 +77,7 @@ model Review {
 }
 
 model Enquire {
-    id                       String    @id @default(cuid()) @map("_id")
+    id                       String    @id @default(cuid())
     name                     String
     email                    String
     phone                    String

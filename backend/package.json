@@ -11,11 +11,25 @@
   "type": "module",
   "main": "main.js",
   "scripts": {
+    "dev": "nodemon --watch . --ext ts --exec \"node --loader ts-node/esm main.ts\"",
+    "start": "node dist/index.js",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "cros": "^1.1.0",
-    "express": "^5.1.0",
-    "mongoose": "^8.16.0"
+    "@prisma/client": "^6.10.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.3",
+    "nodemon": "^3.1.10",
+    "prisma": "^6.10.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
   }
 }

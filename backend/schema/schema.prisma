@@ -1,0 +1,92 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  SELLER
+  ASSOCIATE
+  ADMIN
+}
+
+model User {
+  id                       String    @id @default(cuid()) @map("_id")
+  email                    String    @unique
+  name                     String
+  password                 String
+  phone                    String?
+  address                  String?
+  imageUrl                 String?
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+  role                     Role      @default(USER)
+  reviews                  Review[]
+  marketplaces             Marketplace[]
+  properties               Property[]
+  createdById              String?
+}
+
+
+model Marketplace {
+    id                       String    @id @default(cuid()) @map("_id")
+    name                     String
+    description              String
+    imageUrl                 String[]
+    category                 String?
+    createdBy                User @relation(fields: [createdById], references: [id])
+    createdById              String
+    reviews                  Review[]              
+    enquires                 Enquire[]
+    createdAt                DateTime  @default(now())
+    updatedAt                DateTime  @updatedAt
+}
+
+model Property {
+    id                       String    @id @default(cuid()) @map("_id")
+    name                     String
+    description              String
+    imageUrl                 String[]
+    category                 String?
+    createdBy                User @relation(fields: [createdById], references: [id])
+    createdById              String
+    reviews                  Review[]     
+    enquires                 Enquire[]
+    createdAt                DateTime  @default(now())
+    updatedAt                DateTime  @updatedAt
+}
+
+
+model Review {
+    id                       String    @id @default(cuid()) @map("_id")
+    rating                   Int
+    comment                  String?
+    userId                   String
+    marketplaceId            String?
+    propertyId               String?
+    createdAt                DateTime  @default(now())
+    updatedAt                DateTime  @updatedAt
+
+    user                     User      @relation(fields: [userId], references: [id])
+    marketplace              Marketplace? @relation(fields: [marketplaceId], references: [id])
+    property                 Property?  @relation(fields: [propertyId], references: [id])
+}
+
+model Enquire {
+    id                       String    @id @default(cuid()) @map("_id")
+    name                     String
+    email                    String
+    phone                    String
+    message                  String
+    marketplaceId            String?
+    propertyId               String?
+    createdAt                DateTime  @default(now())
+    updatedAt                DateTime  @updatedAt
+
+    marketplace              Marketplace? @relation(fields: [marketplaceId], references: [id])
+    property                 Property?  @relation(fields: [propertyId], references: [id])
+}

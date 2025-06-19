@@ -37,7 +37,7 @@ model Marketplace {
     name                     String
     description              String
     imageUrl                 String[]
-    category                 String?
+    category                 String?   @default("General")
     createdBy                User @relation(fields: [createdById], references: [id])
     createdById              String
     reviews                  Review[]              
@@ -51,7 +51,7 @@ model Property {
     name                     String
     description              String
     imageUrl                 String[]
-    category                 String?
+    category                 String?   @default("Houses")
     createdBy                User @relation(fields: [createdById], references: [id])
     createdById              String
     reviews                  Review[]     

@@ -1,0 +1,2 @@
+echo "admin/node_modules/" >> .gitignore
+echo "admin/.env" >> .gitignore

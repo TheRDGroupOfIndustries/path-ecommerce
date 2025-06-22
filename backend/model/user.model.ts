@@ -6,7 +6,7 @@ export const allUsers = async () => db.user.findMany({});
 export const userById = async (id: string) =>
   db.user.findUnique({ where: { id } });
 
-export const createUser = async (data: CreateUserInput) => {
+export const createUser = async (req: unknown, res: unknown, data: CreateUserInput) => {
     await db.user.create({
         data: {
         name: data.name,
@@ -40,4 +40,8 @@ export const deleteUser = async (id: string) => {
     await db.user.delete({
         where: { id: id}
     })
+}
+
+export function findUnique(arg0: {}) {
+    throw new Error("Function not implemented.");
 }

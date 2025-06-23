@@ -18,6 +18,7 @@
 | `/create-user` | `POST` | Create new user | 
 | `/update-user/${id}` | `PUT` | Update user by ID |
 | `/delete-user/${id}` | `DELETE` | Delete specific user by ID |
+| `/login` | `POST` | LOGIN TO USER USING JWT |
 
 
 

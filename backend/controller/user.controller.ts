@@ -51,8 +51,6 @@ export const createUser = async (req: Request, res: Response) => {
         const user = await userModel.createUser({email: email, name: name, password: hashedPassword});
         if (user) {
                 const token = generateTokens(user);
-        //                 const {password:_,...usersafe}=user
-        // return res.status(200).json({ user:usersafe, token});
                 return res.status(201).json({ "message": "success", "token": token });
         }
 

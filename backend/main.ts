@@ -1,43 +1,62 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import cookieParser from "cookie-parser"
 
-// ROUTES
-import userRoute from "./routes/user.route.js"
-import marketPlace from "./routes/marketplace.route.js"
-import productRoute from "./routes/property.route.js";
-
-// 
+// Routes
+import userRoute from './routes/user.route.js';
+import marketPlace from './routes/marketplace.route.js';
+import productRoute from './routes/property.route.js';
 
 dotenv.config();
-
 const app = express();
 const PORT = 8000;
 
-const origin = [
-    'http://localhost:3000',
-]
+// Configure CORS for development
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173'];
 
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps, curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true, // Allow cookies
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
+
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({
-    origin,
-    credentials: true
-}));
 
+// Test route
+app.get('/', (_req, res) => {
+  res.status(200).json({ message: 'API is running 🚀' });
+});
 
-app.get('/', async (req, res) => {
-    res.status(200).json({
-        message: 'Welcome to Padh Ecommerce API',
-        status: 'success'
-    });
-})
+// API Routes
+app.use('/api/users', userRoute);
+app.use('/api/marketplace', marketPlace);
+app.use('/api/property', productRoute);
 
-app.use("/api/users", userRoute)
-app.use("/api/marketplace", marketPlace)
-app.use("/api/property", productRoute)
+// Error handling for CORS
+import type { Request, Response, NextFunction } from 'express';
 
+app.use((err: { message: string; }, _req: Request, res: Response, next: NextFunction) => {
+  if (err.message === 'Not allowed by CORS') {
+    res.status(403).json({ error: 'CORS policy blocked this request' });
+  } else {
+    next(err);
+  }
+});
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });

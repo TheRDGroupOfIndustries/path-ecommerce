@@ -80,7 +80,7 @@ export const propertyByUser = async (req: Request, res: Response) => {
     const { userId } = req.params;
     try {
         const properties = await property.allProperty();
-        const userProperties = properties.filter(properties => properties.createdById === userId);
+        const userProperties = properties.filter((properties: { createdById: string; }) => properties.createdById === userId);
         if (userProperties.length === 0) {
             return res.status(404).json({ message: "No properties found for this user" });
         }

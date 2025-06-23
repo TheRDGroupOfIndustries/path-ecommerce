@@ -79,7 +79,7 @@ export const marketplaceByUser = async (req: Request, res: Response) => {
     const { userId } = req.params;
     try {
         const marketplaces = await marketPlaceModel.allMarketplaces();
-        const userMarketplaces = marketplaces.filter(marketplace => marketplace.createdById === userId);
+        const userMarketplaces = marketplaces.filter((marketplace: { createdById: string; }) => marketplace.createdById === userId);
         if (userMarketplaces.length === 0) {
             return res.status(404).json({ message: "No marketplaces found for this user" });
         }

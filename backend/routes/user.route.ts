@@ -22,5 +22,9 @@ route.put("/update-user/:id", async (req: Request, res: Response) => {
 route.delete("/delete-user/:id", async (req: Request, res: Response) => {
     await userController.deleteUser(req, res)
 })
-
+route.post("/login",async(req:Request,res:Response)=>{
+    await userController.login(req,res)
+})
 export default route;
+
+

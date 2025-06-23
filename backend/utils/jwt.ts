@@ -12,16 +12,8 @@ interface Tokens {
 
 export const generateTokens = (user: UserPayload): Tokens => {
   const payload: UserPayload = { id: user.id, email: user.email };
-
-  const accessToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
-    expiresIn: "15m",
-  });
-
-  const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET as string, {
-    expiresIn: "7d",
-  });
-
-  return { accessToken, refreshToken };
+  const accessToken = jwt.sign(payload, process.env.JWT_SECRET as string);
+  return { accessToken };
 };
 
 export const verifyToken = (token: string, secret: string): JwtPayload => {

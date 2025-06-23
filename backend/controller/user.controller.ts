@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as userModel from "../model/user.model.js";
 import bcrypt from 'bcrypt';
 import { generateTokens } from "../utils/jwt.js";
+
 export const allUsers = async (req: Request, res: Response) => {
     try {
         const users = await userModel.allUsers();
@@ -32,11 +33,28 @@ export const userById = async (req: Request, res: Response) => {
 }
 
 export const createUser = async (req: Request, res: Response) => {
-    const body = req.body;
-    try {
+    // const body = req.body;
+  const { name, email, password, confirmPassword } = req.body;
 
-        const user = await userModel.createUser(body.name, body.email, body.password);
-        return res.status(201).json({ "message": "success" });
+  if (password !== confirmPassword) {
+    return res.status(400).json({ error: 'Passwords do not match' });
+  }
+
+  const existingUser = userModel.findUnique({ where: { email } }) as unknown as { id: string, email: string } | null;
+  if (existingUser) {
+    return res.status(409).json({ error: 'User already exists' });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+    try {
+        const user = await userModel.createUser({email: email, name: name, password: hashedPassword});
+        if (user) {
+                const token = generateTokens(user);
+        //                 const {password:_,...usersafe}=user
+        // return res.status(200).json({ user:usersafe, token});
+                return res.status(201).json({ "message": "success", "token": token });
+        }
 
     } catch (error) {
         console.error("Error creating user:", error);
@@ -66,62 +84,25 @@ export const deleteUser = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Internal server error" });
     }
 }
-export const login=async(req:Request,res:Response)=>{
-    const {email,password}=req.body
+export const login=async(req:Request,res:Response)=> {
+    const {email,password}=req.body;
+
     try{
-        const user = await userModel.findUnique({ where: { email } }) as unknown as { id: string, email: string, password: string } | null;
+        const user = await userModel.userByGmail(email);
         if(!user){
             return res.status(401).json({message:"invaild email or password"})
         }
         const ismatched = await bcrypt.compare(password, user.password);
         if (!ismatched) {
-            return res.status(401).json({ error: 'Invalid email or password' });
+            return res.status(401).json({ error: 'Invalid password' });
         }
+    
         const token = generateTokens(user);
-
         const {password:_,...usersafe}=user
-        return res.status(200).json({ user:usersafe,token});
+        return res.status(200).json({ user:usersafe, token});
     }
     catch(err){
         console.error("Error during login:", err);
         res.status(500).json({ error: "Internal server error" });
     }
 }
-
-export const register = async (req: Request, res: Response) => {
-  const { name, email, password, confirmPassword, phone, address, imageUrl, role } = req.body;
-
-  if (password !== confirmPassword) {
-    return res.status(400).json({ error: 'Passwords do not match' });
-  }
-
-  const existingUser = userModel.findUnique({ where: { email } }) as unknown as { id: string, email: string } | null;
-  if (existingUser) {
-    return res.status(409).json({ error: 'User already exists' });
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  try {
-    return await createUser(req, res);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to create user', details: err });
-  }
-}
-// Called after successful Google OAuth login (Passport strategy)
-exports.googleCallback = async (req: { user: any; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; }): void; new(): any; }; }; redirect: (arg0: string) => void; }) => {
-  try {
-    // User attached to req by passport after successful OAuth
-    const user = req.user;
-    if (!user)
-      return res.status(401).json({ message: "Authentication failed" });
-
-    // Generate JWT token for frontend usage
-    const token = generateTokens(user); // Redirect to dashboard or send token as JSON (choose approach)
-    // Example: send token in query (you might want to set in cookie or header)
-    res.redirect(`${process.env.CLIENT_URL}/?token=${token}`);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error during login" });
-  }
-};

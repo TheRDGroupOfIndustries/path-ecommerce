@@ -6,8 +6,12 @@ export const allUsers = async () => db.user.findMany({});
 export const userById = async (id: string) =>
   db.user.findUnique({ where: { id } });
 
-export const createUser = async (req: unknown, res: unknown, data: CreateUserInput) => {
-    await db.user.create({
+export const userByGmail = async (email: string) =>
+  db.user.findUnique({ where: { email } });
+
+
+export const createUser = async (data: CreateUserInput) => {
+    const create = await db.user.create({
         data: {
         name: data.name,
         email: data.email,
@@ -17,7 +21,12 @@ export const createUser = async (req: unknown, res: unknown, data: CreateUserInp
         address: data.address || null,
         imageUrl: data.imageUrl || null
         },
+        select: {
+          id: true,
+          email: true
+        }
     });
+    if (create) return create
 }
 
 export const updateUser = async (id: string, data: UpdateUserInput) => {
@@ -35,6 +44,7 @@ export const updateUser = async (id: string, data: UpdateUserInput) => {
     },
   });
 };
+
 
 export const deleteUser = async (id: string) => {
     await db.user.delete({

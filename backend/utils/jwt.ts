@@ -7,7 +7,6 @@ interface UserPayload {
 
 interface Tokens {
   accessToken: string;
-  refreshToken: string;
 }
 
 export const generateTokens = (user: UserPayload): Tokens => {

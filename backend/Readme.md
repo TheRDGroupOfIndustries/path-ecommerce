@@ -136,3 +136,37 @@
 }
 
 ```
+
+
+## Products - 
+#### Default selector API 
+
+```http
+  /api/product
+```
+
+| Endpoint  | Method     | Description                |
+| :-------- | :------- | :------------------------- |
+| `/get-all` | `GET` | Get All items  |
+| `/get-by-id/${id}` | `GET` | Get details of specific item  |
+| `/get-by-category/${category}` | `GET` | Get list of items of specific category @default ("Houses") |
+| `/create-product` | `POST` | Create new item list | 
+| `/update-product/${id}` | `PUT` | Update specific item by ID |
+| `/delete-product/${id}` | `DELETE` | Delete specific item by ID |
+
+
+## Schema for creating/updating Products
+
+```php
+  name                String
+  description         String
+  images              String[]
+  price               String
+  discount            Int
+  ratings             Int
+  features            String[]
+  highlights          String[]
+  insideBox           String[]
+  category            String?
+  sellerId            String
+```

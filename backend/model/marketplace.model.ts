@@ -23,14 +23,14 @@ export const createMarketplace = async (data: CreateMarketplaceInput) => {
 }
 
 export const updateMarketPlace = async (id: string, data: UpdateMarketplaceInput) => {
-    const market = db.marketplace.findUnique({where: {id}})
+    const market = await db.marketplace.findUnique({ where: { id } });
     await db.marketplace.update({
         where: { id: id },
         data: {
             name: data.name || market?.name,
-            description: data.description || market?.description || null,
-            imageUrl: data.imageUrl || market?.imageUrl || null,
-            category: data.category || market.category || null,
+            description: data.description || market?.description,
+            imageUrl: data.imageUrl || market?.imageUrl,
+            category: data.category || market?.category || null,
         },
     });
 }

@@ -6,7 +6,9 @@ import cookieParser from "cookie-parser"
 // Routes
 import userRoute from './routes/user.route.js';
 import marketPlace from './routes/marketplace.route.js';
-import productRoute from './routes/property.route.js';
+import propertyRoute from './routes/property.route.js';
+import productRoute from "./routes/product.route.js";
+
 
 dotenv.config();
 const app = express();
@@ -44,7 +46,9 @@ app.get('/', (_req, res) => {
 // API Routes
 app.use('/api/users', userRoute);
 app.use('/api/marketplace', marketPlace);
-app.use('/api/property', productRoute);
+app.use('/api/property', propertyRoute);
+app.use('/api/product', productRoute)
+
 
 // Error handling for CORS
 import type { Request, Response, NextFunction } from 'express';
@@ -57,6 +61,6 @@ app.use((err: { message: string; }, _req: Request, res: Response, next: NextFunc
   }
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

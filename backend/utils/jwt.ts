@@ -1,3 +1,4 @@
+import { Request } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 interface UserPayload {
@@ -15,6 +16,11 @@ export const generateTokens = (user: UserPayload): Tokens => {
   return { accessToken };
 };
 
-export const verifyToken = (token: string, secret: string): JwtPayload => {
-  return jwt.verify(token, secret) as JwtPayload;
+export const verifyToken = (req: Request) => {
+  const auth = req.headers.authorization
+  if (!auth) {
+    return false
+  }
+  const user = jwt.verify(auth, process.env.JWT_SECRET as any) as {id: string};
+  return user.id
 };

@@ -120,6 +120,7 @@ model Products {
   insideBox           String[]
 
   // Filled from backend ~ Get id from Token and parse it futher into sellerId - seller will automatically fetch user with it
+  category            String?
   sellerId            String
   seller              User        @relation(fields: [sellerId], references: [id])
 

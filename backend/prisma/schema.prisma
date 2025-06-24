@@ -28,6 +28,7 @@ model User {
   reviews                  Review[]
   marketplaces             Marketplace[]
   properties               Property[]
+  productSeller            Products[]
   createdById              String?
 }
 
@@ -71,6 +72,8 @@ model Review {
     createdAt                DateTime  @default(now())
     updatedAt                DateTime  @updatedAt
 
+    productId                String?
+    product                  Products?    @relation(fields: [productId], references: [id]) 
     user                     User      @relation(fields: [userId], references: [id])
     marketplace              Marketplace? @relation(fields: [marketplaceId], references: [id])
     property                 Property?  @relation(fields: [propertyId], references: [id])
@@ -83,10 +86,47 @@ model Enquire {
     phone                    String
     message                  String
     marketplaceId            String?
-    propertyId               String?
     createdAt                DateTime  @default(now())
     updatedAt                DateTime  @updatedAt
 
+
+    propertyId               String?
     marketplace              Marketplace? @relation(fields: [marketplaceId], references: [id])
     property                 Property?  @relation(fields: [propertyId], references: [id])
+}
+
+// Flow - Ask question - Goes to seller dashboard who listed product - he/she answer appear in user side
+
+model Faq {
+  id             String         @id @default(cuid())
+  question       String  // Judge sahabbb product ke bare me sawalat hai apse!~ ye, ye seller batayange mujhe iska jawab...
+  answer         String?
+  productId      String
+  product        Products    @relation(fields: [productId], references: [id])
+}
+
+
+model Products {
+  id                  String      @id @default(cuid())
+// Basic Details - These keys are must provided by listing creator ~ east or west nukkar wali chai dukan is best...!
+  name                String
+  description         String
+  images              String[]
+  price               String
+  discount            Int
+  ratings             Int
+  features            String[]
+  highlights          String[]
+  insideBox           String[]
+
+  // Filled from backend ~ Get id from Token and parse it futher into sellerId - seller will automatically fetch user with it
+  sellerId            String
+  seller              User        @relation(fields: [sellerId], references: [id])
+
+  // User side questions ~ Shakii log, bharosa to hai nahi aaye bare reviews dekhne...
+  review              Review[]
+  Faq                 Faq[]
+
+  // Further Refreal will appear here ~ ek mota hathi gumne gya...
+  // #---------- Associate ------------#
 }

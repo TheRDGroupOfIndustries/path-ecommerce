@@ -18,11 +18,16 @@ export const getById = async (req: Request, res: Response) => {
     res.status(201).json(products)
 }
 
-export const getByCatogery = async (req: Request, res: Response) => {
-    const { catogery } = req.params
-    const products = await productModel.getByCatogery(catogery)
-    res.status(200).json(products)
-}
+export const getByCategory = async (req: Request, res: Response) => {
+  try {
+    const { category } = req.params;
+    const products = await productModel.getByCategory(category);
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
 
 export const deleteProduct = async (req: Request, res: Response) => {
     const { id } = req.params
@@ -30,25 +35,57 @@ export const deleteProduct = async (req: Request, res: Response) => {
     res.status(200).json({"message": "success"})
 }
 
+// export const createData = async (req: Request, res: Response) => {
+//     const body = req.body
+//     const token: string | boolean = verifyToken(req)
+//     if (!token) {
+//         res.status(404).json({"message": "wrong auth"})
+//     }
+//     const products = await productModel.createProduct(body, token as string)
+//     if (products) {
+//         res.status(200).json({"message": "successfully created."})
+//     }
+// }
+
 export const createData = async (req: Request, res: Response) => {
-    const body = req.body
-    const token: string | boolean = verifyToken(req)
-    if (!token) {
-        res.status(404).json({"message": "wrong auth"})
+    const body = req.body;
+
+    const token = verifyToken(req);
+
+    if (!token || typeof token !== "string") {
+        return res.status(401).json({ message: "Unauthorized: Invalid or missing token" });
     }
-    const products = await productModel.createProduct(body, token as string)
-    if (products) {
-        res.status(200).json({"message": "successfully created."})
+
+    try {
+        const product = await productModel.createProduct(body, token);  // token is now safe string
+        return res.status(200).json({ message: "Product successfully created", product });
+    } catch (error) {
+        console.error("Product creation failed:", error);
+        return res.status(500).json({ message: "Internal Server Error", error });
     }
-}
+};
+
+
+// export const updateData = async (req: Request, res: Response) => {
+//     const body = req.body
+//     try {
+//         const products = await productModel.updateProduct(body, body.id)
+//         res.status(200).json({products, error: "Updated successfully!"})
+//     }
+//     catch (err) {
+//         res.status(404).json({"error": err})
+//     }
+// }
 
 export const updateData = async (req: Request, res: Response) => {
-    const body = req.body
+    const { id } = req.params;   // ✅ Correct way to get ID from route
+    const body = req.body;
+
     try {
-        const products = await productModel.updateProduct(body, body.id)
-        res.status(200).json({products, error: "Updated successfully!"})
+        const product = await productModel.updateProduct(body, id);  // ✅ use id from params
+        res.status(200).json({ product, message: "Updated successfully!" });
+    } catch (err) {
+        console.error("Update failed:", err);
+        res.status(500).json({ error: "Update failed", details: err });
     }
-    catch (err) {
-        res.status(404).json({"error": err})
-    }
-}
+};

@@ -8,8 +8,8 @@ export const getSlug = async (id: string) => {
     return await db.products.findUnique({where: {id: id}})
 }
 
-export const getByCatogery = async (catogery: string) => {
-    return await db.products.findMany({where: {category: catogery}})
+export const getByCategory = async (category: string) => {
+    return await db.products.findMany({where: {category: category}})
 }
 
 export const createProduct = async (data: any, sellerId: string) => {

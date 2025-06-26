@@ -33,32 +33,37 @@ export const userById = async (req: Request, res: Response) => {
 }
 
 export const createUser = async (req: Request, res: Response) => {
-    // const body = req.body;
-  const { name, email, password, confirmPassword } = req.body;
+  const { name, email, password, confirmPassword, phone, role } = req.body;
 
   if (password !== confirmPassword) {
     return res.status(400).json({ error: 'Passwords do not match' });
   }
-
-  const existingUser = userModel.findUnique({ where: { email } }) as unknown as { id: string, email: string } | null;
-  if (existingUser) {
-    return res.status(409).json({ error: 'User already exists' });
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-    try {
-        const user = await userModel.createUser({email: email, name: name, password: hashedPassword});
-        if (user) {
-                const token = generateTokens(user);
-                return res.status(201).json({ "message": "success", "token": token });
-        }
-
-    } catch (error) {
-        console.error("Error creating user:", error);
-        res.status(500).json({ error: "Internal server error" });
+  try {
+    const existingUser = await userModel.userByGmail(email);
+    if (existingUser) {
+      return res.status(409).json({ error: 'User already exists' });
     }
-}
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await userModel.createUser({
+      email,
+      name,
+      password: hashedPassword,
+      phone,
+      role: role?.toUpperCase() || "USER",
+    });
+
+    if (user) {
+      const token = generateTokens(user);
+      return res.status(201).json({ message: "success", token, user });
+    } else {
+      return res.status(500).json({ error: "User creation failed" });
+    }
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 export const updateUser = async (req: Request, res: Response) => {
     const { id } = req.params;

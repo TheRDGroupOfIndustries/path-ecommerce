@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ProfileHeader from "@/components/ProfileHeader/ProfileHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,6 +7,8 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import ProductCard from "@/components/ProductCard/ProductCard"
+
+import axios from "axios";
 
 
 const offers = [
@@ -50,48 +52,48 @@ const FILTERS = [
 ];
 
 
-  const products = [
-    {
-      id: 1,
-      rating: 3.4,
-      title: "Title for the Product",
-      description: "Lorem ipsum dolor sit amet consecteturdolor sit amet consecteturdolor sit amet consecteturdolor sit amet consecteturdolor sit amet consecteturdolor sit amet consectetur. Tellus faucibus. sit amet consectetur. Tellus asdfasd",
-      price: 250,
-      originalPrice: 500,
-      discount: "50% OFF",
-      image: "https://images.unsplash.com/photo-1556228852-80b6e5eeff06?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 2,
-      rating: 3.4,
-      title: "Title for the Product",
-      description: "Lorem ipsum dolor sit amet consectetur. Tellus faucibus.",
-      price: 250,
-      originalPrice: 500,
-      discount: "50% OFF",
-      image: "https://images.unsplash.com/photo-1686831889383-290d9bab10e6?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 3,
-      rating: 3.4,
-      title: "Title for the Product",
-      description: "Lorem ipsum dolor sit amet consectetur. Tellus faucibus.",
-      price: 250,
-      originalPrice: 500,
-      discount: "50% OFF",
-      image: "https://images.unsplash.com/photo-1687662008657-b94277bfb30e?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 4,
-      rating: 3.4,
-      title: "Title for the Product",
-      description: "Lorem ipsum dolor sit amet consectetur. Tellus faucibus.",
-      price: 250,
-      originalPrice: 500,
-      discount: "50% OFF",
-      image: "https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-  ];
+  // const products = [
+  //   {
+  //     id: 1,
+  //     rating: 3.4,
+  //     title: "Title for the Product",
+  //     description: "Lorem ipsum dolor sit amet consecteturdolor sit amet consecteturdolor sit amet consecteturdolor sit amet consecteturdolor sit amet consecteturdolor sit amet consectetur. Tellus faucibus. sit amet consectetur. Tellus asdfasd",
+  //     price: 250,
+  //     originalPrice: 500,
+  //     discount: "50% OFF",
+  //     image: "https://images.unsplash.com/photo-1556228852-80b6e5eeff06?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  //   },
+  //   {
+  //     id: 2,
+  //     rating: 3.4,
+  //     title: "Title for the Product",
+  //     description: "Lorem ipsum dolor sit amet consectetur. Tellus faucibus.",
+  //     price: 250,
+  //     originalPrice: 500,
+  //     discount: "50% OFF",
+  //     image: "https://images.unsplash.com/photo-1686831889383-290d9bab10e6?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  //   },
+  //   {
+  //     id: 3,
+  //     rating: 3.4,
+  //     title: "Title for the Product",
+  //     description: "Lorem ipsum dolor sit amet consectetur. Tellus faucibus.",
+  //     price: 250,
+  //     originalPrice: 500,
+  //     discount: "50% OFF",
+  //     image: "https://images.unsplash.com/photo-1687662008657-b94277bfb30e?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  //   },
+  //   {
+  //     id: 4,
+  //     rating: 3.4,
+  //     title: "Title for the Product",
+  //     description: "Lorem ipsum dolor sit amet consectetur. Tellus faucibus.",
+  //     price: 250,
+  //     originalPrice: 500,
+  //     discount: "50% OFF",
+  //     image: "https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  //   },
+  // ];
 
   
 const Shop = () => {
@@ -100,6 +102,19 @@ const Shop = () => {
 
    const [activeFilter, setActiveFilter] = useState("all");
  const [activeIndex, setActiveIndex] = useState(0); 
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/api/product/get-all");
+        setProducts(res.data);
+      } catch (err) {
+        console.error("Failed to fetch products", err);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   
   const filteredProducts =
@@ -182,16 +197,18 @@ const Shop = () => {
 
         <div className="grid grid-cols-2 gap-4">
           {products.map((product) => (
-            <ProductCard
+         
+             <ProductCard
               key={product.id}
-              rating={product.rating}
-              title={product.title}
+              id={product.id}
+              ratings={product.ratings}
+              title={product.name}
               description={product.description}
               price={product.price}
-              originalPrice={product.originalPrice}
               discount={product.discount}
-              image={product.image}
+              images={product.images}
             />
+           
           ))}
         </div>
       </div>

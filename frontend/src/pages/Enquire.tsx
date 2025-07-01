@@ -7,6 +7,7 @@ import axios from "axios";
 const Enquire = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [property, setProperty] = useState(null);
+  const [user, setUser] = useState(null);
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const { id, type } = useParams();
   const navigate = useNavigate();
@@ -14,17 +15,17 @@ const Enquire = () => {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const endpoint =
-          type === "marketplace"
-            ? "http://localhost:8000/api/marketplace/get-all"
-            : "http://localhost:8000/api/property/get-all";
-
+        const endpoint =`http://localhost:8000/api/${type}/get-by-id/${id}`
         const res = await axios.get(endpoint);
-        const list =
-          type === "marketplace" ? res.data.marketplaces : res.data.properties;
+        const list = type =="marketplace"? res.data.marketplace:res.data.properties;
 
-        const matched = list.find((item) => item.id === id);
-        setProperty(matched);
+        const sellerId=list.createdById
+        const userEndpoint =`http://localhost:8000/api/users/get-by-id/${sellerId}`
+         const userRes  = await axios.get(userEndpoint);
+        
+         const userData=userRes.data.user
+        setProperty(list);
+        setUser(userData);
         setMainImageIndex(0); 
       } catch (err) {
         console.error("Failed to fetch property", err);
@@ -33,6 +34,8 @@ const Enquire = () => {
 
     fetchProperty();
   }, [id, type]);
+  
+  
 
   return (
     <div className="w-full mx-auto bg-white min-h-screen relative pb-24">
@@ -58,8 +61,8 @@ const Enquire = () => {
       <div className="px-4 mb-4">
         <img
           src={
-            property?.imageUrl && property.imageUrl.length > 0
-              ? property.imageUrl[mainImageIndex]
+            property?.imageUrl && property?.imageUrl.length > 0
+              ? property?.imageUrl[mainImageIndex]
               : "https://via.placeholder.com/400x300?text=No+Image"
           }
           alt="Main property"
@@ -70,7 +73,7 @@ const Enquire = () => {
       {/* Thumbnail Images */}
       <div className="flex gap-2 px-4 mb-6 overflow-x-auto">
         {property?.imageUrl &&
-          property.imageUrl.map((img, idx) => (
+          property?.imageUrl.map((img, idx) => (
             <img
               key={idx}
               src={img}
@@ -83,17 +86,16 @@ const Enquire = () => {
               onClick={() => setMainImageIndex(idx)}
             />
           ))}
-        {/* You can keep static thumbnails if you want, or remove these if not needed */}
-        {/* <img ... /> */}
+       
       </div>
 
       {/* Seller Info */}
       <div className="px-4 mb-4">
         <p className="text-cyan-400 text-sm mb-1 underline underline-offset-2">
-          Seller name
+          {user?.name}
         </p>
-        <h1 className="text-xl font-semibold text-gray-900 mb-2">
-          {/* {property?.name} */}
+        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+          {property?.name}
         </h1>
         <div className="flex items-center gap-1 bg-gray-200 w-fit px-1 ">
           <span className="text-lg text-black">4.5</span>
@@ -106,7 +108,7 @@ const Enquire = () => {
       {/* Description */}
       <div className="px-4 mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-2">
-          {property?.name}
+          Description
         </h2>
         <p className="text-gray-600 text-sm leading-relaxed">
           {property?.description}

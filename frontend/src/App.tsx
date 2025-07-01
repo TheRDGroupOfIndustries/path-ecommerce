@@ -8,11 +8,12 @@ import Enquire from "./pages/Enquire";
 import BottomNavBar from "./pages/BottomNavBar ";
 import Shop from "./pages/Shop";
 import ProfilePage from "./pages/ProfilePage";
+import ProductDetail from "./pages/ProductDetail";
 
 function App() {
    const location = useLocation();
 
-  const hiddenPaths = ["/enquire", "/login", "/signup"];
+  const hiddenPaths = ["/enquire", "/login", "/signup","/product-detail"];
 const hideNavbar = hiddenPaths.some(path => location.pathname.startsWith(path));
 
 
@@ -27,6 +28,9 @@ const hideNavbar = hiddenPaths.some(path => location.pathname.startsWith(path));
           <Route path="/all-service" element={<AllService />} />
           <Route path="/houses-plots" element={<HousesPlots />} />
          <Route path="/enquire/:type/:id" element={<Enquire />} />
+         <Route path="/product-detail/:id" element={<ProductDetail />} />
+    
+
         </Routes>
         {!hideNavbar && <BottomNavBar />}
       </div>

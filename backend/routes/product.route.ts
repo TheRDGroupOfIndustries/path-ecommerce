@@ -12,7 +12,7 @@ router.get("/get-by-id/:id", async (req, res) => {
 });
 
 router.get("/get-by-catogery/:id", async (req, res) => {
-  await productController.getByCatogery(req, res);
+  await productController.getByCategory(req, res);
 });
 
 router.delete("/delete-product/:id", async (req, res) => {

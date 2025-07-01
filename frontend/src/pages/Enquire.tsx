@@ -175,7 +175,7 @@ const Enquire = () => {
           </button>
         </div>
       </div>
-      {showPopup && <SendEnquire setShowPopup={setShowPopup} />}
+      {showPopup && <SendEnquire setShowPopup={setShowPopup}  id={id} type={type}/>}
     </div>
   );
 };

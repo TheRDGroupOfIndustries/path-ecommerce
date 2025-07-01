@@ -13,7 +13,8 @@ const HousesPlots = () => {
       try {
         const res = await axios.get("http://localhost:8000/api/property/get-all");
         const data = res.data?.properties || [];
-
+        // console.log("house: ",res.data);
+        
         setProperties(data);
 
         const categories = [...new Set(data.map(p => p.category.toUpperCase()))];

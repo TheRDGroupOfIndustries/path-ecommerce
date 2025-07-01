@@ -22,3 +22,4 @@ export const updateReferralUsedBy = async (referralId: string, usedBy: string[])
     data: { usedBy },
   });
 };
+

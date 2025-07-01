@@ -1,9 +1,7 @@
 import db from "../client/connect.js";
 
 export const getReferralByUser = async (userId: string) => {
-  return await db.referral.findFirst({
-    where: { createdForId: userId },
-  });
+  return await db.referral.findFirst({ where: { createdForId: userId } });
 };
 
 export const createReferral = async (referral: string, createdForId: string, usedBy: string[]) => {

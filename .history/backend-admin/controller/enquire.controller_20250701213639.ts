@@ -12,7 +12,7 @@ export const createEnquiry = async (req: Request, res: Response): Promise<void> 
         phone,
         message,
         ...(marketplaceId ? { marketplaceId } : {}),
-        ...(propertyId ? { propertyId } : {}) // won't include if undefined and empty
+        ...(propertyId ? { propertyId } : {}) // won't include if undefined anempty
       },
     });
 

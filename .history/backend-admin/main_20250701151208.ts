@@ -16,7 +16,7 @@ const app = express();
 const PORT = 8000;
 
 // Configure CORS for development
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173','http://localhost:5174'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173'];
 
 app.use(
   cors({

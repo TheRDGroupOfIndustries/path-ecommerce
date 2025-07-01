@@ -13,6 +13,7 @@ const AllServicesPage = () => {
       try {
         const response = await axios.get("http://localhost:8000/api/marketplace/get-all");
         const marketplaces = response.data?.marketplaces || [];
+        // console.log("market : ",response.data);
         setServices(marketplaces);
 
         // Get unique categories from API response

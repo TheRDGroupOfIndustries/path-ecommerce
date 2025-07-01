@@ -1,10 +1,6 @@
 import { Request, Response } from "express";
 import db from "../client/connect.js";
-import {
-  getReferralByUser,
-  createReferral,
-  updateReferralUsedBy,
-} from "../model/referral.model.js";
+import { getReferralByUser, createReferral, updateReferralUsedBy } from "../model/referral.model.js";
 
 export const createOrUpdateReferral = async (req: Request, res: Response) => {
   const { associateId, percent } = req.body;
@@ -37,21 +33,7 @@ export const createOrUpdateReferral = async (req: Request, res: Response) => {
   }
 };
 
-export const getReferralCode = async (req: Request, res: Response) => {
-  const { associateId } = req.params;
 
-  try {
-    const referral = await getReferralByUser(associateId);
 
-    if (!referral) {
-      return res.status(404).json({ error: "Referral not found" });
-    }
-
-    res.status(200).json({ referralCode: referral.referral });
-  } catch (err) {
-    console.error("Error fetching referral:", err);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
 
 

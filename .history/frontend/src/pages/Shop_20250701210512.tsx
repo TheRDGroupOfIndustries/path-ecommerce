@@ -97,9 +97,13 @@ const FILTERS = [
 
   
 const Shop = () => {
-  const [activeFilter, setActiveFilter] = useState("all");
+
+  
+
+   const [activeFilter, setActiveFilter] = useState("all");
  const [activeIndex, setActiveIndex] = useState(0); 
   const [products, setProducts] = useState([]);
+  const [offer,setOffer]=useState([]);
 
   useEffect(() => {
     const fetchProducts = async () => {

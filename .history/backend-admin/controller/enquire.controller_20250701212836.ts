@@ -11,17 +11,14 @@ export const createEnquiry = async (req: Request, res: Response): Promise<void> 
         email,
         phone,
         message,
-        ...(marketplaceId ? { marketplaceId } : {}),
-        ...(propertyId ? { propertyId } : {}) // won't include if undefined and empty
+        ...(marketplaceId && { marketplaceId }),
+        ...(propertyId && { propertyId }),
       },
     });
 
     res.status(201).json({ message: "Enquiry created successfully", enquiry });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error creating enquiry:", error);
-    res.status(500).json({
-      error: "Failed to create enquiry",
-      details: error?.message || error,
-    });
+    res.status(500).json({ error: "Failed to create enquiry" });
   }
 };

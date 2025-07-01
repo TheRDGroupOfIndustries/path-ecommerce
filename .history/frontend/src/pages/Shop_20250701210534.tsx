@@ -11,38 +11,38 @@ import ProductCard from "@/components/ProductCard/ProductCard"
 import axios from "axios";
 
 
-const offers = [
-    {
-      id: 1,
-      discount: "25% Discount",
-      title: "Nike Sports Shoes",
-      description:
-        "Lorem ipsum dolor sit amet consectetur. Sit diam neque id nisi fermentum eget in sagittis ac. ",
-      image:
-        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      buttonText: "BUY NOW",
-    },
-    {
-      id: 2,
-      discount: "10% Discount",
-      title: "Samsun",
-      description:
-        "Lorem ipsum dolor sit amet consectetur. Sit diam neque id nisi fermentum eget in sagittis ac.",
-      image:
-        "https://images.unsplash.com/photo-1549482199-bc1ca6f58502?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      buttonText: "BUY NOW",
-    },
-    {
-      id: 3,
-      discount: "20% Discount",
-      title: "Nothing",
-      description:
-        "Lorem ipsum dolor sit amet consecteturLorem ipsum dolor sit amet consecteturLorem ipsum dolor sit amet consecteturLorem ipsum dolor sit amet consectetur. Sit diam neque id nisi fermentum eget in sagittis ac.",
-      image:
-        "https://images.unsplash.com/photo-1721059537509-a0eeaa242bf6?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      buttonText: "BUY NOW",
-    },
-  ];
+// const offers = [
+//     {
+//       id: 1,
+//       discount: "25% Discount",
+//       title: "Nike Sports Shoes",
+//       description:
+//         "Lorem ipsum dolor sit amet consectetur. Sit diam neque id nisi fermentum eget in sagittis ac. ",
+//       image:
+//         "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+//       buttonText: "BUY NOW",
+//     },
+//     {
+//       id: 2,
+//       discount: "10% Discount",
+//       title: "Samsun",
+//       description:
+//         "Lorem ipsum dolor sit amet consectetur. Sit diam neque id nisi fermentum eget in sagittis ac.",
+//       image:
+//         "https://images.unsplash.com/photo-1549482199-bc1ca6f58502?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+//       buttonText: "BUY NOW",
+//     },
+//     {
+//       id: 3,
+//       discount: "20% Discount",
+//       title: "Nothing",
+//       description:
+//         "Lorem ipsum dolor sit amet consecteturLorem ipsum dolor sit amet consecteturLorem ipsum dolor sit amet consecteturLorem ipsum dolor sit amet consectetur. Sit diam neque id nisi fermentum eget in sagittis ac.",
+//       image:
+//         "https://images.unsplash.com/photo-1721059537509-a0eeaa242bf6?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+//       buttonText: "BUY NOW",
+//     },
+//   ];
 
 const FILTERS = [
   { label: "For You", value: "all" },
@@ -97,9 +97,13 @@ const FILTERS = [
 
   
 const Shop = () => {
-  const [activeFilter, setActiveFilter] = useState("all");
+
+  
+
+   const [activeFilter, setActiveFilter] = useState("all");
  const [activeIndex, setActiveIndex] = useState(0); 
   const [products, setProducts] = useState([]);
+  const [offers,setOffer]=useState([]);
 
   useEffect(() => {
     const fetchProducts = async () => {

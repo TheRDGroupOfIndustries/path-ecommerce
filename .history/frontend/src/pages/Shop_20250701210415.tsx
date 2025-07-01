@@ -9,7 +9,7 @@ import {
 import ProductCard from "@/components/ProductCard/ProductCard"
 
 import axios from "axios";
-
+get-trend
 
 const offers = [
     {
@@ -97,7 +97,10 @@ const FILTERS = [
 
   
 const Shop = () => {
-  const [activeFilter, setActiveFilter] = useState("all");
+
+  
+
+   const [activeFilter, setActiveFilter] = useState("all");
  const [activeIndex, setActiveIndex] = useState(0); 
   const [products, setProducts] = useState([]);
 

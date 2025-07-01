@@ -7,7 +7,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 
 const tabs = [
-  { name: "Shop", icon: ShoppingBag, path: "/shop" },
+  { name: "Shop", icon: ShoppingBag, path: "/" },
   { name: "Services", icon: HandPlatter, path: "/all-service" },
   { name: "Houses & Plots", icon: Building2, path: "/houses-plots" },
   { name: "Profile", icon: CircleUserRound, path: "/profile" },
@@ -35,8 +35,8 @@ const BottomNavBar = () => {
                 className={isActive ? "text-white" : "text-muted-foreground"}
               />
               <span
-                className={`text-xs ${
-                  isActive ? "text-white font-medium" : "text-muted-foreground"
+                className={`text-[8px] ${
+                  isActive ? "text-white font-regular" : "font-light text-muted-foreground"
                 }`}
               >
                 {tab.name}

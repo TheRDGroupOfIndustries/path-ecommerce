@@ -81,7 +81,7 @@ const ProductDetail = () => {
       <div className="flex items-center justify-between p-4 bg-white">
         <ChevronLeft
           className="w-6 h-6 text-gray-600 cursor-pointer"
-          onClick={() => navigate("/shop")}
+          onClick={() => navigate("/")}
         />
         <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-medium">
           {product.category}

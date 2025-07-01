@@ -177,7 +177,7 @@ const Shop = () => {
 
      
       <div className="mt-7 mb-20">
-       <div className="flex space-x-2 mb-4 overflow-x-auto text-sm max-w-2xl whitespace-nowrap">
+       <div className="flex space-x-2 mb-4 overflow-x-auto text-sm max-w-2xl whitespace-nowrap" style={{scrollbarWidth: 'none'}}>
           {FILTERS.map((filter) => (
             <button
               key={filter.value}

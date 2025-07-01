@@ -36,7 +36,7 @@ const AllServicesPage = () => {
       : services.filter((service) => service.category.toUpperCase() === activeTab);
 
   return (
-    <div className="container mx-auto p-5 pb-28">
+    <div className="container mx-auto p-4 pb-28">
       <div className="flex flex-col gap-6 mb-10">
         <ProfileHeader />
         <div className="flex gap-2 overflow-x-auto pb-2">

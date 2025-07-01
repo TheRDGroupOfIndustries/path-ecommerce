@@ -23,7 +23,7 @@ const hideNavbar = hiddenPaths.some(path => location.pathname.startsWith(path));
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/shop" element={<Shop />} />
+          <Route path="/" element={<Shop />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/all-service" element={<AllService />} />
           <Route path="/houses-plots" element={<HousesPlots />} />

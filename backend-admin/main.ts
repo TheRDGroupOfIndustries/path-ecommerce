@@ -9,7 +9,7 @@ import marketPlace from './routes/marketplace.route.js';
 import propertyRoute from './routes/property.route.js';
 import productRoute from "./routes/product.route.js";
 import referralRoute from "./routes/referral.route.js";
-
+import enquiryRoute from "./routes/enquire.route.js";
 
 dotenv.config();
 const app = express();
@@ -50,7 +50,7 @@ app.use('/api/marketplace', marketPlace);
 app.use('/api/property', propertyRoute);
 app.use('/api/product', productRoute);
 app.use('/api/referral',referralRoute);
-
+app.use("/api", enquiryRoute);
 
 // Error handling for CORS
 import type { Request, Response, NextFunction } from 'express';

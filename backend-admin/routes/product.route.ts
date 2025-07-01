@@ -30,4 +30,6 @@ router.put("/update-product/:id", async (req, res) => {
 
 router.post("/update-referral",updateReferralInProducts);
 
+router.get("/get-trendy", productController.getTrendyProducts);
+
 export default router

@@ -118,7 +118,8 @@ model Products {
   features    String[]
   highlights  String[]
   insideBox   String[]
-
+  isTrendy    Boolean  @default(false)
+  
   // Filled from backend ~ Get id from Token and parse it futher into sellerId - seller will automatically fetch user with it
   category String?
   sellerId String

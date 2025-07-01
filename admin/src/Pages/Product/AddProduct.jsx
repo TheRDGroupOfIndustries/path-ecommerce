@@ -20,6 +20,7 @@ const AddProduct = () => {
     insideBox: [],
     category:"",
     sellerId:"",
+    isTrendy:null,
   })
 
 
@@ -120,6 +121,7 @@ console.log(user.id);
       insideBox: [],
       category: "",
       sellerId: "",
+      isTrendy:null,
     });
 
     setTimeout(() => {
@@ -211,8 +213,29 @@ console.log(user.id);
                 className="form-input"
                 required
               />
-            </div>       
-          </div>
+            </div>   
+
+           <div className="form-group">
+          <label>Is Trendy</label>
+          <select
+            name="isTrendy"
+            value={formData.isTrendy === null ? "" : formData.isTrendy.toString()}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                isTrendy: e.target.value === "true",
+              }))
+            }
+            className="form-input"
+            required
+          >
+            <option value="">Select Type</option>
+            <option value="true">True</option>
+            <option value="false">False</option>
+          </select>
+        </div>
+
+       </div>
 
           {/* Images Section */}
           <div className="form-section">

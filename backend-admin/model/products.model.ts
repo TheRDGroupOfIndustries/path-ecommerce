@@ -12,6 +12,15 @@ export const getByCategory = async (category: string) => {
     return await db.products.findMany({where: {category: category}})
 }
 
+export const getTrendyProducts = async () => {
+  return await db.products.findMany({
+    where: {
+      isTrendy: true,
+    },
+  });
+};
+
+
 export const createProduct = async (data: any, sellerId: string) => {
     try {
         const product = await db.products.create({
@@ -27,6 +36,7 @@ export const createProduct = async (data: any, sellerId: string) => {
             highlights: data.highlights,
             insideBox: data.insideBox,
             category: data.category,
+            isTrendy:data.isTrendy,
             referralBy: data.referralBy,                  
             referralPercentage: data.referralPercentage,  
             }
@@ -58,6 +68,7 @@ export const updateProduct = async (data: any, id: string) => {
                 highlights: data.highlights || existing.highlights,
                 insideBox: data.insideBox || existing.insideBox,
                 category: data.category || existing.category,
+                isTrendy:data.isTrendy || existing.isTrendy,
                 referralBy:data.referralBy || existing.referralBy,
                 referralPercentage:data.referralPercentage || existing.referralPercentage
             }

@@ -68,6 +68,17 @@ export const updateData = async (req: Request, res: Response) => {
     }
 };
 
+export const getTrendyProducts = async (req: Request, res: Response) => {
+  try {
+    const products = await productModel.getTrendyProducts();
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error fetching trendy products:", error);
+    res.status(500).json({ error: "Failed to fetch trendy products" });
+  }
+};
+
+
 export const updateReferralInProducts = async (req: Request, res: Response) => {
   const { referralBy, referralPercentage } = req.body;
 

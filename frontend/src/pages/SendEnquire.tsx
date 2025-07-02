@@ -37,13 +37,10 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
         marketplaceId: type === "marketplace" ? id : null,
         propertyId: type !== "marketplace" ? id : null,
       };
-
-
-      console.log("Pay: ",payload);
       
       const res = await axios.post("http://localhost:8000/api/enquiries", payload);
 
-      console.log("Send: ",res);
+      // console.log("Send: ",res);
       
       setResponseMsg("✅ Enquiry sent successfully!");
       setFormData({ name: "", email: "", phone: "", message: "" });

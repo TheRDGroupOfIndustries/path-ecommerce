@@ -79,23 +79,4 @@ export const getTrendyProducts = async (req: Request, res: Response) => {
 };
 
 
-export const updateReferralInProducts = async (req: Request, res: Response) => {
-  const { referralBy, referralPercentage } = req.body;
-
-  try {
-    await db.products.updateMany({
-      where: { referralBy: null }, //optional
-      data: {
-        referralBy,
-        referralPercentage,
-      },
-    });
-
-    res.status(200).json({ message: "Products updated" });
-  } catch (err) {
-    console.error("Error updating products:", err);
-    res.status(500).json({ error: "Failed to update products" });
-  }
-};
-
 

@@ -7,6 +7,7 @@ const Dashboard = ({ darkMode }) => {
    const [itemM,setItemM] = useState([])
    const [itemP,setItemP] = useState([])
    const [products,setProducts] = useState([]);
+   const [enquiry,setEnquiry] = useState([]);
 
   const statsData = [
   {
@@ -38,7 +39,7 @@ const Dashboard = ({ darkMode }) => {
   },
   {
     title: "Total Products",
-    value: "₹ 0",
+    key:"products",
     change: "+25%",
     trend: "up",
     icon: "👗",
@@ -46,8 +47,8 @@ const Dashboard = ({ darkMode }) => {
     period: "vs. last month",
   },
   {
-    title: "Total Investors",
-    value: "1",
+    title: "Total Enquiries",
+    key: "enquiry",
     change: "-1%",
     trend: "down",
     icon: "💼",
@@ -90,6 +91,7 @@ const Dashboard = ({ darkMode }) => {
        fetchItems();
        fetchItemMs();
        fetchingProduct();
+       fetchEnquiry();
      }, []);
    
      const fetchUsers = async () => {
@@ -130,6 +132,16 @@ const Dashboard = ({ darkMode }) => {
         .catch((error) => console.error("Error fetching Products:", error));
     };
 
+    const fetchEnquiry = async () => {
+    const res = await fetchDataFromApi("/enquiry/get-all");
+    if (res && Array.isArray(res)) {
+      setEnquiry(res);
+    } else {
+      console.error("Unexpected API response:", res);
+      setEnquiry([]);
+    }
+  };
+
   const topData = {
     investors: [{ name: "developer", amount: "₹ 60000" }],
     employees: [{ name: "Raman Singh", position: "Position", salary: "₹ 80000" }],
@@ -161,8 +173,10 @@ const Dashboard = ({ darkMode }) => {
                     ? itemM.length
                     : stat.key === "itemP"
                     ? itemP.length
-                    : stat.value
+                    : stat.key === "products"
                     ? products.length
+                    : stat.key === "enquiry"
+                    ? enquiry.length
                     : stat.value
                     }
                 </p>

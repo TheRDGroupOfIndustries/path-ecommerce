@@ -50,7 +50,7 @@ app.use('/api/marketplace', marketPlace);
 app.use('/api/property', propertyRoute);
 app.use('/api/product', productRoute);
 app.use('/api/referral',referralRoute);
-app.use("/api", enquiryRoute);
+app.use("/api/enquiry", enquiryRoute);
 
 // Error handling for CORS
 import type { Request, Response, NextFunction } from 'express';

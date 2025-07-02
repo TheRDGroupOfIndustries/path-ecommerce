@@ -1,6 +1,5 @@
 import * as productController from "../controller/product.controller.js";
 import { Router } from "express";
-import { updateReferralInProducts } from "../controller/product.controller.js";
 
 const router = Router();
 
@@ -26,10 +25,6 @@ router.post("/create-product", async (req, res) => {
 
 router.put("/update-product/:id", async (req, res) => {
   await productController.updateData(req, res);
-});
-
-router.post("/update-referral", async (req, res) => {
-  await productController.updateReferralInProducts(req, res)
 });
 
 router.get("/get-trendy", async (req, res) => {

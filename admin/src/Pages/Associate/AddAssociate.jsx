@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchDataFromApi, promoteUserToAssociate } from '../../utils/api';
+import { fetchDataFromApi, promoteUserToAssociate,postData } from '../../utils/api';
 
 const AddAssociate = () => {
   const [users, setUsers] = useState([]);
@@ -47,70 +47,61 @@ const AddAssociate = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-//   const handleSubmit = async (e) => {
-//   e.preventDefault();
-//   if (!validateForm()) return;
 
-//   setIsSubmitting(true);
-
-//   try {
-//     await promoteUserToAssociate(
-//       formData.users,
-//       parseInt(formData.level),
-//       parseInt(formData.percent)
-//     );
-
-//     setSubmitSuccess(true);
-//     setFormData({ users: "", level: "", percent: "" });
-
-//     setTimeout(() => setSubmitSuccess(false), 3000);
-//   } catch (error) {
-//     console.error("Error promoting user:", error);
-//     alert("Failed to promote user");
-//   } finally {
-//     setIsSubmitting(false);
-//   }
-// };
+const waitForRoleUpdate = async (userId, expectedRole, maxRetries = 5) => {
+  for (let i = 0; i < maxRetries; i++) {
+    const res = await fetchDataFromApi(`/users/get-by-id/${userId}`); // Add a GET endpoint to fetch user
+    if (res?.user?.role === expectedRole) return true;
+    await new Promise((res) => setTimeout(res, 300));
+  }
+  return false;
+};
 
 const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    setIsSubmitting(true);
-    try {
-      await promoteUserToAssociate(
-        formData.users,
-        parseInt(formData.level),
-        parseInt(formData.percent)
-      );
+  e.preventDefault();
+  if (!validateForm()) return;
+  setIsSubmitting(true);
 
-      await fetchDataFromApi('/products/update-referral', {
-        method: 'POST',
-        body: JSON.stringify({
-          referralBy: formData.users,
-          referralPercentage: parseInt(formData.percent),
-        }),
-        headers: { 'Content-Type': 'application/json' },
-      });
+  try {
+    // 1. Promote user to ASSOCIATE
+    await promoteUserToAssociate(
+      formData.users,
+      parseInt(formData.level),
+      parseInt(formData.percent)
+    );
 
-      await fetchDataFromApi('/referral/create-or-update', {
-        method: 'POST',
-        body: JSON.stringify({
-          associateId: formData.users,
-          percent: parseInt(formData.percent),
-        }),
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      setSubmitSuccess(true);
-      setFormData({ users: '', level: '', percent: '' });
-      setTimeout(() => setSubmitSuccess(false), 3000);
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Failed to process associate referral data.');
-    } finally {
-      setIsSubmitting(false);
+    // 2. Confirm role updated
+    const isUpdated = await waitForRoleUpdate(formData.users, "ASSOCIATE");
+    if (!isUpdated) {
+      throw new Error("User role not updated to ASSOCIATE");
     }
-  };
+
+    // 3. Update product referral
+    await postData('/product/update-referral', {
+      referralBy: formData.users,
+      referralPercentage: parseInt(formData.percent),
+    });
+
+    // 4. Create or update referral code
+    const referralRes = await postData('/referral/create-or-update', {
+      associateId: formData.users,
+      percent: parseInt(formData.percent),
+    });
+
+    console.log("Referral response:", referralRes);
+
+    // Reset form
+    setSubmitSuccess(true);
+    setFormData({ users: '', level: '', percent: '' });
+    setTimeout(() => setSubmitSuccess(false), 3000);
+  } catch (error) {
+    console.error("Error submitting associate referral form:", error);
+    alert("Failed to process associate referral data.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   const handleReset = () => {
     setFormData({ users: "", level: "", percent: "" });

@@ -65,7 +65,7 @@ const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {
       ]
     },
     { key: "announcement", title: "Announcement", icon: <HiSpeakerphone />, link: "/announcement" },
-    { key: "enquiries", title: "Enquiries", icon: <FaEnvelope />, link: "/enquiries" },
+    { key: "enquiries", title: "Enquiries", icon: <FaEnvelope />, link: "/enquiry" },
     
     { 
     key: "product", 

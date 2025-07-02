@@ -16,6 +16,7 @@ import Alert from "@mui/material/Alert";
 import AddProduct from "./Pages/Product/AddProduct";
 import ViewProduct from "./Pages/Product/ViewProduct";
 import AddAssociate from "./Pages/Associate/AddAssociate";
+import Enquiry from "./Pages/Enquiry/Enquiry";
 
 // Global Context
 export const myContext = createContext();
@@ -46,6 +47,7 @@ function AppLayout({ darkMode, toggleDarkMode, sidebarOpen, toggleSidebar }) {
           <Route path="/addproduct" element={<AddProduct />} />
           <Route path="/viewproduct" element={<ViewProduct />} />
           <Route path="/addAssociate" element={<AddAssociate/>} />
+          <Route path="/enquiry" element={<Enquiry/>} />
         </Routes>
       </div>
     </>

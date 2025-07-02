@@ -10,58 +10,27 @@ import ProductCard from "@/components/ProductCard/ProductCard";
 
 import axios from "axios";
 
-const offers = [
-  {
-    id: 1,
-    discount: "25% Discount",
-    title: "Nike Sports Shoes",
-    description:
-      "Lorem ipsum dolor sit amet consectetur. Sit diam neque id nisi fermentum eget in sagittis ac. ",
-    image:
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    buttonText: "BUY NOW",
-  },
-  {
-    id: 2,
-    discount: "10% Discount",
-    title: "Samsun",
-    description:
-      "Lorem ipsum dolor sit amet consectetur. Sit diam neque id nisi fermentum eget in sagittis ac.",
-    image:
-      "https://images.unsplash.com/photo-1549482199-bc1ca6f58502?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    buttonText: "BUY NOW",
-  },
-  {
-    id: 3,
-    discount: "20% Discount",
-    title: "Nothing",
-    description:
-      "Lorem ipsum dolor sit amet consecteturLorem ipsum dolor sit amet consecteturLorem ipsum dolor sit amet consecteturLorem ipsum dolor sit amet consectetur. Sit diam neque id nisi fermentum eget in sagittis ac.",
-    image:
-      "https://images.unsplash.com/photo-1721059537509-a0eeaa242bf6?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    buttonText: "BUY NOW",
-  },
-];
-
 const Shop = () => {
   const [activeFilter, setActiveFilter] = useState("For You");
   const [activeIndex, setActiveIndex] = useState(0);
   const [products, setProducts] = useState([]);
   const [tabs, setTabs] = useState(["For You"]);
-  // const [trendy, setTrendy] = useState([]);
-  // useEffect(() => {
-  //   const fetchTrendy = async () => {
-  //     try {
-  //       const res = await axios.get(
-  //         "http://localhost:8000/api/product/get-trendy"
-  //       );
-  //       console.log("Trendy", res);
-  //     } catch (err) {
-  //       console.error("Failed to fetch Trendy Product", err);
-  //     }
-  //   };
-  //   fetchTrendy();
-  // }, []);
+  const [trendy, setTrendy] = useState([]);
+  useEffect(() => {
+    const fetchTrendy = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:8000/api/product/get-trendy"
+        );
+       setTrendy(res.data);
+      //  console.log("trendy: ",trendy);
+       
+      } catch (err) {
+        console.error("Failed to fetch Trendy Product", err);
+      }
+    };
+    fetchTrendy();
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -99,20 +68,20 @@ const Shop = () => {
         }}
       >
         <CarouselContent className="-ml-4">
-          {offers.map((offer, index) => (
+          {trendy.slice(0, 6).map((offer, index) => (
             <CarouselItem key={offer.id} className="pl-4 basis-[75%]">
               <div
                 className="relative h-54 rounded-lg shadow-lg bg-cover bg-center flex items-center"
-                style={{ backgroundImage: `url(${offer.image})` }}
+                style={{ backgroundImage: `url(${offer.images[0]})` }}
               >
                 <div className="absolute inset-0 bg-black/30 rounded-lg" />
                 <div className="relative z-10 flex flex-col justify-center h-full w-full px-4 ">
                   <div className="flex flex-col flex-1 justify-end h-1/4 gap-1">
                     <p className="text-sm text-white font-semibold">
-                      {offer.discount}
+                      {offer.discount} % OFF
                     </p>
                     <h3 className="text-2xl font-semibold text-white">
-                      {offer.title}
+                      {offer.name}
                     </h3>
                     <p className="text-[10px] mb-2 text-white font-light">
                       {offer.description.length > 110
@@ -122,7 +91,7 @@ const Shop = () => {
                   </div>
                   <div className="flex justify-end">
                     <Button className="bg-transparent underline underline-offset-3 tracking-widest text-xs font-light text-white">
-                      {offer.buttonText}
+                     Buy Now
                     </Button>
                   </div>
                 </div>
@@ -133,7 +102,7 @@ const Shop = () => {
       </Carousel>
 
       <div className="flex justify-center mt-3 gap-1">
-        {offers.map((_, index) => (
+        {trendy.slice(0, 6).map((_, index) => (
           <div
             key={index}
             className={`h-1 rounded-full transition-all duration-300 w-8  ${

@@ -4,13 +4,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 
-const validReferralCodes = [
-  "adarsh-40",
-  "muskan-20",
-  "chetan-30",
-  "john-15",
-  "sale-50",
-];
+// const validReferralCodes = [
+//   "adarsh-40",
+//   "muskan-20",
+//   "chetan-30",
+//   "john-15",
+//   "sale-50",
+// ];
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -49,29 +49,64 @@ const ProductDetail = () => {
     fetchProduct();
   }, [id]);
 
-  const handleReferralButtonClick = () => {
-    const code = referralCode.trim().toLowerCase();
+  // const handleReferralButtonClick = () => {
+  //   const code = referralCode.trim().toLowerCase();
 
-    if (referralStep === "check") {
-      const isValidFormat = /^[a-zA-Z]+-\d+$/.test(code);
-      if (!isValidFormat) {
-        setReferralError("Invalid format. Use like 'adarsh-40'");
+  //   if (referralStep === "check") {
+  //     const isValidFormat = /^[a-zA-Z]+-\d+$/.test(code);
+  //     if (!isValidFormat) {
+  //       setReferralError("Invalid format. Use like 'adarsh-40'");
+  //       return;
+  //     }
+
+  //     if (!validReferralCodes.includes(code)) {
+  //       setReferralError("Referral code not found.");
+  //       return;
+  //     }
+
+  //     const discount = parseInt(code.split("-")[1]);
+  //     setReferralDiscount(discount);
+  //     setReferralStep("apply");
+  //     setReferralError("");
+  //   } else if (referralStep === "apply") {
+  //     setReferralStep("applied");
+  //   }
+  // };
+
+const handleReferralButtonClick = async () => {
+  const code = referralCode.trim().toLowerCase();
+
+  if (referralStep === "check") {
+    const isValidFormat = /^[a-zA-Z]+-\d+$/.test(code);
+    if (!isValidFormat) {
+      setReferralError("Invalid format. Use like 'adarsh-40'");
+      return;
+    }
+
+    try {
+      const res = await axios.post("http://localhost:8000/api/referral/check", {
+        code,
+      });
+
+      const { valid, discount } = res.data;
+
+      if (!valid) {
+        setReferralError("Referral code not found or expired.");
         return;
       }
 
-      if (!validReferralCodes.includes(code)) {
-        setReferralError("Referral code not found.");
-        return;
-      }
-
-      const discount = parseInt(code.split("-")[1]);
       setReferralDiscount(discount);
       setReferralStep("apply");
       setReferralError("");
-    } else if (referralStep === "apply") {
-      setReferralStep("applied");
+    } catch (err) {
+      console.error("Referral validation failed:", err);
+      setReferralError("Something went wrong. Please try again.");
     }
-  };
+  } else if (referralStep === "apply") {
+    setReferralStep("applied");
+  }
+};
+
 
   if (!product) return <p className="p-4 text-center">Loading...</p>;
 

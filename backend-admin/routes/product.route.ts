@@ -28,8 +28,12 @@ router.put("/update-product/:id", async (req, res) => {
   await productController.updateData(req, res);
 });
 
-router.post("/update-referral",updateReferralInProducts);
+router.post("/update-referral", async (req, res) => {
+  await productController.updateReferralInProducts(req, res)
+});
 
-router.get("/get-trendy", productController.getTrendyProducts);
+router.get("/get-trendy", async (req, res) => {
+  await productController.getTrendyProducts(req, res)
+});
 
 export default router

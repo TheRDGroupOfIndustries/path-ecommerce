@@ -88,13 +88,13 @@ const handleReferralButtonClick = async () => {
         code,
       });
 
-      const { valid, discount } = res.data;
-
+      const { valid } = res.data;
+      // console.log("Check: ",res.data);
       if (!valid) {
         setReferralError("Referral code not found or expired.");
         return;
       }
-
+      const discount = parseInt(code.split("-")[1]);
       setReferralDiscount(discount);
       setReferralStep("apply");
       setReferralError("");

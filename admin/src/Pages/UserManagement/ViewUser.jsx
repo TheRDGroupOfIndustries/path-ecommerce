@@ -60,40 +60,43 @@ const ViewUser = () => {
   };
 
   const handleSaveEdit = async () => {
-    try {
-      const {
-        name,
-        email,
-        phone,
-        password,
-        role,
-        createdById,
-      } = editForm;
+  try {
+    const {
+      name,
+      email,
+      phone,
+      password,
+      role,
+      createdById,
+      imageUrl,
+    } = editForm;
 
-      const payload = {
-        name,
-        email,
-        phone,
-        password,
-        createdById,
-        role: role.toUpperCase(),
-      };
+    const payload = {
+      name,
+      email,
+      phone,
+      password,
+      createdById,
+      role: role.toUpperCase(),
+      imageUrl, 
+    };
 
-      await editData(`/users/update-user/${editingUser}`, payload);
-      console.log("Updating:", `/users/update-user/${editingUser}`, payload);
+    await editData(`/users/update-user/${editingUser}`, payload);
+    console.log("Updating:", `/users/update-user/${editingUser}`, payload);
 
-      await fetchUsers();
-      setEditingUser(null);
-      setEditForm({});
-    } catch (error) {
-      console.error("Error updating user:", error);
-      context.setAlertBox({
+    await fetchUsers(); 
+    setEditingUser(null);
+    setEditForm({});
+  } catch (error) {
+    console.error("Error updating user:", error);
+    context.setAlertBox({
       open: true,
       msg: "Failed to update user!",
       error: true,
     });
-    }
-  };
+  }
+};
+
 
   const handleCancelEdit = () => {
     setEditingUser(null);
@@ -225,6 +228,7 @@ const ViewUser = () => {
               <thead>
                 <tr>
                   <th>Serial No.</th>
+                  <th>Image</th>
                   <th>Name</th>
                   <th>Email</th>
                   <th>Phone</th>
@@ -237,6 +241,27 @@ const ViewUser = () => {
                 {filteredUsers?.map((user, index) => (
                   <tr key={user.id}>
                     <td>{index + 1}</td>
+                  
+                  <td>
+              {editingUser === user.id ? (
+                <div>
+                  <input
+                    type="text"
+                    name="imageUrl"
+                    value={editForm.imageUrl || ""}
+                    onChange={handleInputChange}
+                    className="edit-input"
+                    placeholder="Enter image URL"
+                  />
+                </div>
+              ) : (
+                <img
+                  src={user.imageUrl || "/placeholder.svg"}
+                  alt="User"
+                />
+              )}
+            </td>
+
                     <td>
                       {editingUser === user.id ? (
                         <input

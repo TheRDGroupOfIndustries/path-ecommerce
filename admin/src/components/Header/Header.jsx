@@ -25,10 +25,12 @@ const Header = ({ toggleSidebar, toggleDarkMode, darkMode }) => {
           {darkMode ? "☀️" : "🌙"}
         </button>
 
-
-        <div className="user-profile">
-          <div className="user-avatar">👤</div>
+      <div className="user-profile">
+        <div className="user-avatar">
+          {JSON.parse(localStorage.getItem("user"))?.email?.charAt(0).toUpperCase() || "👤"}
         </div>
+      </div>
+       
       </div>
     </header>
   )

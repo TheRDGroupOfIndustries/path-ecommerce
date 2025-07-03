@@ -16,6 +16,7 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
     role: "USER",
+    imageUrl:"",
   });
 
   const handleChange = (e) => {
@@ -139,6 +140,45 @@ const Signup = () => {
                 required
               />
             </div>
+
+            <div className="form-sectionn">
+            <div className="input-group">
+              {/* <span className="input-icon"><FaUser /></span> */}
+              <input
+                type="url"
+                name="imageUrl"
+                value={formData.imageUrl}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, imageUrl: e.target.value }))
+                }
+                placeholder="Enter Profile image URL"
+                className="form-input"
+              />
+            </div>
+
+            {formData.imageUrl && (
+              <div className="preview-container">
+                <h4 className="preview-title">Image Preview</h4>
+                <div className="preview-item image-preview">
+                  <button
+                    type="button"
+                    className="delete-preview-btn"
+                    onClick={() =>
+                      setFormData((prev) => ({ ...prev, imageUrl: "" }))
+                    }
+                    title="Remove image"
+                  >
+                    ×
+                  </button>
+                  <img
+                    src={formData.imageUrl || "/placeholder.svg"}
+                    alt="Product"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
 
             <button type="submit" className="login-btn">Sign Up</button>
           </form>

@@ -33,7 +33,7 @@ export const userById = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  const { name, email, password, confirmPassword, phone, role } = req.body;
+  const { name, email, password, confirmPassword, phone, role,imageUrl } = req.body;
 
   if (password !== confirmPassword) {
     return res.status(400).json({ error: "Passwords do not match" });
@@ -52,6 +52,7 @@ export const createUser = async (req: Request, res: Response) => {
       password: hashedPassword,
       phone,
       role: role?.toUpperCase() || "USER",
+      imageUrl,
     });
 
     if (user) {

@@ -84,3 +84,53 @@ export const checkReferralCode = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+
+//apply
+
+export const applyReferralCode = async (req: Request, res: Response) => {
+  const { code, productId } = req.body;
+
+  try {
+    if (!code || typeof code !== "string" || !productId) {
+      return res.status(400).json({ error: "Referral code and productId are required" });
+    }
+
+    const referral = await db.referral.findUnique({
+      where: { referral: code },
+    });
+
+    if (!referral) {
+      return res.status(404).json({ error: "Invalid referral code" });
+    }
+
+    const product = await db.products.findUnique({
+      where: { id: productId },
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const parts = code.split("-");
+    const percent = parseFloat(parts[1]);
+
+    if (isNaN(percent)) {
+      return res.status(400).json({ error: "Invalid referral percentage format" });
+    }
+
+    const originalPrice = typeof product.price === "string" ? parseFloat(product.price) : product.price;
+    const discountAmount = (originalPrice * percent) / 100;
+    const discountedPrice = originalPrice - discountAmount;
+
+    return res.status(200).json({
+      message: "Referral applied successfully",
+      originalPrice,
+      discountPercent: percent,
+      discountedPrice,
+    });
+  } catch (err) {
+    console.error("Error applying referral code:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

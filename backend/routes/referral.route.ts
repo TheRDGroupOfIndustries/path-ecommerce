@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createOrUpdateReferral , checkReferralCode } from "../controller/referral.controller.js";
+import { createOrUpdateReferral , checkReferralCode , applyReferralCode } from "../controller/referral.controller.js";
 import db from "../client/connect.js";
 
 const router = Router();
@@ -28,5 +28,11 @@ router.get("/all", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+router.post("/apply", async (req,res) => {
+  await applyReferralCode(req,res);
+});
+
 
 export default router;

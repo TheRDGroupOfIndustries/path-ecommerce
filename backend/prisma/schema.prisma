@@ -35,6 +35,8 @@ model User {
 
   // Relations for referral system
   createdReferrals Referral[] @relation("CreatedReferrals") // User has created referrals
+
+  orders Order[]
 }
 
 model Marketplace {
@@ -88,12 +90,11 @@ model Enquire {
   phone         String
   message       String
   marketplaceId String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
   propertyId  String?
   marketplace Marketplace? @relation(fields: [marketplaceId], references: [id])
   property    Property?    @relation(fields: [propertyId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
 }
 
 // Flow - Ask question - Goes to seller dashboard who listed product - he/she answer appear in user side
@@ -119,18 +120,22 @@ model Products {
   highlights  String[]
   insideBox   String[]
   isTrendy    Boolean  @default(false)
-  
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime? @updatedAt
+
   // Filled from backend ~ Get id from Token and parse it futher into sellerId - seller will automatically fetch user with it
   category String?
   sellerId String
   seller   User    @relation(fields: [sellerId], references: [id])
 
-  referralBy   String?   //associateid
-  referralPercentage Int?   //40
+  referralBy         String? //associateid
+  referralPercentage Int? //40
 
   // User side questions ~ Shakii log, bharosa to hai nahi aaye bare reviews dekhne...
   review Review[]
   Faq    Faq[]
+  orders Order[]
 }
 
 // Further Refreal will appear here ~ ek mota hathi gumne gya...
@@ -146,11 +151,25 @@ model Associate {
 }
 
 model Referral {
-  id           String    @id @default(uuid())
-  referral     String    @unique                       // e.g., "adarsh-40"
-  createdFor   User      @relation("CreatedReferrals", fields: [createdForId], references: [id])
-  createdForId String    @unique
-  usedBy       String[]                             //  Now optional
-  createdAt    DateTime  @default(now())
+  id           String   @id @default(uuid())
+  referral     String   @unique // e.g., "adarsh-40"
+  createdFor   User     @relation("CreatedReferrals", fields: [createdForId], references: [id])
+  createdForId String   @unique
+  usedBy       String[] //  Now optional
+  createdAt    DateTime @default(now())
 }
 
+// as of now - order 
+
+model Order {
+  id          String   @id @default(cuid())
+  productId   String
+  userId      String
+  quantity    Int
+  totalAmount Float
+  status      String
+  createdAt   DateTime @default(now())
+
+  product Products? @relation(fields: [productId], references: [id])
+  user    User?     @relation(fields: [userId], references: [id])
+}

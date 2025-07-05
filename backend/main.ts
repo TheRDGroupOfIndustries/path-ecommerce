@@ -17,7 +17,7 @@ const app = express();
 const PORT = 8000;
 
 // Configure CORS for development
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173','http://localhost:5174', 'https://path-ecommerce.onrender.com'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173','http://localhost:5174', 'https://path-ecommerce.onrender.com', 'https://path-ecommerce.vercel.app'];
 
 app.use(
   cors({

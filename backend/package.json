@@ -11,7 +11,7 @@
   "type": "module",
   "main": "main.js",
   "scripts": {
-    "dev": "nodemon --watch . --ext ts --exec \"node --loader ts-node/esm main.ts\"",
+    "dev": "tsx watch main.ts",
     "start": "node dist/main.js",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"

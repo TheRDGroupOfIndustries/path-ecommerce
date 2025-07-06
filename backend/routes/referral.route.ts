@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { createOrUpdateReferral , checkReferralCode , applyReferralCode } from "../controller/referral.controller.js";
 import db from "../client/connect.js";
+import { getAllReferralRevenue ,deleteReferral } from "../controller/referral.controller.js";
 
 const router = Router();
 
@@ -16,6 +17,7 @@ router.get("/all", async (req, res) => {
   try {
     const referrals = await db.referral.findMany({
       select: {
+        id:true,
         referral: true,
         createdForId: true,
         usedBy: true,
@@ -33,6 +35,18 @@ router.get("/all", async (req, res) => {
 router.post("/apply", async (req,res) => {
   await applyReferralCode(req,res);
 });
+
+
+router.get("/revenue", async (req, res) => {
+  await getAllReferralRevenue(req, res);
+});
+
+
+
+router.delete("/:id", async (req, res) => {
+  await deleteReferral(req, res);
+});
+
 
 
 export default router;

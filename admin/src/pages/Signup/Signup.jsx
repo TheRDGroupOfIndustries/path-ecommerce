@@ -15,7 +15,7 @@ const Signup = () => {
     phone: "",
     password: "",
     confirmPassword: "",
-    role: "USER",
+    role: "",
     imageUrl:"",
   });
 
@@ -44,7 +44,7 @@ const Signup = () => {
       });
 
       setTimeout(() => {
-        window.location.href = "/dashboard";
+        window.location.href = "/login";
       }, 2000);
     } catch (error) {
       console.error("Signup failed:", error);
@@ -55,6 +55,7 @@ const Signup = () => {
     });
     }
   };
+
 
   return (
     <div className="login-container">
@@ -112,10 +113,9 @@ const Signup = () => {
                 onChange={handleChange}
                 required
               >
-                <option value="USER">User</option>
+                <option value="">Select Role</option>
                 <option value="ADMIN">Admin</option>
                 <option value="SELLER">Seller</option>
-                <option value="ASSOCIATE">Associate</option>
               </select>
             </div>
             <div className="input-group">

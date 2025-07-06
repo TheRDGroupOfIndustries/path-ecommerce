@@ -1224,3 +1224,25 @@ form textarea:focus {
   display:flex;
   justify-content:space-between;
 }
+
+.badge1 {
+  padding: 3px 6px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.badge1.green {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.badge1.red {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.badge1.gray {
+  background-color: #e2e3e5;
+  color: #6c757d;
+}

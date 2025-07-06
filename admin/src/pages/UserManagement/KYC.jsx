@@ -1,6 +1,12 @@
 import { useState } from "react"
+import { postData } from "../../utils/api";
+import { useContext } from "react"
+import { myContext } from "../../App"
+import { useNavigate } from "react-router-dom";
 
 const KYC = () => {
+  const navigate = useNavigate();
+  const context = useContext(myContext)
   const [formData, setFormData] = useState({
     fullName: "",
     dateOfBirth: "",
@@ -15,7 +21,7 @@ const KYC = () => {
     passport: null,
     bankStatement: null,
     salarySlip: null,
-    selfie: null,
+    image: null,
   })
 
   const [uploadProgress, setUploadProgress] = useState({})
@@ -51,35 +57,68 @@ const KYC = () => {
       }, 100)
     }
   }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+  const requiredFiles = ["aadharFront", "aadharBack", "panCard", "image"];
+  const missingFiles = requiredFiles.filter((fileKey) => !formData[fileKey]);
 
-    // Simulate API call
-    setTimeout(() => {
-      alert("KYC documents submitted successfully!")
-      setIsSubmitting(false)
-      // Reset form
-      setFormData({
-        fullName: "",
-        dateOfBirth: "",
-        address: "",
-        phoneNumber: "",
-        email: "",
-        aadharNumber: "",
-        panNumber: "",
-        aadharFront: null,
-        aadharBack: null,
-        panCard: null,
-        passport: null,
-        bankStatement: null,
-        salarySlip: null,
-        selfie: null,
-      })
-      setUploadProgress({})
-    }, 2000)
+  if (missingFiles.length > 0) {
+    alert(`Please upload the following required files: ${missingFiles.join(", ")}`);
+    setIsSubmitting(false);
+    return;
   }
+
+  try {
+    const form = new FormData();
+    Object.keys(formData).forEach((key) => {
+      if (formData[key]) form.append(key, formData[key]);
+    });
+
+    await postData("/kyc", form, true); 
+    
+    context.setAlertBox({
+      open: true,
+      msg: "KYC submitted successfully!",
+      error: false,
+    });
+
+    setFormData({
+      fullName: "",
+      dateOfBirth: "",
+      address: "",
+      phoneNumber: "",
+      email: "",
+      aadharNumber: "",
+      panNumber: "",
+      aadharFront: null,
+      aadharBack: null,
+      panCard: null,
+      passport: null,
+      bankStatement: null,
+      salarySlip: null,
+      image: null,
+    });
+
+    setUploadProgress({});
+
+    // ✅ Redirect after a short delay (optional)
+    setTimeout(() => {
+      navigate("/kyc-status");
+    }, 1000); // optional delay for alert display
+  } catch (error) {
+    console.error("KYC submission error:", error);
+    context.setAlertBox({
+      open: true,
+      msg: "KYC Submission Failed!",
+      error: true,
+    });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   const FileUploadField = ({ name, label, accept, required = false }) => (
     <div className="file-upload-field">
@@ -111,14 +150,14 @@ const KYC = () => {
   )
 
   return (
-    <div className="kyc-container" style={styles.container}>
+    <div className="kyc-container" style={styles.containerr}>
       <div className="kyc-header" style={styles.header}>
         <h1 className="kyc-title" style={styles.title}>KYC Document Upload</h1>
         <p className="kyc-subtitle" style={styles.subtitle}>Please upload all required documents for verification</p>
       </div>
       <form onSubmit={handleSubmit} className="kyc-form" style={styles.form}>
         {/* Personal Information */}
-        <div className="kyc-section" style={styles.section}>
+        <div className="kyc-section" style={styles.sectionn}>
           <h2 className="kyc-sectionTitle" style={styles.sectionTitle}>Personal Information</h2>
           <div style={styles.row}>
             <div className="kyc-inputGroup" style={styles.inputGroup}>
@@ -231,13 +270,13 @@ const KYC = () => {
         <div className="kyc-section" style={styles.section}>
           <h2 className="kyc-sectionTitle" style={styles.sectionTitle}>Document Uploads</h2>
           <div style={styles.documentsGrid}>
-            <FileUploadField name="aadharFront" label="Aadhar Card (Front)" accept="image/*,.pdf" required={true} />
-            <FileUploadField name="aadharBack" label="Aadhar Card (Back)" accept="image/*,.pdf" required={true} />
-            <FileUploadField name="panCard" label="PAN Card" accept="image/*,.pdf" required={true} />
+            <FileUploadField name="aadharFront" label="Aadhar Card (Front)" accept="image/*,.pdf"  />
+            <FileUploadField name="aadharBack" label="Aadhar Card (Back)" accept="image/*,.pdf"/>
+            <FileUploadField name="panCard" label="PAN Card" accept="image/*,.pdf"  />
             <FileUploadField name="passport" label="Passport" accept="image/*,.pdf" />
             <FileUploadField name="bankStatement" label="Bank Statement" accept="image/*,.pdf" />
             <FileUploadField name="salarySlip" label="Salary Slip" accept="image/*,.pdf" />
-            <FileUploadField name="selfie" label="Selfie with ID" accept="image/*" required={true} />
+            <FileUploadField name="image" label="Selfie with ID" accept="image/*"  />
           </div>
         </div>
         <div className="kyc-submit-section" style={styles.submitSection}>
@@ -347,13 +386,14 @@ const KYC = () => {
 }
 
 const styles = {
-  container: {
-    maxWidth: "1000px",
+  containerr: {
+    maxWidth: "100% !important",
     margin: "0 auto",
     padding: "20px",
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
     backgroundColor: "#f5f7fa",
     minHeight: "100vh",
+    width:"70%"
   },
   header: {
     textAlign: "center",
@@ -380,7 +420,7 @@ const styles = {
     padding: "40px",
     boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
   },
-  section: {
+  sectionn: {
     marginBottom: "40px",
   },
   sectionTitle: {

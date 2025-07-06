@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./Login.css";
 import { FaLock } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
-import { postData } from "../../utils/api";
+import { fetchDataFromApi, postData } from "../../utils/api";
 import { jwtDecode } from "jwt-decode";
 import { useContext } from "react"
 import { myContext } from "../../App"
@@ -21,46 +21,68 @@ const Login = () => {
       [name]: value,
     }));
   };
-
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   try {
     const response = await postData("/users/login", formData);
-
     const token = response.token?.accessToken || "";
     const user = response.user || {};
 
-    // Store in localStorage
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
 
-    // ✅ Decode token to get id and email
     const decoded = jwtDecode(token);
-
     console.log("Decoded Token:", decoded);
+    console.log("User Role from Token:", decoded.role);
 
-    // You can access id and email like this (if present in your token payload)
-    console.log("User ID:", decoded?.id);
-    console.log("User Email:", decoded?.email);
-
-   context.setAlertBox({
+    context.setAlertBox({
       open: true,
-      msg: "Login successfully!",
+      msg: "Login successful!",
       error: false,
     });
 
-    setTimeout(() => {
-      window.location.href = "/dashboard";
-    }, 2000);
+    if (user.role === "SELLER") {
+      try {
+        const kyc = await fetchDataFromApi("/kyc/my-kyc");
+
+        // If KYC exists, route based on its status
+        if (!kyc || !kyc.status) {
+          window.location.href = "/kycc";   //  Fill KYC
+        } else if (kyc.status === "PENDING") {
+          window.location.href = "/kyc-status"; //  Wait
+        } else if (kyc.status === "APPROVED") {
+          window.location.href = "/dashboard"; //  Go ahead /seller-dashboard
+        } else {
+          window.location.href = "/kyc-status?rejected=true"; //  Rejected
+        }
+      } catch (kycError) {
+        if (
+          kycError?.response?.status === 404 &&
+          kycError?.response?.data?.msg === "No KYC found."
+        ) {
+          window.location.href = "/kycc"; //  Show KYC form
+        } else {
+          console.error("Error fetching KYC:", kycError);
+          context.setAlertBox({
+            open: true,
+            msg: "Error fetching KYC",
+            error: true,
+          });
+        }
+      }
+    } else {
+      window.location.href = "/dashboard"; //  Non-sellers or ADMIN 
+    }
   } catch (error) {
     console.error("Login failed:", error);
-  context.setAlertBox({
+    context.setAlertBox({
       open: true,
       msg: "Login Failed!",
       error: true,
     });
   }
 };
+
 
   return (
     <div className="login-container">

@@ -116,7 +116,7 @@
 }
 
 .role-admin {
-  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  background: linear-gradient(135deg, #fb0909, #f22318);
   color: white;
 }
 
@@ -134,7 +134,7 @@
   color: white;
 }
 .role-associate {
-  background: linear-gradient(135deg, #ef97c6, #f16119);
+  background: linear-gradient(135deg, #aa1665, #981066);
   color: white;
 }
 
@@ -179,7 +179,6 @@
 }
 
 .delete-btn:hover {
-  /* transform: translateY(-2px); */
   box-shadow: 0 4px 12px rgba(253, 121, 168, 0.4);
 }
 

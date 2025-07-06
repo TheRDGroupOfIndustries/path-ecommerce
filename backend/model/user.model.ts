@@ -20,9 +20,16 @@ export const getUsersByRole = async (role: Role) => {
       name: true,
       email: true,
       phone: true,
+      associate: { //added this for view association
+        select: {
+          level: true,
+          percent: true,
+        },
+      },
     },
   });
 };
+
 
 // Create a new user
 export const createUser = async (data: CreateUserInput) => {
@@ -39,9 +46,11 @@ export const createUser = async (data: CreateUserInput) => {
     select: {
       id: true,
       email: true,
+      role: true, // Add this
     },
   });
 };
+
 
 // Update user
 export const updateUser = async (id: string, data: UpdateUserInput) => {

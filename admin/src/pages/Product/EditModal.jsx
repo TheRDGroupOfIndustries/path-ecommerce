@@ -24,7 +24,7 @@ export default function EditModal({
     <div className="modal-overlay">
       <div className="modal-content">
         <div className="modal-header">
-          <h2>Edit Product</h2>
+          <h3>Edit Product</h3>
           <button onClick={onClose}><ImCross /></button>
         </div>
 
@@ -48,6 +48,20 @@ export default function EditModal({
             }}
           />
 
+          {/* isTrendy Toggle */}
+          <div className="form-sectionn"><br />
+            <h4>Is Trendy?</h4>
+            <select
+              name="isTrendy"
+              value={formData.isTrendy}
+              onChange={onChange}
+              className="trendy-select"
+            >
+              <option value=""> Select </option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
 
           {/* Image Add Section */}
           <input

@@ -43,7 +43,7 @@ const KYC = () => {
         [name]: files[0],
       }))
 
-      // Simulate upload progress
+      //  upload progress
       setUploadProgress((prev) => ({ ...prev, [name]: 0 }))
       const interval = setInterval(() => {
         setUploadProgress((prev) => {
@@ -103,7 +103,7 @@ const handleSubmit = async (e) => {
 
     setUploadProgress({});
 
-    // ✅ Redirect after a short delay (optional)
+    //  Redirect after a short delay (optional)
     setTimeout(() => {
       navigate("/kyc-status");
     }, 1000); // optional delay for alert display
@@ -267,7 +267,7 @@ const handleSubmit = async (e) => {
           </div>
         </div>
         {/* Document Uploads */}
-        <div className="kyc-section" style={styles.section}>
+        <div className="kyc-section" style={styles.sectionn}>
           <h2 className="kyc-sectionTitle" style={styles.sectionTitle}>Document Uploads</h2>
           <div style={styles.documentsGrid}>
             <FileUploadField name="aadharFront" label="Aadhar Card (Front)" accept="image/*,.pdf"  />

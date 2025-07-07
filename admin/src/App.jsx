@@ -41,7 +41,7 @@ function AppLayout({ darkMode, toggleDarkMode, sidebarOpen, toggleSidebar }) {
           darkMode={darkMode}
         />
         <Routes>
-          <Route path="/" element={<Dashboard darkMode={darkMode} />} />
+          {/* <Route path="/" element={<Dashboard darkMode={darkMode} />} /> */}
           <Route path="/dashboard" element={<Dashboard darkMode={darkMode} />} />
           <Route path="/users" element={<ViewUser />} />
           <Route path="/kyc" element={<KYC />} />
@@ -129,6 +129,7 @@ function App() {
 
           {/* Routes */}
           <Routes>
+             <Route path="/" element={<Login />} />
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />

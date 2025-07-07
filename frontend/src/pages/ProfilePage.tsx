@@ -12,12 +12,15 @@ import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const handleGoBack = () => {
+    window.history.back();
+  };
   return (
     <div className="flex flex-col bg-black ">
       {/* Profile Header */}
       <ChevronLeft
         className=" absolute top-5 left-5  text-white cursor-pointer"
-        onClick={() => navigate(-1)}
+        onClick={handleGoBack}
         size={32}
       />
       <div className=" bg-black text-white p-10 flex flex-col items-center text-center gap-3">
@@ -32,9 +35,11 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Menu Items */}
       <div className="p-4 space-y-4 rounded-t-3xl bg-white py-16">
-        <div className="bg-gray-100 p-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200">
+        <div
+          className="bg-gray-100 p-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200"
+          onClick={() => navigate("/product-list")}
+        >
           <div className="flex items-center space-x-5">
             <ShoppingBag className="text-black font-bold" />
             <div>
@@ -49,7 +54,10 @@ const ProfilePage = () => {
           </span>
         </div>
 
-        <div className="bg-gray-100 p-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200">
+        <div
+          className="bg-gray-100 p-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200"
+          onClick={() => navigate("/my-orders")}
+        >
           <div className="flex items-center space-x-5">
             <ShoppingCart className="text-black font-bold" />
             <div>
@@ -93,7 +101,10 @@ const ProfilePage = () => {
             <ChevronRight />
           </span>
         </div>
-        <div className="bg-gray-100 p-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200">
+        <div
+          className="bg-gray-100 p-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200"
+          onClick={() => navigate("/settings")}
+        >
           <div className="flex items-center space-x-5">
             <Settings className="text-black font-bold" />
             <div>

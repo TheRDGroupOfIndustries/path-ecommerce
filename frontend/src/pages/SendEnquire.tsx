@@ -42,7 +42,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
 
       // console.log("Send: ",res);
       
-      setResponseMsg("✅ Enquiry sent successfully!");
+      setResponseMsg("Enquiry sent successfully!");
       setFormData({ name: "", email: "", phone: "", message: "" });
 
 
@@ -53,7 +53,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
 
     } catch (err) {
       console.error("Enquiry failed:", err);
-      setResponseMsg("❌ Failed to send enquiry. Try again later.");
+      setResponseMsg("Failed to send enquiry. Try again later.");
     }
     setLoading(false);
   };

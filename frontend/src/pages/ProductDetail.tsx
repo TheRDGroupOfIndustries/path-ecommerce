@@ -3,15 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-
-// const validReferralCodes = [
-//   "adarsh-40",
-//   "muskan-20",
-//   "chetan-30",
-//   "john-15",
-//   "sale-50",
-// ];
-
+import { MdStar } from "react-icons/md";
+import toast from "react-hot-toast";
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -23,6 +16,9 @@ const ProductDetail = () => {
   const [referralStep, setReferralStep] = useState("check"); // check | apply | applied
   const [referralError, setReferralError] = useState("");
   const [referralDiscount, setReferralDiscount] = useState(0);
+
+  const [userRating, setUserRating] = useState(0);
+  const [userReview, setUserReview] = useState("");
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -49,64 +45,82 @@ const ProductDetail = () => {
     fetchProduct();
   }, [id]);
 
-  // const handleReferralButtonClick = () => {
-  //   const code = referralCode.trim().toLowerCase();
+  const handleReferralButtonClick = async () => {
+    const code = referralCode.trim().toLowerCase();
 
-  //   if (referralStep === "check") {
-  //     const isValidFormat = /^[a-zA-Z]+-\d+$/.test(code);
-  //     if (!isValidFormat) {
-  //       setReferralError("Invalid format. Use like 'adarsh-40'");
-  //       return;
-  //     }
+    if (referralStep === "check") {
+      const isValidFormat = /^[a-zA-Z]+-\d+$/.test(code);
+      if (!isValidFormat) {
+        setReferralError("Invalid format. Use like 'adarsh-40'");
+        return;
+      }
 
-  //     if (!validReferralCodes.includes(code)) {
-  //       setReferralError("Referral code not found.");
-  //       return;
-  //     }
+      try {
+        const res = await axios.post(
+          "http://localhost:8000/api/referral/check",
+          {
+            code,
+          }
+        );
 
-  //     const discount = parseInt(code.split("-")[1]);
-  //     setReferralDiscount(discount);
-  //     setReferralStep("apply");
-  //     setReferralError("");
-  //   } else if (referralStep === "apply") {
-  //     setReferralStep("applied");
-  //   }
-  // };
+        const { valid } = res.data;
+        if (!valid) {
+          setReferralError("Referral code not found or expired.");
+          return;
+        }
+        const discount = parseInt(code.split("-")[1]);
+        setReferralDiscount(discount);
+        setReferralStep("apply");
+        setReferralError("");
+      } catch (err) {
+        console.error("Referral validation failed:", err);
+        setReferralError("Something went wrong. Please try again.");
+      }
+    } else if (referralStep === "apply") {
+      try {
+        const res = await axios.post(
+          "http://localhost:8000/api/referral/apply",
+          {
+            code,
+            productId: id,
+          }
+        );
+        if (res.status == 200) {
+          const discount = parseInt(code.split("-")[1]);
+          setReferralDiscount(discount);
+        } else {
+          setReferralError("Something went wrong. Please try again.");
+        }
+      } catch (err) {
+        console.error("Referral validation failed:", err);
+        setReferralError("Something went wrong. Please try again.");
+      }
 
-const handleReferralButtonClick = async () => {
-  const code = referralCode.trim().toLowerCase();
+      setReferralStep("applied");
+    }
+  };
 
-  if (referralStep === "check") {
-    const isValidFormat = /^[a-zA-Z]+-\d+$/.test(code);
-    if (!isValidFormat) {
-      setReferralError("Invalid format. Use like 'adarsh-40'");
+  const handleSubmitReview = async () => {
+    if (!userRating || !userReview.trim()) {
+      toast.error("Please give a rating and write a review.");
       return;
     }
 
     try {
-      const res = await axios.post("http://localhost:8000/api/referral/check", {
-        code,
-      });
+      // await axios.post("http://localhost:8000/api/reviews/create", {
+      //   productId: id,
+      //   rating: userRating,
+      //   comment: userReview,
+      // });
 
-      const { valid } = res.data;
-      // console.log("Check: ",res.data);
-      if (!valid) {
-        setReferralError("Referral code not found or expired.");
-        return;
-      }
-      const discount = parseInt(code.split("-")[1]);
-      setReferralDiscount(discount);
-      setReferralStep("apply");
-      setReferralError("");
-    } catch (err) {
-      console.error("Referral validation failed:", err);
-      setReferralError("Something went wrong. Please try again.");
+      toast.success("Review submitted successfully!");
+      setUserRating(0);
+      setUserReview("");
+    } catch (error) {
+      console.error("Failed to submit review:", error);
+      toast.error("Something went wrong. Please try again.");
     }
-  } else if (referralStep === "apply") {
-    setReferralStep("applied");
-  }
-};
-
+  };
 
   if (!product) return <p className="p-4 text-center">Loading...</p>;
 
@@ -285,6 +299,47 @@ const handleReferralButtonClick = async () => {
           </div>
         </div>
       )}
+
+      {/* Review Section */}
+      <div className="px-4 mb-6">
+        <h2 className="text-md font-semibold mb-2 text-gray-800">
+          Add a Review
+        </h2>
+
+        {/* Star Rating */}
+        <div className="flex gap-1 mb-3">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <MdStar
+              key={star}
+              onClick={() => setUserRating(star)}
+              className={`w-6 h-6 cursor-pointer ${
+                userRating >= star
+                  ? "fill-yellow-400 text-yellow-400"
+                  : "text-gray-400"
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Review Textarea */}
+        <textarea
+          value={userReview}
+          onChange={(e) => setUserReview(e.target.value)}
+          placeholder="Write your review here..."
+          rows={3}
+          className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+        />
+
+        {/* Submit Button */}
+        <div className="flex justify-end">
+    <Button
+      onClick={handleSubmitReview}
+      className="mt-3 bg-black hover:bg-gray-900 text-white font-medium px-6 py-3 rounded-lg"
+    >
+      Submit Review
+    </Button>
+    </div>
+      </div>
 
       {/* Inside the Box */}
       {product.insideBox?.length > 0 && (

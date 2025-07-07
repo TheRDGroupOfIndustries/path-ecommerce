@@ -10,7 +10,7 @@ const Enquire = () => {
   const [user, setUser] = useState(null);
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const { id, type } = useParams();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -35,6 +35,9 @@ const Enquire = () => {
     fetchProperty();
   }, [id, type]);
   
+   const handleGoBack = () => {
+    window.history.back();
+  };
   
 
   return (
@@ -43,13 +46,14 @@ const Enquire = () => {
       <div className="flex items-center justify-between p-4 bg-white">
         <ChevronLeft
           className="w-6 h-6 text-gray-600 cursor-pointer"
-          onClick={() => {
-            if (type === "marketplace") {
-              navigate("/all-service");
-            } else {
-              navigate("/houses-plots");
-            }
-          }}
+          // onClick={() => {
+          //   if (type === "marketplace") {
+          //     navigate("/all-service");
+          //   } else {
+          //     navigate("/houses-plots");
+          //   }
+          // }}
+           onClick={handleGoBack}
         />
 
         <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-medium">
@@ -115,6 +119,7 @@ const Enquire = () => {
         </p>
       </div>
 
+          
       {/* Reviews */}
       <div className="px-4">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Reviews</h2>

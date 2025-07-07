@@ -3,7 +3,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
-// import SPC from "@/assets/SPC.jpg";
 import SPC from "@/assets/Logo_2.jpg";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
@@ -77,7 +76,12 @@ const SignUp = () => {
     setIsLoading(true);
 
     try {
-      await register(formData);
+      await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword:formData.confirmPassword
+      });
       navigate("/login");
     } catch (err: any) {
       setError(

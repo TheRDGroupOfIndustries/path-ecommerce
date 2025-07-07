@@ -1,6 +1,5 @@
 import { Router, Request, Response } from "express";
 import * as userController from "../controller/user.controller.js";
-import { isAuthenticated } from "../middlewares/auth.js";
 
 const route = Router();
 
@@ -33,12 +32,6 @@ route.delete("/delete-user/:id", async (req: Request, res: Response) => {
 route.post("/login", async (req: Request, res: Response) => {
   await userController.login(req, res);
 });
-
-// Get current authenticated user
-route.get("/me", isAuthenticated, async (req: Request, res: Response) => {
-  await userController.getMe(req, res);
-});
-
 
 //  Promote user to associate
 route.patch("/promote-to-associate/:id", async (req: Request, res: Response) => {

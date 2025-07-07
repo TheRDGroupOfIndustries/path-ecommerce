@@ -34,12 +34,6 @@ route.post("/login", async (req: Request, res: Response) => {
   await userController.login(req, res);
 });
 
-// Get current authenticated user
-route.get("/me", isAuthenticated, async (req: Request, res: Response) => {
-  await userController.getMe(req, res);
-});
-
-
 //  Promote user to associate
 route.patch("/promote-to-associate/:id", async (req: Request, res: Response) => {
   await userController.promoteToAssociate(req, res);

@@ -160,7 +160,6 @@ export const getAllAssociates = async (req: Request, res: Response) => {
   }
 };
 
-//user
 export const getMe = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;

@@ -28,6 +28,7 @@ export const getSellerDashboardDetails = async (req: Request, res: Response) => 
           // @ts-ignore
           createdAt: true,
           ratings: true,
+          description:true,
           review: {
             select: {
               id: true,

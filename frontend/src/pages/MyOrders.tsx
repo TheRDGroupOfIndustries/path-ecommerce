@@ -1,12 +1,15 @@
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  ArrowLeft,
-  ChevronLeft,
-  Search,
-  Star,
-
-} from "lucide-react";
+import { useAuth } from "@/context/authContext";
+import { ChevronLeft, Search, Star } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 const MyOrderItem = ({
   date,
@@ -15,11 +18,26 @@ const MyOrderItem = ({
   progressColor,
   image,
   productId,
+  canChangeStatus,
 }) => {
+  const [status, setStatus] = useState("Pending");
+  const statusOptions = [
+    "Pending",
+    "Dispatched",
+    "Shipped",
+    "Arrived",
+    "Delivered",
+  ];
+  const handleStatusChange = (e) => {
+    const newStatus = e.target.value;
+    setStatus(newStatus);
+
+    // axios.post(`/api/order/update-status`, { productId, status: newStatus });
+  };
   return (
-    <Card className="rounded-lg mb-4 bg-gray-100 h-32 p-2 border-none shadow-none">
-      <CardContent className="flex flex-row items-center justify-between px-1 py-1 flex-nowrap ">
-        <div className="flex flex-col space-y-2 flex-1">
+    <Card className="rounded-lg mb-4 bg-gray-100 min-h-36 p-2 border-none shadow-none">
+      <CardContent className="flex flex-row items-center justify-between px-2 py-1 flex-nowrap ">
+        <div className="flex flex-col space-y-2">
           <h2 className="text-lg text-black "> Product ID: {productId}</h2>
           <p className="text-xs text-black/90 font-light">{date}</p>
           <div className="flex items-center space-x-1 mb-2">
@@ -35,10 +53,42 @@ const MyOrderItem = ({
             ))}
             <span className="text-xs text-gray-600 ml-1">({rating}/5)</span>
           </div>
-          <p className={`text-xs font-medium ${progressColor}`}>{progress}</p>
+
+          {canChangeStatus ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="text-xs font-medium text-black border px-4 py-1 rounded bg-white w-fit truncate"
+                >
+                  {status}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className=" rounded-lg p-2"
+                sideOffset={8}
+                align="start"
+              >
+                {statusOptions.map((option) => (
+                  <DropdownMenuItem
+                    key={option}
+                    onClick={() => {
+                      setStatus(option);
+                      handleStatusChange({ target: { value: option } });
+                    }}
+                    className="text-sm py-2 px-3 rounded-md data-[highlighted]:bg-cyan-100 data-[highlighted]:text-cyan-900"
+                  >
+                    {option}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <p className={`text-xs font-medium ${progressColor}`}>{progress}</p>
+          )}
         </div>
 
-        <div className="relative w-26 h-26 flex-shrink-0">
+        <div className="relative w-30 h-30 flex-shrink-0">
           <img
             src={image}
             alt={productId}
@@ -50,8 +100,9 @@ const MyOrderItem = ({
   );
 };
 export default function MyOrders() {
-
-    const orders= [
+  const { user } = useAuth(); // get the logged-in user
+  const navigate = useNavigate();
+  const orders = [
     {
       id: "B1001",
       date: "20-July-2025, 3:00 PM",
@@ -97,41 +148,38 @@ export default function MyOrders() {
       image:
         "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
     },
-  ]
-
-  const navigate = useNavigate();
+  ];
 
   return (
-    
-      <div className="container mx-auto p-4 mb-6">
-        <div className="flex justify-between  p-2 items-center mb-4 text-black">
-          
-          <ChevronLeft
-            className="w-6 h-6  cursor-pointer"
-            onClick={() => {
-              navigate("/profile");
-            }}
-          /> 
-         
-          <h2 className="text-2xl   ">My orders</h2>
+    <div className="container mx-auto p-4 mb-16">
+      <div className="flex justify-between  p-2 items-center mb-4 text-black">
+        <ChevronLeft
+          className="w-8 h-8  cursor-pointer"
+          onClick={() => {
+            navigate("/profile");
+          }}
+        />
 
-            <div className="flex items-center space-x-2">
-           <Search className="w-7 h-7 text-black" />
-           </div>
+        <h2 className="text-2xl  font-semibold ">My orders</h2>
+
+        <div className="flex items-center space-x-2">
+          <Search className="w-7 h-7 text-black" />
         </div>
-        {orders.map((order) => (
-          <MyOrderItem
-            key={order.id}
-            date={order.date}
-            rating={order.rating}
-            image={order.image}
-            progress={order.progress}
-            progressColor={order.progressColor}
-            productId={order.id}
-          />
-        ))}
       </div>
-    
+      {orders.map((order) => (
+        <MyOrderItem
+          key={order.id}
+          date={order.date}
+          rating={order.rating}
+          image={order.image}
+          progress={order.progress}
+          progressColor={order.progressColor}
+          productId={order.id}
+          canChangeStatus={user?.role === "ADMIN" || user?.role === "SELLER"}
+
+        />
+      ))}
+    </div>
   );
 }
 

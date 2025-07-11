@@ -13,12 +13,12 @@ const tabs = [
   { name: "Profile", icon: CircleUserRound, path: "/profile" },
 ];
 
-const BottomNavBar = () => {
+const BottomNavBar= () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 w-full">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 w-full ">
       <div className="mx-auto [background:radial-gradient(circle_at_center,_#0a1b57_0%,_#000_60%)] text-white py-3 px-6 flex gap-10 items-center shadow-lg">
         {tabs.map((tab) => {
           const Icon = tab.icon;

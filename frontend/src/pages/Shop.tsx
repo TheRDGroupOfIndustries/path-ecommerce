@@ -9,8 +9,11 @@ import {
 import ProductCard from "@/components/ProductCard/ProductCard";
 
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Shop = () => {
+
+  const navigate=useNavigate();
   const [activeFilter, setActiveFilter] = useState("For You");
   const [activeIndex, setActiveIndex] = useState(0);
   const [products, setProducts] = useState([]);
@@ -22,8 +25,8 @@ const Shop = () => {
         const res = await axios.get(
           "http://localhost:8000/api/product/get-trendy"
         );
-       setTrendy(res.data);
-      //  console.log("trendy: ",trendy);
+        setTrendy(res.data);
+        // console.log("trendy: ",res.data);
        
       } catch (err) {
         console.error("Failed to fetch Trendy Product", err);
@@ -69,7 +72,7 @@ const Shop = () => {
       >
         <CarouselContent className="-ml-4">
           {trendy.slice(0, 6).map((offer, index) => (
-            <CarouselItem key={offer.id} className="pl-4 basis-[75%]">
+            <CarouselItem key={offer.id} className="pl-4 basis-[75%]" onClick={() => navigate(`/product-detail/${offer.id}`)}>
               <div
                 className="relative h-54 rounded-lg shadow-lg bg-cover bg-center flex items-center"
                 style={{ backgroundImage: `url(${offer.images[0]})` }}
@@ -90,7 +93,7 @@ const Shop = () => {
                     </p>
                   </div>
                   <div className="flex justify-end">
-                    <Button className="bg-transparent underline underline-offset-3 tracking-widest text-xs font-light text-white">
+                    <Button className="bg-transparent underline underline-offset-3 tracking-widest text-xs font-light text-white" >
                      Buy Now
                     </Button>
                   </div>

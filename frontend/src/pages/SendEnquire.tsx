@@ -3,8 +3,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import React, { useState } from 'react';
 import axios from 'axios';
+import { toast } from "react-hot-toast";
 
 const SendEnquire = ({ setShowPopup, type, id }) => {
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -38,8 +40,8 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
         propertyId: type !== "marketplace" ? id : null,
       };
       
-      const res = await axios.post("http://localhost:8000/api/enquiries", payload);
-
+      const res = await axios.post("http://localhost:8000/api/enquiry", payload);
+      toast.success("Enquiry sent successfully!");
       // console.log("Send: ",res);
       
       setResponseMsg("Enquiry sent successfully!");
@@ -49,11 +51,12 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
       setTimeout(() => {
         setShowPopup(false);
         setResponseMsg('');
-      }, 2000);
+      }, 1000);
 
     } catch (err) {
       console.error("Enquiry failed:", err);
       setResponseMsg("Failed to send enquiry. Try again later.");
+       toast.error("Failed to send enquiry. Try again later.");
     }
     setLoading(false);
   };

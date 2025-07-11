@@ -63,8 +63,7 @@ const ProductDetail = () => {
           }
         );
 
-        const { valid } = res.data;
-        if (!valid) {
+        if (res.status != 200) {
           setReferralError("Referral code not found or expired.");
           return;
         }
@@ -73,8 +72,15 @@ const ProductDetail = () => {
         setReferralStep("apply");
         setReferralError("");
       } catch (err) {
-        console.error("Referral validation failed:", err);
+        // console.error("Referral validation failed:", err);
+        // setReferralError("Something went wrong. Please try again.");
+        if (err.response && err.response.status === 404) {
+        setReferralError("Referral code not found or expired.");
+      } else if (err.response && err.response.data && err.response.data.error) {
+        setReferralError(err.response.data.error);
+      } else {
         setReferralError("Something went wrong. Please try again.");
+      }
       }
     } else if (referralStep === "apply") {
       try {
@@ -251,14 +257,14 @@ const ProductDetail = () => {
         )}
         {referralStep === "apply" && (
           <p className="text-green-600 text-sm mt-1">
-            ✅ Referral code is valid. Click <strong>Apply</strong> to get{" "}
+             Referral code is valid. Click <strong>Apply</strong> to get{" "}
             {referralDiscount}% extra off.
           </p>
         )}
 
         {referralStep === "applied" && (
           <p className="text-blue-700 text-sm mt-1 font-medium">
-            🎉 Referral applied! You've got an additional {referralDiscount}%
+            Referral applied! You've got an additional {referralDiscount}%
             discount.
           </p>
         )}

@@ -17,6 +17,8 @@ interface FormData {
 
 const SignUp = () => {
   const { register } = useAuth();
+  // console.log("register: ",register);
+  
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);

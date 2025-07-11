@@ -97,9 +97,11 @@ import { authservices } from "../services/authservice";
 
 interface User {
   id: string;
-  email: string;
   name: string;
-  picture?: string;
+  email: string;
+  role?: string;
+  imageUrl?: string;
+  phone?: string;
 }
 
 interface AuthContextType {
@@ -108,6 +110,7 @@ interface AuthContextType {
   register: (data: { name: string; email: string; password: string,confirmPassword:string }) => Promise<void>;
   logout: () => void;
   loading: boolean;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -132,7 +135,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       const res = await authservices.me(token);
+      // console.log("Me authservice: ",res);
       setUser(res.user);
+      
     } catch (err) {
       localStorage.removeItem("token");
       setUser(null);
@@ -143,7 +148,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     const res = await authservices.login({ email, password });
-    localStorage.setItem("token", res.token);
+    // console.log("login authservice1: ",res.token);
+    localStorage.setItem("token", res.token.accessToken);
     setUser(res.user);
   };
 
@@ -159,7 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading,setUser }}>
       {children}
     </AuthContext.Provider>
   );

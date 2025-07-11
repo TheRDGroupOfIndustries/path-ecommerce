@@ -19,6 +19,7 @@ export interface RegisterInput {
   name: string;
   email: string;
   password: string;
+  confirmPassword: string;
 }
 
 export interface AuthResponse {
@@ -59,6 +60,8 @@ export const authservices = {
           headers: { "Content-Type": "application/json" },
         }
       );
+    //   console.log("register: ",res);
+      
       return res.data;
     } catch (error: any) {
       throw new Error(

@@ -1,0 +1,32 @@
+body {
+  background: #f6f7ff;
+}
+
+.app-layout {
+  min-height: 100vh;
+  background-color:white;
+  transition: all 0.3s ease;
+}
+
+.app-layout.dark {
+  background-color: #1a202c;
+}
+
+.main-content {
+  transition: margin-left 0.3s ease;
+}
+
+.main-content.sidebar-open {
+  margin-left: 280px;
+}
+
+.main-content.sidebar-closed {
+  margin-left: 0;
+}
+
+@media (max-width: 1024px) {
+  .main-content.sidebar-open,
+  .main-content.sidebar-closed {
+    margin-left: 0;
+  }
+}

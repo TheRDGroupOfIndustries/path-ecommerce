@@ -1,39 +1,46 @@
-import "./Header.css" 
-import { Link } from "react-router-dom"
-import { FaUserPlus } from "react-icons/fa";
+import { Search, Sun, Moon, Menu } from "lucide-react";
+import "./Header.css";
 
 const Header = ({ toggleSidebar, toggleDarkMode, darkMode }) => {
+  // Get and parse user from localStorage
+  const user = JSON.parse(localStorage.getItem("user")) || {};
+  
+  const imageUrl = user.imageUrl;
+  const email = user.email || "";
+  const initial = email.charAt(0).toUpperCase();
+
   return (
-    <header className="header">
-      <div className="header-left">
-        <button className="sidebar-toggle-mobile" onClick={toggleSidebar} aria-label="Open Sidebar">
-          <span>&#9776;</span>
-        </button>
-        <button onClick={toggleSidebar} className="sidebar-toggle">
-          ☰
-        </button>
-        <h1 className="page-title">Dashboard</h1>
-      </div>
-      <div className="header-right">
-       
-       <div className="login-btn2">
-        <button><Link to="/signup"><FaUserPlus/></Link></button>
-       </div>
-      
-
-        <button onClick={toggleDarkMode} className="theme-toggle">
-          {darkMode ? "☀️" : "🌙"}
+    <header className={`header ${darkMode ? "dark" : ""}`}>
+      <div className="header-content">
+        <button className="menu-toggle" onClick={toggleSidebar}>
+          <Menu size={20} />
         </button>
 
-      <div className="user-profile">
-        <div className="user-avatar">
-          {JSON.parse(localStorage.getItem("user"))?.email?.charAt(0).toUpperCase() || "👤"}
+        <div className="search-section">
+          <div className="search-container">
+            <input type="text" placeholder="Search..." className="search-input" />
+            <button className="search-button">
+              <Search size={18} />
+            </button>
+          </div>
+        </div>
+
+        <div className="header-actions">
+          <button className="dark-mode-toggle" onClick={toggleDarkMode}>
+            {darkMode ? <Moon size={18} /> : <Sun size={18} />}
+          </button>
+
+          <div className="profile-avatar">
+            {imageUrl ? (
+              <img src={imageUrl} alt="Profile" className="avatar-image" />
+            ) : (
+              <div className="avatar-initial">{initial || "U"}</div>
+            )}
+          </div>
         </div>
       </div>
-       
-      </div>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

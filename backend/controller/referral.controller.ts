@@ -22,20 +22,25 @@ export const createOrUpdateReferral = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Referral code already exists for another associate" });
     }
 
-    let referral = await getReferralByUser(associateId);
+    let referral = await db.referral.findUnique({
+      where: { createdForId: associateId },
+    });
 
     if (!referral) {
-      referral = await createReferral(referralCode, associateId, [associateId]);
+      // ✅ Create referral with empty usedBy list
+      referral = await db.referral.create({
+        data: {
+          referral: referralCode,
+          createdForId: associateId,
+          usedBy: [],
+        },
+      });
     } else {
-      const updatedUsedBy = referral.usedBy?.includes(associateId)
-        ? referral.usedBy
-        : [...referral.usedBy, associateId];
-
+      // ✅ Update referral code only, not usedBy
       referral = await db.referral.update({
         where: { id: referral.id },
         data: {
           referral: referralCode,
-          usedBy: updatedUsedBy,
         },
       });
     }
@@ -46,7 +51,6 @@ export const createOrUpdateReferral = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 // Check Referral Code 
 export const checkReferralCode = async (req: Request, res: Response) => {
@@ -87,24 +91,32 @@ export const checkReferralCode = async (req: Request, res: Response) => {
 
 
 //apply
-
 export const applyReferralCode = async (req: Request, res: Response) => {
   const { code, productId } = req.body;
 
   try {
+    // 1. Validate input
     if (!code || typeof code !== "string" || !productId) {
       return res.status(400).json({ error: "Referral code and productId are required" });
     }
 
+    // 2. Validate user from middleware
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized user" });
+    }
+
+    // 3. Find referral
     const referral = await db.referral.findUnique({
       where: { referral: code },
-      include: { createdFor: true }
+      include: { createdFor: true },
     });
 
     if (!referral) {
       return res.status(404).json({ error: "Invalid referral code" });
     }
 
+    // 4. Find product
     const product = await db.products.findUnique({
       where: { id: productId },
     });
@@ -113,9 +125,9 @@ export const applyReferralCode = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Product not found" });
     }
 
+    // 5. Parse percentage
     const parts = code.split("-");
     const percent = parseFloat(parts[1]);
-
     if (isNaN(percent)) {
       return res.status(400).json({ error: "Invalid referral percentage format" });
     }
@@ -124,24 +136,24 @@ export const applyReferralCode = async (req: Request, res: Response) => {
     const discountAmount = (originalPrice * percent) / 100;
     const discountedPrice = originalPrice - discountAmount;
 
-
-    // 💰 Track commission
     const commission = (originalPrice * percent) / 100;
 
-     console.log("Referral Debug Info:", {
+    console.log("Referral Debug Info:", {
       code,
+      userId,
       productPriceRaw: product.price,
       originalPrice,
       percent,
       commission,
     });
 
-
-    //@ts-ignore
+    // 6. Record referral transaction
     await db.referralTransaction.create({
       data: {
         referralId: referral.id,
         associateId: referral.createdForId,
+        //@ts-ignore
+        userId: userId,
         productId: product.id,
         productName: product.name,
         price: originalPrice,
@@ -150,6 +162,17 @@ export const applyReferralCode = async (req: Request, res: Response) => {
       },
     });
 
+    // 7. Update usedBy only if user hasn't used it before
+    if (!referral.usedBy.includes(userId)) {
+      await db.referral.update({
+        where: { id: referral.id },
+        data: {
+          usedBy:[...referral.usedBy, userId]
+        },
+      });
+    }
+
+    // 8. Return response
     return res.status(200).json({
       message: "Referral applied successfully",
       originalPrice,
@@ -162,7 +185,6 @@ export const applyReferralCode = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 
 // Get total commission per associate
@@ -226,51 +248,3 @@ export const deleteReferral = async (req: Request, res: Response) => {
 
 
 
-
-
-// export const applyReferralCode = async (req: Request, res: Response) => {
-//   const { code, productId } = req.body;
-
-//   try {
-//     if (!code || typeof code !== "string" || !productId) {
-//       return res.status(400).json({ error: "Referral code and productId are required" });
-//     }
-
-//     const referral = await db.referral.findUnique({
-//       where: { referral: code },
-//     });
-
-//     if (!referral) {
-//       return res.status(404).json({ error: "Invalid referral code" });
-//     }
-
-//     const product = await db.products.findUnique({
-//       where: { id: productId },
-//     });
-
-//     if (!product) {
-//       return res.status(404).json({ error: "Product not found" });
-//     }
-
-//     const parts = code.split("-");
-//     const percent = parseFloat(parts[1]);
-
-//     if (isNaN(percent)) {
-//       return res.status(400).json({ error: "Invalid referral percentage format" });
-//     }
-
-//     const originalPrice = typeof product.price === "string" ? parseFloat(product.price) : product.price;
-//     const discountAmount = (originalPrice * percent) / 100;
-//     const discountedPrice = originalPrice - discountAmount;
-
-//     return res.status(200).json({
-//       message: "Referral applied successfully",
-//       originalPrice,
-//       discountPercent: percent,
-//       discountedPrice,
-//     });
-//   } catch (err) {
-//     console.error("Error applying referral code:", err);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// };

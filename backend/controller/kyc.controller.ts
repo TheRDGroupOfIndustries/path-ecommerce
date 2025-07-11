@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import db from "../client/connect.js";
 import { Prisma } from "@prisma/client";
-import { uploadBufferToCloudinary } from "../utils/uploadToCloudinary";
+import { uploadBufferToCloudinary } from "../utils/uploadToCloudinary.js";
 
 // Extend Request to include `user` and `files` for TypeScript
 interface MulterRequest extends Request {

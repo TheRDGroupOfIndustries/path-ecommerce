@@ -28,6 +28,7 @@ export const getSellerDashboardDetails = async (req: Request, res: Response) => 
           // @ts-ignore
           createdAt: true,
           ratings: true,
+          description:true,
           review: {
             select: {
               id: true,
@@ -106,5 +107,66 @@ export const getSellerDashboardDetails = async (req: Request, res: Response) => 
   } catch (error) {
     console.error("Error fetching seller dashboard:", error);
     return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+
+
+ //enquiry
+
+export const getSellerEnquiries = async (req: Request, res: Response): Promise<void> => {
+  const { id: sellerId } = req.params;
+
+  try {
+    // Get all marketplace enquiries for the seller
+    const marketplaceEnquiries = await db.marketplace.findMany({
+      where: { createdById: sellerId },
+      select: {
+        id: true,
+        name: true,
+        enquires: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            subject:true,
+            message: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    // Get all property enquiries for the seller
+    const propertyEnquiries = await db.property.findMany({
+      where: { createdById: sellerId },
+      select: {
+        id: true,
+        name: true,
+        enquires: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            subject:true,
+            message: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    res.status(200).json({
+      marketplaceEnquiries,
+      propertyEnquiries,
+    });
+  } catch (error: any) {
+    console.error("Error fetching seller enquiries:", error);
+    res.status(500).json({
+      error: "Failed to fetch seller enquiries",
+      details: error?.message || error,
+    });
   }
 };

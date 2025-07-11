@@ -1,32 +1,230 @@
-.login-btn2 {
-    /* background: linear-gradient(90deg, #7c3aed 0%, #a78bfa 100%); */
-    color: #7c3aed;
-    border: none;
-    font-size: 1.4rem;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 0.5rem;
-    transition: background 0.2s;
-  }
-  
-  .login-btn:hover {
-    background: linear-gradient(90deg, #a78bfa 0%, #7c3aed 100%);
-  }
+.header {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  height: 70px;
+  position: sticky;
+  top: 20px;
+  z-index: 100;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
 
-.sidebar-toggle-mobile {
+.header.dark {
+  background: #2d3748;
+  border-bottom-color: #4a5568;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 24px;
+}
+
+.menu-toggle {
   display: none;
   background: none;
   border: none;
-  font-size: 2rem;
-  color: #7c3aed;
+  color: #718096;
   cursor: pointer;
-  margin-right: 1rem;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
 }
-@media (max-width: 768px) {
-  .sidebar-toggle-mobile {
+
+.menu-toggle:hover {
+  background: #f7fafc;
+}
+
+.header.dark .menu-toggle {
+  color: #a0aec0;
+}
+
+.header.dark .menu-toggle:hover {
+  background: #4a5568;
+}
+
+.search-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  max-width: 400px;
+  margin: 0 20px;
+}
+
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+}
+
+.search-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 50px 0 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  background: #f7fafc;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.search-input:focus {
+  border-color: #5a67d8;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
+}
+
+.header.dark .search-input {
+  background: #4a5568;
+  border-color: #718096;
+  color: #e2e8f0;
+}
+
+.header.dark .search-input:focus {
+  background: #2d3748;
+  border-color: #90cdf4;
+  box-shadow: 0 0 0 3px rgba(144, 205, 244, 0.1);
+}
+
+.search-input::placeholder {
+  color: #a0aec0;
+}
+
+.search-button {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: #5a67d8;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.search-button:hover {
+  background: #4c51bf;
+}
+
+.header.dark .search-button {
+  background: #90cdf4;
+  color: #1a202c;
+}
+
+.header.dark .search-button:hover {
+  background: #63b3ed;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dark-mode-toggle {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #718096;
+}
+
+.dark-mode-toggle:hover {
+  background: #f7fafc;
+  border-color: #cbd5e0;
+}
+
+.header.dark .dark-mode-toggle {
+  background: #4a5568;
+  border-color: #718096;
+  color: #a0aec0;
+}
+
+.header.dark .dark-mode-toggle:hover {
+  background: #2d3748;
+  border-color: #a0aec0;
+}
+
+.profile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #1f7cf6;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.profile-avatar:hover {
+  border-color: #5a67d8;
+}
+
+.header.dark .profile-avatar {
+  border-color: #718096;
+}
+
+.header.dark .profile-avatar:hover {
+  border-color: #90cdf4;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 1024px) {
+  .header {
+    width: 100%;
+    border-radius: 0;
+  }
+
+  .menu-toggle {
     display: block;
   }
-  .sidebar-toggle {
+}
+
+@media (max-width: 768px) {
+  .search-section {
+    margin: 0 12px;
+  }
+
+  .search-container {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 640px) {
+  .search-section {
     display: none;
   }
+}
+
+.avatar-initial {
+  width: 35px;
+  height: 35px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+  text-transform: uppercase;
 }

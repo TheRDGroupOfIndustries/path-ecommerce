@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import db from "../client/connect.js";
 
 export const createEnquiry = async (req: Request, res: Response): Promise<void> => {
-  const { name, email, phone, message, marketplaceId, propertyId } = req.body;
+  const { name, email, phone, subject, message, marketplaceId, propertyId } = req.body;
 
   try {
     const enquiry = await db.enquire.create({
@@ -10,9 +10,10 @@ export const createEnquiry = async (req: Request, res: Response): Promise<void> 
         name,
         email,
         phone,
+        subject,
         message,
         ...(marketplaceId ? { marketplaceId } : {}),
-        ...(propertyId ? { propertyId } : {}) // won't include if undefined and empty
+        ...(propertyId ? { propertyId } : {})
       },
     });
 
@@ -25,6 +26,7 @@ export const createEnquiry = async (req: Request, res: Response): Promise<void> 
     });
   }
 };
+
 
 export const getAllEnquiries = async (req: Request, res: Response): Promise<void> => {
   try {

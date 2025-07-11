@@ -2,6 +2,8 @@ import { Router } from "express";
 import { createOrUpdateReferral , checkReferralCode , applyReferralCode } from "../controller/referral.controller.js";
 import db from "../client/connect.js";
 import { getAllReferralRevenue ,deleteReferral } from "../controller/referral.controller.js";
+import { isAuthenticated } from "../middlewares/auth.js";
+
 
 const router = Router();
 
@@ -32,7 +34,7 @@ router.get("/all", async (req, res) => {
 });
 
 
-router.post("/apply", async (req,res) => {
+router.post("/apply",isAuthenticated, async (req,res) => {
   await applyReferralCode(req,res);
 });
 

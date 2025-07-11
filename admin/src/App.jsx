@@ -41,7 +41,6 @@ function AppLayout({ darkMode, toggleDarkMode, sidebarOpen, toggleSidebar }) {
           darkMode={darkMode}
         />
         <Routes>
-          {/* <Route path="/" element={<Dashboard darkMode={darkMode} />} /> */}
           <Route path="/dashboard" element={<Dashboard darkMode={darkMode} />} />
           <Route path="/users" element={<ViewUser />} />
           <Route path="/kyc" element={<KYC />} />
@@ -68,11 +67,12 @@ function App() {
     const stored = localStorage.getItem('darkMode');
     return stored ? JSON.parse(stored) : false;
   });
-  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth > 768);
+
+  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth > 1200);
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth > 768) {
+      if (window.innerWidth > 1200) {
         setSidebarOpen(true);
       } else {
         setSidebarOpen(false);
@@ -108,9 +108,10 @@ function App() {
 
   return (
     <myContext.Provider value={contextValue}>
-      <div className={`dashboard-container${darkMode ? " dark" : ""}`}>
+  
+      <div className={`dashboard-app-bg${darkMode ? " dark" : ""}`} style={{ background: darkMode ? "#181c2f" : "#f6f7ff", minHeight: "100vh" }}>
         <Router>
-          {/* Alert Box visible for ALL routes */}
+      
           <Snackbar
             open={alertBox.open}
             autoHideDuration={6000}
@@ -156,6 +157,11 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
 
 
 

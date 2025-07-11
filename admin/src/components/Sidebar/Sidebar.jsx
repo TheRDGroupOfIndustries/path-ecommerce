@@ -1,208 +1,248 @@
-import "./Sidebar.css";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import {
-  MdDashboard,
-  MdAccountCircle
-} from "react-icons/md";
-import { FaUser,FaStore,FaBuilding,FaStar, FaEnvelope} from "react-icons/fa";
-import { PiSignOutFill } from "react-icons/pi";
-import { HiSpeakerphone } from "react-icons/hi";
-import { IoSettings } from "react-icons/io5";
-import { GiClothes } from "react-icons/gi";
-import { FaCircleInfo } from "react-icons/fa6";
+  LayoutDashboard,
+  Users,
+  Store,
+  MapPinHouse,
+  PackageOpen,
+  Waypoints,
+  Podcast,
+  Mails,
+  Bolt,
+  ChevronDown,
+  CircleUser,
+  X,
+} from "lucide-react"
+import "./Sidebar.css"
 
 const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {
-  const navigate = useNavigate();
-  const [expandedMenus, setExpandedMenus] = useState({});
+  const navigate = useNavigate()
+  const [isSettingOpen, setIsSettingOpen] = useState(false)
+  const [activeItem, setActiveItem] = useState("Dashboard")
+  const [expandedItems, setExpandedItems] = useState({})
 
-  const user = JSON.parse(localStorage.getItem("user"));
-  const role = user?.role || "";
-
-  const toggleMenu = (menuKey) => {
-    setExpandedMenus((prev) => ({
-      ...prev,
-      [menuKey]: !prev[menuKey],
-    }));
-  };
+  const user = JSON.parse(localStorage.getItem("user"))
+  const role = user?.role || ""
 
   const adminMenuItems = [
-    { key: "dashboard", title: "Dashboard", icon: <MdDashboard />, link: "/dashboard" },
     {
-      key: "users", title: "Users", icon: <FaUser />, hasSubmenu: true,
+      name: "Dashboard",
+      icon: LayoutDashboard,
+      special: true,
+      link: "/dashboard",
+    },
+    {
+      name: "Users",
+      icon: Users,
+      hasSubmenu: true,
       submenu: [{ title: "View User", link: "/users" }],
     },
     {
-      key: "marketplaces", title: "Marketplaces", icon: <FaStore />, hasSubmenu: true,
+      name: "Marketplace",
+      icon: Store,
+      hasSubmenu: true,
       submenu: [
         { title: "Add Item", link: "/additemM" },
         { title: "View Item", link: "/viewitemM" },
       ],
     },
     {
-      key: "properties", title: "Properties", icon: <FaBuilding />, hasSubmenu: true,
+      name: "Properties",
+      icon: MapPinHouse,
+      hasSubmenu: true,
       submenu: [
         { title: "Add Item", link: "/additemP" },
         { title: "View Item", link: "/viewitemP" },
       ],
     },
     {
-      key: "associate", title: "Associate", icon: <FaStar />, hasSubmenu: true,
-      submenu: [{ title: "Add Associate", link: "/addAssociate" },{ title: "View Associate", link: "/viewAssociate" }],
-    },
-    {
-      key: "product", title: "Product", icon: <GiClothes />, hasSubmenu: true,
+      name: "Products",
+      icon: PackageOpen,
+      hasSubmenu: true,
       submenu: [
         { title: "Add Product", link: "/addproduct" },
         { title: "View Product", link: "/viewproduct" },
       ],
     },
-    { key: "KYC", title: "KYC", icon: <FaCircleInfo />, link: "/view-kyc" },
-    { key: "announcement", title: "Announcement", icon: <HiSpeakerphone />, link: "/admin-anouncment" },
-    { key: "enquiries", title: "Enquiries", icon: <FaEnvelope />, link: "/enquiry" },
-  ];
+    {
+      name: "KYC",
+      icon: Waypoints,
+      link: "/view-kyc",
+    },
+    {
+      name: "Associate",
+      icon: CircleUser,
+      link: "/addAssociate",
+    },
+    {
+      name: "Announcements",
+      icon: Podcast,
+      link: "/admin-anouncment",
+    },
+    {
+      name: "Enqueries",
+      icon: Mails,
+      link: "/enquiry",
+    },
+  ]
 
   const sellerMenuItems = [
-    { key: "dashboard", title: "Dashboard", icon: <MdDashboard />, link: "/dashboard" },
     {
-      key: "marketplaces", title: "Marketplaces", icon: <FaStore />, hasSubmenu: true,
+      name: "Dashboard",
+      icon: LayoutDashboard,
+      special: true,
+      link: "/dashboard",
+    },
+    {
+      name: "Marketplace",
+      icon: Store,
+      hasSubmenu: true,
       submenu: [
         { title: "Add Item", link: "/additemM" },
         { title: "View Item", link: "/viewitemM" },
       ],
     },
     {
-      key: "properties", title: "Properties", icon: <FaBuilding />, hasSubmenu: true,
+      name: "Properties",
+      icon: MapPinHouse,
+      hasSubmenu: true,
       submenu: [
         { title: "Add Item", link: "/additemP" },
         { title: "View Item", link: "/viewitemP" },
       ],
     },
     {
-      key: "product", title: "Product", icon: <GiClothes />, hasSubmenu: true,
+      name: "Products",
+      icon: PackageOpen,
+      hasSubmenu: true,
       submenu: [
         { title: "Add Product", link: "/addproduct" },
         { title: "View Product", link: "/viewproduct" },
       ],
     },
-    { key: "announcement", title: "Announcement", icon: <HiSpeakerphone />, link: "/seller-anouncment" },
-    { key: "enquiries", title: "Enquiries", icon: <FaEnvelope />, link: "/enquiry" },
-  ];
-
-  const accountItems = [
     {
-      key: "account", title: "Account", icon: <MdAccountCircle />, hasSubmenu: true,
-      submenu: [
-        { title: "Profile", link: "#" },
-        { title: "Security", link: "#" },
-      ],
+      name: "Enqueries",
+      icon: Mails,
+      link: "/enquiry",
     },
-    {
-      key: "settings", title: "Settings", icon: <IoSettings />, hasSubmenu: true,
-      submenu: [
-        { title: "General", link: "#" },
-        { title: "Preferences", link: "#" },
-      ],
-    },
-  ];
+  ]
 
-  const helpItems = [
-    {
-      key: "help", title: "Help Desk", icon: <span>❓</span>, hasSubmenu: true,
-      submenu: [
-        { title: "Documentation", link: "#" },
-        { title: "Support", link: "#" },
-      ],
-    },
-  ];
+  //  SELECT MENU BASED ON ROLE
+  const menuItems = role === "ADMIN" ? adminMenuItems : sellerMenuItems
 
-  const renderMenuItem = (item) => (
-    <li key={item.key} className="menu-item">
-      {item.hasSubmenu ? (
-        <>
-          <button
-            className={`menu-button ${expandedMenus[item.key] ? "expanded" : ""}`}
-            onClick={() => toggleMenu(item.key)}
-          >
-            <span className="menu-icon">{item.icon}</span>
-            <span className="menu-text">{item.title}</span>
-            <span className="menu-arrow">{expandedMenus[item.key] ? "▼" : "▶"}</span>
-          </button>
-          {expandedMenus[item.key] && (
-            <ul className="submenu">
-              {item.submenu.map((subItem, index) => (
-                <li key={index} className="submenu-item">
-                  <NavLink to={subItem.link} className="submenu-link">
-                    {subItem.title}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
-      ) : (
-        <NavLink to={item.link} className="menu-link">
-          <span className="menu-icon">{item.icon}</span>
-          <span className="menu-text">{item.title}</span>
-        </NavLink>
-      )}
-    </li>
-  );
-
-  const handleSignOut = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
-
-  const handleOverlayClick = () => {
-    if (window.innerWidth <= 768) {
-      toggleSidebar();
-    }
-  };
+  const toggleExpanded = (itemName) => {
+    setExpandedItems((prev) => ({
+      ...prev,
+      [itemName]: !prev[itemName],
+    }))
+  }
 
   return (
     <>
-      {isOpen && <div className="sidebar-overlay show" onClick={handleOverlayClick}></div>}
+      {isOpen && <div className="sidebar-overlay" onClick={toggleSidebar}></div>}
 
-      <div className={`sidebar ${isOpen ? "open" : "closed"} ${darkMode ? "dark" : ""}`}>
+      <aside className={`sidebar ${isOpen ? "open" : ""} ${darkMode ? "dark" : ""}`}>
         <div className="sidebar-header">
           <div className="logo">
-            <div className="logo-icon"><img src="SPC.png" alt="SPC Logo" /></div>
+            <div className="logo-icon">
+              <img src="/SPC.png" alt="SPC Logo" />
+            </div>
             <span className="logo-text">SPC</span>
           </div>
-          <button className="sidebar-close-btn" onClick={toggleSidebar} aria-label="Close Sidebar">
-            &times;
+          <button className="close-btn" onClick={toggleSidebar}>
+            <X size={20} />
           </button>
         </div>
 
-        <div className="sidebar-content">
-          <nav className="sidebar-nav">
-            <ul className="menu-list">
-              {(role === "ADMIN" ? adminMenuItems : sellerMenuItems).map(renderMenuItem)}
-            </ul>
-          </nav>
+        <div className="sidebar-divider"></div>
 
-          <div className="menu-section">
-            <div className="section-title">Account & Settings</div>
-            <ul className="menu-list">{accountItems.map(renderMenuItem)}</ul>
-          </div>
+        <nav className="sidebar-nav">
+          <ul className="nav-list">
+            {menuItems.map((item) => (
+              <li key={item.name} className="nav-item">
+                <div
+                  className={`nav-link ${activeItem === item.name ? "active" : ""} ${item.special ? "special" : ""}`}
+                  onClick={() => {
+                    setActiveItem(item.name)
+                    if (item.link) navigate(item.link)
+                    if (item.hasSubmenu) toggleExpanded(item.name)
+                  }}
+                >
+                  <div className="nav-link-content">
+                    <item.icon className="nav-icon" size={18} />
+                    <span className="nav-text">
+                      {item.name}
+                      {item.special && activeItem === item.name && (
+                        <span className="top-line"></span> // Add this if you want the upper line in the text span
+                      )}
+                    </span>
+                  </div>
+                  {item.hasSubmenu && (
+                    <ChevronDown
+                      className={`submenu-arrow ${expandedItems[item.name] ? "expanded" : ""}`}
+                      size={14}
+                    />
+                  )}
+                </div>
 
-          <div className="menu-section">
-            <div className="section-title">Help & Feedback</div>
-            <ul className="menu-list">{helpItems.map(renderMenuItem)}</ul>
-          </div>
-        </div>
+                {item.hasSubmenu && expandedItems[item.name] && (
+                  <ul className="submenu">
+                    {item.submenu.map((subItem, idx) => (
+                      <li key={idx} className="submenu-item">
+                        <div
+                          className="submenu-link"
+                          onClick={() => navigate(subItem.link)}
+                        >
+                          {subItem.title}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+        </nav>
+ <div className="sidebar-footer">
+  <h3 className="sidebar-head">Setting</h3>
 
-        <div className="sidebar-footer">
-          <button className="signout-btn" onClick={handleSignOut}>
-            <span className="menu-icon"><PiSignOutFill /></span>
-            <span className="menu-text">Signout</span>
-          </button>
-        </div>
+  <div className="nav-item">
+    <div
+      className={`nav-link ${isSettingOpen ? "active" : ""}`}
+      onClick={() => setIsSettingOpen(!isSettingOpen)}
+    >
+      <div className="nav-link-content">
+        <Bolt className="nav-icon" size={18} />
+        <span className="nav-text">Setting</span>
       </div>
-    </>
-  );
-};
 
-export default Sidebar;
+      <ChevronDown
+        className={`submenu-arrow ${isSettingOpen ? "expanded" : ""}`}
+        size={14}
+      />
+    </div>
+
+    {isSettingOpen && (
+      <ul className="submenu submenu-footer">
+        <li className="submenu-item">
+          <div className="submenu-link" onClick={() => navigate("/profile")}>
+            Profile
+          </div>
+        </li>
+        <li className="submenu-item">
+          <div className="submenu-link" onClick={() => navigate("/login")}>
+            Login
+          </div>
+        </li>
+      </ul>
+    )}
+  </div>
+</div>
+
+      </aside>
+    </>
+  )
+}
+
+export default Sidebar

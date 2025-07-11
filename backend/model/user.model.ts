@@ -30,7 +30,6 @@ export const getUsersByRole = async (role: Role) => {
   });
 };
 
-
 // Create a new user
 export const createUser = async (data: CreateUserInput) => {
   return await db.user.create({

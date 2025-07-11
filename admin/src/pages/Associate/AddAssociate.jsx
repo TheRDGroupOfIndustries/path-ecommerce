@@ -76,13 +76,7 @@ const handleSubmit = async (e) => {
       throw new Error("User role not updated to ASSOCIATE");
     }
 
-    // 3. Update product referral
-    await postData('/product/update-referral', {
-      referralBy: formData.users,
-      referralPercentage: parseInt(formData.percent),
-    });
-
-    // 4. Create or update referral code
+    // 3. Create or update referral code
     const referralRes = await postData('/referral/create-or-update', {
       associateId: formData.users,
       percent: parseInt(formData.percent),

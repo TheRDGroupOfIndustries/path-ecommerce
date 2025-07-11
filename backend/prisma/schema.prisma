@@ -13,7 +13,6 @@ enum Role {
   ASSOCIATE
   ADMIN
 }
-
 model User {
   id            String        @id @default(cuid())
   email         String        @unique
@@ -25,21 +24,24 @@ model User {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   role          Role          @default(USER)
+
+  // Relations
   reviews       Review[]
   marketplaces  Marketplace[]
   properties    Property[]
   productSeller Products[]
   createdById   String?
+  associate     Associate?
 
-  associate Associate?
-
-  // Relations for referral system
-  createdReferrals Referral[] @relation("CreatedReferrals") // User has created referrals
+  // Referrals
+  createdReferrals Referral[]                     @relation("CreatedReferrals")
+  associateTransactions ReferralTransaction[]     @relation("AssociateUser")
+  usedReferralTransactions ReferralTransaction[]  @relation("ReferredUser")
 
   orders Order[]
   kyc    Kyc?
-  transactions ReferralTransaction[]
 }
+
 
 model Marketplace {
   id          String    @id @default(cuid())
@@ -90,6 +92,7 @@ model Enquire {
   name          String
   email         String
   phone         String
+  subject       String?
   message       String
   marketplaceId String?
   propertyId  String?
@@ -157,7 +160,7 @@ model Referral {
   referral     String   @unique // e.g., "adarsh-40"
   createdFor   User     @relation("CreatedReferrals", fields: [createdForId], references: [id])
   createdForId String   @unique
-  usedBy       String[] //  Now optional
+  usedBy       String[]  @default([])//  Now optional
   createdAt    DateTime @default(now())
 
   transactions ReferralTransaction[]
@@ -212,17 +215,21 @@ model Announcement {
 
 
 model ReferralTransaction {
-  id          String   @id @default(uuid())
-  referralId  String
-  associateId String
-  productId   String
-  productName String
-  price       Float
-  percent     Float
-  commission  Float
-  createdAt   DateTime @default(now())
+  id           String   @id @default(uuid())
+  referralId   String
+  associateId  String
+  userId       String?
+  productId    String
+  productName  String
+  price        Float
+  percent      Float
+  commission   Float
+  createdAt    DateTime @default(now())
 
-  referral    Referral @relation(fields: [referralId], references: [id])
-  associate   User     @relation(fields: [associateId], references: [id])
+  referral     Referral @relation(fields: [referralId], references: [id])
+  associate    User     @relation("AssociateUser", fields: [associateId], references: [id])
+  user         User?     @relation("ReferredUser", fields: [userId], references: [id])
 }
+
+
 

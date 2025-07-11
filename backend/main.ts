@@ -1,7 +1,9 @@
-import express from 'express';
 import dotenv from 'dotenv';
+dotenv.config();
+import express from 'express';
 import cors from 'cors';
 import cookieParser from "cookie-parser"
+
 
 // Routes
 import userRoute from './routes/user.route.js';
@@ -13,9 +15,9 @@ import enquiryRoute from "./routes/enquire.route.js";
 import sellerRoute from "./routes/getSellerProfile.route.js"
 import kycRoute from "./routes/kyc.route.js"
 import announcementRoute from "./routes/announcement.route.js"
-import associateRoute from "./routes/getAssociateProfile.route.js"
+// import associateRoute from "./routes/getAssociateProfile.route.js"
 
-dotenv.config();
+
 const app = express();
 const PORT = 8000;
 
@@ -58,7 +60,7 @@ app.use("/api/enquiry", enquiryRoute);
 app.use("/api/seller",sellerRoute);   //profile
 app.use("/api/kyc",kycRoute);
 app.use("/api/announcement",announcementRoute);
-app.use("/api/associate",associateRoute);  //profile
+// app.use("/api/associate",associateRoute);  //profile
 
 // Error handling for CORS
 import type { Request, Response, NextFunction } from 'express';

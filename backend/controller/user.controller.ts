@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { generateTokens } from "../utils/jwt.js";
 import * as associateModel from "../model/associate.model.js";
 import { Role } from "@prisma/client";
+import { uploadBufferToCloudinary } from "../utils/uploadToCloudinary.js";
 
 export const allUsers = async (req: Request, res: Response) => {
   try {
@@ -33,7 +34,7 @@ export const userById = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  const { name, email, password, confirmPassword, phone, role,imageUrl } = req.body;
+  const { name, email, password, confirmPassword, phone, role } = req.body;
 
   if (password !== confirmPassword) {
     return res.status(400).json({ error: "Passwords do not match" });
@@ -43,6 +44,12 @@ export const createUser = async (req: Request, res: Response) => {
     const existingUser = await userModel.userByGmail(email);
     if (existingUser) {
       return res.status(409).json({ error: "User already exists" });
+    }
+
+    let imageUrl: string | undefined = undefined;
+
+    if (req.file) {
+      imageUrl = await uploadBufferToCloudinary(req.file.buffer, email, "profiles");
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -70,12 +77,23 @@ export const createUser = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
   const body = req.body;
+
   try {
+    if (body.password) {
+      body.password = await bcrypt.hash(body.password, 10);
+    }
+
+    if (req.file) {
+      const imageUrl = await uploadBufferToCloudinary(req.file.buffer, `profile-${id}`, "profiles");
+      body.imageUrl = imageUrl;
+    }
+
     await userModel.updateUser(id, body);
+
     return res.status(200).json({ message: "User updated successfully" });
   } catch (error) {
     console.error("Error updating user:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -115,7 +133,6 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-//associate
 export const promoteToAssociate = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { level, percent } = req.body;
@@ -146,7 +163,6 @@ export const promoteToAssociate = async (req: Request, res: Response) => {
   }
 };
 
-//get all associate
 export const getAllAssociates = async (req: Request, res: Response) => {
   try {
     const associates = await userModel.getUsersByRole(Role.ASSOCIATE);
@@ -160,7 +176,6 @@ export const getAllAssociates = async (req: Request, res: Response) => {
   }
 };
 
-//user
 export const getMe = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
@@ -182,5 +197,3 @@ export const getMe = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
-

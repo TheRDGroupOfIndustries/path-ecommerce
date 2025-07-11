@@ -44,15 +44,37 @@ export const postData = async (url, formData, isFormData = false) => {
 };
 
 // PUT Request (Edit/Update)
-export const editData = async (url, updatedData) => {
+
+// export const editData = async (url, updatedData) => {
+//   try {
+//     const token = localStorage.getItem("token");
+
+//     const { data } = await axios.put(BASE_URL + url, updatedData, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//         "Content-Type": "application/json",
+//       },
+//     });
+
+//     return data;
+//   } catch (error) {
+//     console.error("Error in editData:", error.response?.data || error.message);
+//     throw error;
+//   }
+// };
+
+export const editData = async (url, updatedData, isFormData = false) => {
   try {
     const token = localStorage.getItem("token");
 
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
+    };
+
     const { data } = await axios.put(BASE_URL + url, updatedData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+      headers,
+      withCredentials: true,
     });
 
     return data;
@@ -61,6 +83,7 @@ export const editData = async (url, updatedData) => {
     throw error;
   }
 };
+
 
 // DELETE Request
 export const deleteData = async (url) => {

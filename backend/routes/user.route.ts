@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import * as userController from "../controller/user.controller.js";
 import { isAuthenticated } from "../middlewares/auth.js";
+import {upload} from "../middlewares/multer.js";
 
 const route = Router();
 
@@ -15,12 +16,13 @@ route.get("/get-by-id/:id", async (req: Request, res: Response) => {
 });
 
 //  Create a new user
-route.post("/create-user", async (req: Request, res: Response) => {
-  await userController.createUser(req, res);
+
+route.post("/create-user", upload.single("image"), async (req: Request, res: Response) => {
+    await userController.createUser(req, res);
 });
 
 //  Update user
-route.put("/update-user/:id", async (req: Request, res: Response) => {
+route.put("/update-user/:id", upload.single("image"), async (req: Request, res: Response) => {
   await userController.updateUser(req, res);
 });
 

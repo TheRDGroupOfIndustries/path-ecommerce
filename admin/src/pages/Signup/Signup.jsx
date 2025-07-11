@@ -16,7 +16,7 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
     role: "",
-    imageUrl:"",
+    imageFile: null, 
   });
 
   const handleChange = (e) => {
@@ -27,15 +27,25 @@ const Signup = () => {
     }));
   };
 
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const response = await postData("/users/create-user", formData); 
+  const data = new FormData();
+  data.append("name", formData.name);
+  data.append("email", formData.email);
+  data.append("phone", formData.phone);
+  data.append("password", formData.password);
+  data.append("confirmPassword", formData.confirmPassword);
+  data.append("role", formData.role);
+  data.append("image", formData.imageFile);  
 
-      // Saving token to localStorage
-      localStorage.setItem("token", response.token?.accessToken || "");  
-      localStorage.setItem("user", JSON.stringify(response.user || {}));
+  try {
+    const result = await postData("/users/create-user", data, true); // already parsed
+
+    if (result?.token) {
+      localStorage.setItem("token", result.token?.accessToken || "");  
+      localStorage.setItem("user", JSON.stringify(result.user || {}));
 
       context.setAlertBox({
         open: true,
@@ -46,16 +56,19 @@ const Signup = () => {
       setTimeout(() => {
         window.location.href = "/login";
       }, 2000);
-    } catch (error) {
-      console.error("Signup failed:", error);
-      context.setAlertBox({
+    } else {
+      throw new Error(result.error || "Signup failed");
+    }
+
+  } catch (error) {
+    console.error("Signup failed:", error);
+    context.setAlertBox({
       open: true,
       msg: "SignUp Failed!",
       error: true,
     });
-    }
-  };
-
+  }
+};
 
   return (
     <div className="login-container">
@@ -141,43 +154,47 @@ const Signup = () => {
               />
             </div>
 
-            <div className="form-sectionn">
-            <div className="input-group">
-              {/* <span className="input-icon"><FaUser /></span> */}
-              <input
-                type="url"
-                name="imageUrl"
-                value={formData.imageUrl}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, imageUrl: e.target.value }))
-                }
-                placeholder="Enter Profile image URL"
-                className="form-input"
-              />
-            </div>
-
-            {formData.imageUrl && (
-              <div className="preview-container">
-                <h4 className="preview-title">Image Preview</h4>
-                <div className="preview-item image-preview">
-                  <button
-                    type="button"
-                    className="delete-preview-btn"
-                    onClick={() =>
-                      setFormData((prev) => ({ ...prev, imageUrl: "" }))
-                    }
-                    title="Remove image"
-                  >
-                    ×
-                  </button>
-                  <img
-                    src={formData.imageUrl || "/placeholder.svg"}
-                    alt="Product"
-                  />
-                </div>
+              <div className="form-sectionn">
+              <div className="input-group">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      imageFile: e.target.files[0],
+                    }))
+                  }
+                  required
+                  className="form-input"
+                />
               </div>
-            )}
-          </div>
+
+              {formData.imageFile && (
+                <div className="preview-container">
+                  <h4 className="preview-title">Image Preview</h4>
+                  <div className="preview-item image-preview">
+                    <button
+                      type="button"
+                      className="delete-preview-btn"
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          imageFile: null,
+                        }))
+                      }
+                      title="Remove image"
+                    >
+                      ×
+                    </button>
+                    <img
+                      src={URL.createObjectURL(formData.imageFile)}
+                      alt="Preview"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
 
 
             <button type="submit" className="login-btn">Sign Up</button>

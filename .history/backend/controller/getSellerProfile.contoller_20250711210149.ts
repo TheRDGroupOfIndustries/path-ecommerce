@@ -58,8 +58,7 @@ export const getSellerDashboardDetails = async (req: Request, res: Response) => 
             product: {
               select: {
                 id: true,
-                name: true,
-                images: true,
+                name: true
               }
             },
             createdAt: true

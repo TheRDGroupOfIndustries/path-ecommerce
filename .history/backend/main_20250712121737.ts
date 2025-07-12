@@ -4,6 +4,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from "cookie-parser"
 
+
 // Routes
 import userRoute from './routes/user.route.js';
 import marketPlace from './routes/marketplace.route.js';
@@ -60,7 +61,7 @@ app.use("/api/seller",sellerRoute);   //profile
 app.use("/api/kyc",kycRoute);
 app.use("/api/announcement",announcementRoute);
 app.use("/api/associate",associateRoute);  //profile
-app.use("/api/review",reviewRoute);
+app.use("/api/review",reviewRoute)
 
 // Error handling for CORS
 import type { Request, Response, NextFunction } from 'express';

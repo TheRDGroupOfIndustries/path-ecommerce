@@ -59,7 +59,7 @@ export const getSellerDashboardDetails = async (req: Request, res: Response) => 
               select: {
                 id: true,
                 name: true,
-                images: true,
+                images: true
               }
             },
             createdAt: true

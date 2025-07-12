@@ -26,7 +26,7 @@ export const createKyc = async (req: MulterRequest, res: Response) => {
 
     const files = req.files;
 
-    //  Helper to upload file to Cloudinary and return URL string
+    // ✅ Helper to upload file to Cloudinary and return URL string
     const getUrl = async (field: string): Promise<string | null> => {
       const file = files?.[field]?.[0];
       return file ? await uploadBufferToCloudinary(file.buffer, field, "kyc") : null;

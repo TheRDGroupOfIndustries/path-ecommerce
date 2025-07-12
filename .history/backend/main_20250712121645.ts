@@ -4,6 +4,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from "cookie-parser"
 
+
 // Routes
 import userRoute from './routes/user.route.js';
 import marketPlace from './routes/marketplace.route.js';
@@ -15,7 +16,7 @@ import sellerRoute from "./routes/getSellerProfile.route.js"
 import kycRoute from "./routes/kyc.route.js"
 import announcementRoute from "./routes/announcement.route.js"
 import associateRoute from "./routes/getAssociateProfile.route.js"
-import reviewRoute from "./routes/review.route.js"
+
 
 const app = express();
 const PORT = 8000;
@@ -60,7 +61,7 @@ app.use("/api/seller",sellerRoute);   //profile
 app.use("/api/kyc",kycRoute);
 app.use("/api/announcement",announcementRoute);
 app.use("/api/associate",associateRoute);  //profile
-app.use("/api/review",reviewRoute);
+app.use
 
 // Error handling for CORS
 import type { Request, Response, NextFunction } from 'express';

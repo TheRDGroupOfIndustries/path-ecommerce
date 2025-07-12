@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import db from "../client/connect.js";
+
 export const getAssociateDashboardDetails = async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -21,6 +22,7 @@ export const getAssociateDashboardDetails = async (req: Request, res: Response) 
             createdAt: true
           }
         },
+        // Include referral code
         createdReferrals: {
           select: {
             id: true,
@@ -29,7 +31,8 @@ export const getAssociateDashboardDetails = async (req: Request, res: Response) 
             usedBy: true,
           }
         },
-        associateTransactions: {
+        // Include commission earned
+        transactions: {
           select: {
             id: true,
             productName: true,
@@ -47,7 +50,8 @@ export const getAssociateDashboardDetails = async (req: Request, res: Response) 
       return res.status(404).json({ message: "Associate not found" });
     }
 
-    const totalCommission = user.associateTransactions.reduce((sum, t) => sum + t.commission, 0);
+    // Calculate total commission
+    const totalCommission = user.transactions.reduce((sum, t) => sum + t.commission, 0);
 
     return res.status(200).json({ ...user, totalCommission });
   } catch (error) {

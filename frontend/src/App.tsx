@@ -155,7 +155,7 @@ function App() {
             }
           />
           <Route
-            path="/enquiry-detail"
+            path="/enquiry-detail/:id"
             element={
               <ProtectedRoute>
                 <EnquiryDetail/>

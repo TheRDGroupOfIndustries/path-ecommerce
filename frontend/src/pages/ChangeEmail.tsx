@@ -24,6 +24,7 @@ export default function ChangeEmail() {
       );
       setUser({ ...user, email });
       toast.success("Email updated successfully");
+      navigate(-1);
     } catch (error) {
       console.error(error);
       toast.error("Failed to update email");

@@ -32,8 +32,9 @@ export default function ChangePassword() {
         }
       );
       console.log("res: ", res);
-
       toast.success("Password updated successfully");
+      setForm({password:"",confirmPassword:""})
+      navigate(-1);
     } catch (error) {
       console.error(error);
       toast.error("Failed to update password");

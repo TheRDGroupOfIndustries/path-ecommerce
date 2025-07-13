@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
 import PROIFLE_IMAGE from "@/assets/user_img.png";
@@ -22,24 +23,24 @@ import { Button } from "@/components/ui/button";
 const Settings = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-   const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const handleGoBack = () => {
     window.history.back();
   };
-  const handleConfirmLogout  = () => {
+  const handleConfirmLogout = () => {
     logout();
     navigate("/login");
   };
 
   return (
     <div className="container mx-auto p-4 mb-6">
-        <div className="flex items-center h-14 mb-4 text-black gap-4">
-          <ChevronLeft
-            className="w-8 h-8 cursor-pointer"
-            onClick={handleGoBack}
-          />
-          <h2 className="text-2xl text-start">Settings</h2>
-        </div>
+      <div className="flex items-center h-14 mb-4 text-black gap-4">
+        <ChevronLeft
+          className="w-8 h-8 cursor-pointer"
+          onClick={handleGoBack}
+        />
+        <h2 className="text-2xl text-start">Settings</h2>
+      </div>
       <div className=" flex flex-row items-center text-center gap-3 bg-gray-100 mb-10 px-3 py-4 rounded-lg">
         <img
           src={user?.imageUrl || PROIFLE_IMAGE}
@@ -117,9 +118,16 @@ const Settings = () => {
           <DialogContent className="sm:max-w-md ">
             <DialogHeader>
               <DialogTitle>Are you sure you want to log out?</DialogTitle>
+              <DialogDescription>
+                This action will end your current session.
+              </DialogDescription>
             </DialogHeader>
             <DialogFooter className="flex flex-row justify-center space-x-7 ">
-              <Button variant="default" onClick={() => setOpen(false)} className="px-8">
+              <Button
+                variant="default"
+                onClick={() => setOpen(false)}
+                className="px-8"
+              >
                 Cancel
               </Button>
               <Button

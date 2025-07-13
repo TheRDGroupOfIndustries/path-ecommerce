@@ -13,6 +13,8 @@ const EditProfile = () => {
   const [selectedImage, setSelectedImage] = useState(null);
 
   const [previewUrl, setPreviewUrl] = useState(user?.imageUrl || PROIFLE_IMAGE);
+  const [isLoading, setIsLoading] = useState(false);
+
   // console.log(user.id);
 
   const [formData, setFormData] = useState({
@@ -41,15 +43,15 @@ const EditProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true);
     try {
       const payload = new FormData();
       payload.append("name", formData.name);
       payload.append("phone", formData.phone);
-      if (selectedImage) {
-        payload.append("imageUrl", selectedImage);
-      }
 
+      if (selectedImage) {
+        payload.append("image", selectedImage);
+      }
       const res = await axios.put(
         `http://localhost:8000/api/users/update-user/${user.id}`,
         payload,
@@ -59,6 +61,7 @@ const EditProfile = () => {
           },
         }
       );
+      console.log("res: ", res);
 
       toast.success("Profile updated successfully");
 
@@ -73,6 +76,8 @@ const EditProfile = () => {
     } catch (error) {
       console.error("Error updating user:", error);
       toast.error("Failed to update profile"); // optional
+    } finally {
+      setIsLoading(false); // ✅ Stop loading
     }
   };
 
@@ -123,7 +128,6 @@ const EditProfile = () => {
           />
         </div>
       </div>
-     
 
       {/* Form */}
       <div className="bg-white rounded-t-3xl pt-10 pb-60 px-4 text-black space-y-4">
@@ -156,9 +160,10 @@ const EditProfile = () => {
 
           <Button
             type="submit"
-            className=" w-fit mt-3 bg-black text-white py-4 rounded-lg"
+            disabled={isLoading}
+            className="w-fit mt-3 bg-black text-white py-4 rounded-lg flex items-center justify-center gap-2 px-6"
           >
-            Update Profile
+            {isLoading ? "Updating..." : "Update Profile"}
           </Button>
         </form>
       </div>

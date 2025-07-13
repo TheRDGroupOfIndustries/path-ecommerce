@@ -1,20 +1,20 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import React, { useState } from 'react';
-import axios from 'axios';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import React, { useState } from "react";
+import axios from "axios";
 import { toast } from "react-hot-toast";
 
 const SendEnquire = ({ setShowPopup, type, id }) => {
-  
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: '',
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
   });
   const [loading, setLoading] = useState(false);
-  const [responseMsg, setResponseMsg] = useState('');
+  const [responseMsg, setResponseMsg] = useState("");
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -22,41 +22,45 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
       [e.target.name]: e.target.value,
     }));
   };
- 
-  
-  
+
   const handleSend = async () => {
-    if (!formData.name || !formData.email || !formData.message||!formData.phone) {
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.message ||
+      !formData.phone
+    ) {
       setResponseMsg("Please fill in all required fields.");
       return;
     }
 
     setLoading(true);
-    
+
     try {
       const payload = {
         ...formData,
         marketplaceId: type === "marketplace" ? id : null,
         propertyId: type !== "marketplace" ? id : null,
       };
-      
-      const res = await axios.post("http://localhost:8000/api/enquiry", payload);
+
+      const res = await axios.post(
+        "http://localhost:8000/api/enquiry",
+        payload
+      );
       toast.success("Enquiry sent successfully!");
       // console.log("Send: ",res);
-      
-      setResponseMsg("Enquiry sent successfully!");
-      setFormData({ name: "", email: "", phone: "", message: "" });
 
+      setResponseMsg("Enquiry sent successfully!");
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
 
       setTimeout(() => {
         setShowPopup(false);
-        setResponseMsg('');
+        setResponseMsg("");
       }, 1000);
-
     } catch (err) {
       console.error("Enquiry failed:", err);
       setResponseMsg("Failed to send enquiry. Try again later.");
-       toast.error("Failed to send enquiry. Try again later.");
+      toast.error("Failed to send enquiry. Try again later.");
     }
     setLoading(false);
   };
@@ -75,7 +79,8 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
         </div>
 
         <p className="mb-4 text-lg font-light">
-          Feel Free to ask anything about this {type === "marketplace" ? "service" : "property"}!
+          Feel Free to ask anything about this{" "}
+          {type === "marketplace" ? "service" : "property"}!
         </p>
 
         <div className="flex flex-col gap-2 mb-4">
@@ -103,6 +108,14 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
             placeholder="Phone number"
             className="w-full p-2 bg-transparent text-white rounded border-none"
           />
+          <Input
+            name="subject"
+            type="text"
+            value={formData.subject}
+            onChange={handleChange}
+            placeholder="Subject"
+            className="w-full p-2 bg-transparent text-white rounded border-none"
+          />
           <Textarea
             name="message"
             value={formData.message}
@@ -113,9 +126,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
         </div>
 
         {responseMsg && (
-          <p className="text-sm mb-2 text-center">
-            {responseMsg}
-          </p>
+          <p className="text-sm mb-2 text-center">{responseMsg}</p>
         )}
 
         <Button

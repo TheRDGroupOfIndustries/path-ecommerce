@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "@/lib/api.temp";
 
 export default function ChangeEmail() {
   const { user, setUser } = useAuth();
@@ -17,7 +18,7 @@ export default function ChangeEmail() {
     e.preventDefault();
     try {
       const res = await axios.put(
-        `http://localhost:8000/api/users/update-user/${user.id}`,
+        `${API_URL}/api/users/update-user/${user.id}`,
         {
           email,
         }

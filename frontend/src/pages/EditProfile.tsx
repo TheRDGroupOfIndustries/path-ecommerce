@@ -8,6 +8,8 @@ import PROIFLE_IMAGE from "@/assets/user_img.png";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { API_URL } from "@/lib/api.temp";
+
 const EditProfile = () => {
   const { user, setUser } = useAuth();
   const [selectedImage, setSelectedImage] = useState(null);
@@ -53,7 +55,7 @@ const EditProfile = () => {
         payload.append("image", selectedImage);
       }
       const res = await axios.put(
-        `http://localhost:8000/api/users/update-user/${user.id}`,
+        `${API_URL}/api/users/update-user/${user.id}`,
         payload,
         {
           headers: {
@@ -227,7 +229,7 @@ export default EditProfile;
 //   //     }
 
 //   //     await axios.put(
-//   //       `http://localhost:8000/api/users/update-user/${user.id}`,
+//   //       `${API_URL}/api/users/update-user/${user.id}`,
 //   //       payload,
 //   //       {
 //   //         headers: {
@@ -254,7 +256,7 @@ export default EditProfile;
 //   e.preventDefault();
 //   try {
 //     await axios.put(
-//       `http://localhost:8000/api/users/update-user/${user.id}`,
+//       `${API_URL}/api/users/update-user/${user.id}`,
 //       formData
 //     );
 

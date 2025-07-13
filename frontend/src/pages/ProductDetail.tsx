@@ -5,6 +5,7 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { MdStar } from "react-icons/md";
 import toast from "react-hot-toast";
+import { API_URL } from "@/lib/api.temp";
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -24,12 +25,12 @@ const ProductDetail = () => {
     const fetchProduct = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/api/product/get-by-id/${id}`
+          `${API_URL}/api/product/get-by-id/${id}`
         );
         const found = res.data;
         const sellerId = found.sellerId;
 
-        const userEndpoint = `http://localhost:8000/api/users/get-by-id/${sellerId}`;
+        const userEndpoint = `${API_URL}/api/users/get-by-id/${sellerId}`;
         const userRes = await axios.get(userEndpoint);
 
         const userData = userRes.data.user;
@@ -57,7 +58,7 @@ const ProductDetail = () => {
 
       try {
         const res = await axios.post(
-          "http://localhost:8000/api/referral/check",
+          `${API_URL}/api/referral/check`,
           {
             code,
           }
@@ -85,7 +86,7 @@ const ProductDetail = () => {
     } else if (referralStep === "apply") {
       try {
         const res = await axios.post(
-          "http://localhost:8000/api/referral/apply",
+          `${API_URL}/api/referral/apply`,
           {
             code,
             productId: id,
@@ -113,7 +114,7 @@ const ProductDetail = () => {
     }
 
     try {
-      // await axios.post("http://localhost:8000/api/reviews/create", {
+      // await axios.post(`${API_URL}/api/reviews/create`, {
       //   productId: id,
       //   rating: userRating,
       //   comment: userReview,

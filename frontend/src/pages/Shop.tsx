@@ -10,6 +10,7 @@ import ProductCard from "@/components/ProductCard/ProductCard";
 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "@/lib/api.temp";
 
 const Shop = () => {
 
@@ -23,7 +24,7 @@ const Shop = () => {
     const fetchTrendy = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:8000/api/product/get-trendy"
+          `${API_URL}/api/product/get-trendy`
         );
         setTrendy(res.data);
         // console.log("trendy: ",res.data);
@@ -39,7 +40,7 @@ const Shop = () => {
     const fetchProducts = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:8000/api/product/get-all"
+          `${API_URL}/api/product/get-all`
         );
         // console.log("res: ", res.data);
         setProducts(res.data);

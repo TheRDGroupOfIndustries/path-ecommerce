@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import SendEnquire from "./SendEnquire";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "@/lib/api.temp";
 
 const Enquire = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -15,12 +16,12 @@ const Enquire = () => {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const endpoint =`http://localhost:8000/api/${type}/get-by-id/${id}`
+        const endpoint =`${API_URL}/api/${type}/get-by-id/${id}`
         const res = await axios.get(endpoint);
         const list = type =="marketplace"? res.data.marketplace:res.data.properties;
 
         const sellerId=list.createdById
-        const userEndpoint =`http://localhost:8000/api/users/get-by-id/${sellerId}`
+        const userEndpoint =`${API_URL}/api/users/get-by-id/${sellerId}`
          const userRes  = await axios.get(userEndpoint);
         
          const userData=userRes.data.user

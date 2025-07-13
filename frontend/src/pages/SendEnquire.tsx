@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { API_URL } from "@/lib/api.temp";
 
 const SendEnquire = ({ setShowPopup, type, id }) => {
   const [formData, setFormData] = useState({
@@ -44,7 +45,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
       };
 
       const res = await axios.post(
-        "http://localhost:8000/api/enquiry",
+        `${API_URL}/api/enquiry`,
         payload
       );
       toast.success("Enquiry sent successfully!");

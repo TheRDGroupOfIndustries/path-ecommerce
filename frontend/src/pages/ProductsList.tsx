@@ -4,6 +4,7 @@ import {  ChevronLeft, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '@/context/authContext';
+import { API_URL } from '@/lib/api.temp';
 
 const ProductListItem = ({ image, rating, title, description, productId }) => {
   const navigate=useNavigate();
@@ -56,7 +57,7 @@ const ProductsList = () => {
 
    useEffect(() => {
    const fetchData = async () => {
-    const res = await axios(`http://localhost:8000/api/seller/${id}`);
+    const res = await axios(`${API_URL}/api/seller/${id}`);
     // console.log("res: ",res);
     
     setProducts(res.data.productSeller)

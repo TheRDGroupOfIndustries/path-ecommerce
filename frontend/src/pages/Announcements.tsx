@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
+import { API_URL } from "@/lib/api.temp";
 import axios from "axios";
 import { ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -31,7 +32,7 @@ const [announcements, setAnnouncements] = useState([]);
    useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/announcement/get");
+        const res = await axios.get(`${API_URL}/api/announcement/get`);
         setAnnouncements(res.data.reverse());
       } catch (error) {
         console.error("Failed to fetch announcements:", error);

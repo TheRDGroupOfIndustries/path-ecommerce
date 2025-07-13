@@ -59,7 +59,6 @@ export const getSellerDashboardDetails = async (req: Request, res: Response) => 
               select: {
                 id: true,
                 name: true,
-                images: true,
               }
             },
             createdAt: true
@@ -125,7 +124,6 @@ export const getSellerEnquiries = async (req: Request, res: Response): Promise<v
       select: {
         id: true,
         name: true,
-        imageUrl:true,
         enquires: {
           select: {
             id: true,
@@ -146,7 +144,6 @@ export const getSellerEnquiries = async (req: Request, res: Response): Promise<v
       select: {
         id: true,
         name: true,
-        imageUrl:true,
         enquires: {
           select: {
             id: true,

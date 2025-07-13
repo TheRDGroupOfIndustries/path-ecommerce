@@ -1,5 +1,3 @@
-import { Request, Response } from "express";
-import db from "../client/connect.js";
 export const getAssociateDashboardDetails = async (req: Request, res: Response) => {
   const { id } = req.params;
 

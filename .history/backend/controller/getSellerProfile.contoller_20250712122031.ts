@@ -125,7 +125,6 @@ export const getSellerEnquiries = async (req: Request, res: Response): Promise<v
       select: {
         id: true,
         name: true,
-        imageUrl:true,
         enquires: {
           select: {
             id: true,
@@ -146,7 +145,6 @@ export const getSellerEnquiries = async (req: Request, res: Response): Promise<v
       select: {
         id: true,
         name: true,
-        imageUrl:true,
         enquires: {
           select: {
             id: true,

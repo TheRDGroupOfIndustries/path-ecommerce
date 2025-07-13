@@ -1,15 +1,21 @@
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ChevronLeft } from "lucide-react";
+import {  ChevronLeft } from "lucide-react";
 import { useState } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 
 export default function EnquiryDetail() {
-    //   const { id } = useParams();
-  const [enquiryData] = useState({
-    customerName: 'Aquib Ahmed',
-    email: 'aquib.ahmed01@gmail.com',
-    subject: 'Xyz Enquire Subject goes here',
-    message: 'Lorem ipsum dolor sit amet consectetur. Tellus odio feugiat dolor odio enim vel ultrices egestas sapien. Aliquam at pulvinar eleifend pulvinar. Pellentesque integer luctus euismod erat vulputate. Sed nibh tempor ut mollit faucibus a consectetur eget. Amet etiam eget sed suspendisse nisl ullamcorper urna nullam. Ac tristique neque eu ullamcorper mattis auctor. Tortor pellentesque metus non cum. Varius aliquam sapien id qenean pharetra.'
-  });
+     const { id } = useParams();
+  const location = useLocation();
+  const enquiryData = location.state?.enquiry;
+//   console.log("enquiryData: ",enquiryData);
+  
+  
+
+  if (!enquiryData) {
+    return <div className="p-4 text-red-500">No enquiry data found.</div>;
+  }
+      
+
 
   const handleGoBack = () => {
     window.history.back();
@@ -31,37 +37,37 @@ export default function EnquiryDetail() {
           onClick={handleGoBack}
         />
         <h2 className="flex-1 text-2xl text-center font-semibold">
-         Enquiry of Aquib
+         Enquiry of {enquiryData.customerName}
         </h2>
       </div>
 
       {/* Enquiry Details */}
-      <div className=" py-6 space-y-4">
+        <div className=" py-6 space-y-4">
         {/* Customer Name */}
         <div className="bg-gray-100 rounded-lg px-4 py-3">
           <p className="text-lg  text-gray-700">
-            {enquiryData.customerName}
+            {enquiryData?.customerName}
           </p>
         </div>
 
         {/* Email */}
         <div className="bg-gray-100 rounded-lg px-4 py-3">
           <p className="text-lg text-gray-700">
-            {enquiryData.email}
+            {enquiryData?.email}
           </p>
         </div>
 
         {/* Subject */}
         <div className="bg-gray-100 rounded-lg px-4 py-3">
           <p className="text-lg  text-gray-700">
-            {enquiryData.subject}
+            {enquiryData?.subject}
           </p>
         </div>
 
         {/* Message */}
         <div className="bg-gray-100 rounded-lg px-4 py-3">
           <p className="text-sm text-gray-700 leading-relaxed">
-            {enquiryData.message}
+            {enquiryData?.message}
           </p>
         </div>
 
@@ -78,3 +84,10 @@ export default function EnquiryDetail() {
     </div>
   );
 }
+    
+//   const [enquiryData] = useState({
+//     customerName: 'Aquib Ahmed',
+//     email: 'aquib.ahmed01@gmail.com',
+//     subject: 'Xyz Enquire Subject goes here',
+//     message: 'Lorem ipsum dolor sit amet consectetur. Tellus odio feugiat dolor odio enim vel ultrices egestas sapien. Aliquam at pulvinar eleifend pulvinar. Pellentesque integer luctus euismod erat vulputate. Sed nibh tempor ut mollit faucibus a consectetur eget. Amet etiam eget sed suspendisse nisl ullamcorper urna nullam. Ac tristique neque eu ullamcorper mattis auctor. Tortor pellentesque metus non cum. Varius aliquam sapien id qenean pharetra.'
+//   });

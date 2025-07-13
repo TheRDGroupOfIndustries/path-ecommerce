@@ -168,6 +168,7 @@ const Enquire = () => {
           </div>
         </div>
       </div>
+      
       <div className="fixed bottom-0 left-0 right-0 z-60 w-full">
         <div className="relative w-full bg-black text-white  py-5 px-8 shadow-lg flex items-center justify-center  [background:radial-gradient(circle_at_center,_#031a67_0%,_#000_100%)]">
           <span className="text-lg font-semibold mx-auto"  onClick={() => setShowPopup(true)}>Enquire Now</span>

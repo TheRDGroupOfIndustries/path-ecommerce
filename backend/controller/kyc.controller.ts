@@ -29,7 +29,7 @@ export const createKyc = async (req: MulterRequest, res: Response) => {
     // ✅ Helper to upload file to Cloudinary and return URL string
     const getUrl = async (field: string): Promise<string | null> => {
       const file = files?.[field]?.[0];
-      return file ? await uploadBufferToCloudinary(file.buffer, field) : null;
+      return file ? await uploadBufferToCloudinary(file.buffer, field,"kyc") : null;
     };
 
     const data: Prisma.KycCreateInput = {

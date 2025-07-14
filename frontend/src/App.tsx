@@ -197,7 +197,7 @@ function App() {
             }
           />
                     <Route
-            path="/testing"
+            path="/my-referrals"
             element={
               // <ProtectedRoute>
                 <NotFound />

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '@/context/authContext';
 import { API_URL } from '@/lib/api.temp';
+import Loader from '@/components/Loader/Loader';
 
 const ProductListItem = ({ image, rating, title, description, productId }) => {
   const navigate=useNavigate();
@@ -71,7 +72,7 @@ const ProductsList = () => {
  const handleGoBack = () => {
     window.history.back();
   };
- if (!products) return <p className="p-4 text-center ">Loading...</p>;
+ if (!products) return <Loader />;
 
   return (
     <div className="container mx-auto p-4 mb-16">

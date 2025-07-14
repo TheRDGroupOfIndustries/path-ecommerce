@@ -128,14 +128,14 @@ const ProfilePage = () => {
   const tabs = roleTabs[user?.role] || [];
 
   return (
-    <div className="flex flex-col bg-black h-1/2 mb-10">
+    <div className="flex flex-col h-1/2 mb-10">
       {/* Profile Header */}
       <ChevronLeft
         className=" absolute top-5 left-5  text-white cursor-pointer"
         onClick={handleGoBack}
         size={32}
       />
-      <div className=" bg-black text-white p-10 flex flex-col items-center text-center gap-3">
+      <div className=" bg-neutral-900 text-white p-10 flex flex-col items-center text-center gap-3">
         <img
           src={user?.imageUrl || PROIFLE_IMAGE}
           alt="Profile"

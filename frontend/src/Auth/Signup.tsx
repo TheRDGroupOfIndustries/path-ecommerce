@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
-import SPC from "@/assets/Logo_2.jpg";
+import SPC from "@/assets/SPC.jpg";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
 import { FaGoogle } from "react-icons/fa";
@@ -175,7 +175,7 @@ const SignUp = () => {
 
             <Button
               type="submit"
-              className="w-full bg-black text-white hover:bg-gray-900 py-7 text-xl  [background:radial-gradient(circle_at_center,_#031a67_0%,_#000_100%)]
+              className="w-full bg-black text-white hover:bg-gray-900 py-7 text-xl primary-bg
 "
               disabled={isLoading}
             >

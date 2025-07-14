@@ -156,3 +156,11 @@ body {
     animation: slide-down 0.3s ease-in forwards;
   }
 }
+
+.primary-bg {
+  background-color: #2E3192;
+}
+
+.primary-bg-dark {
+  background-color: #00035C;
+}

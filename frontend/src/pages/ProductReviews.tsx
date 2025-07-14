@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft } from "lucide-react";
 import { MdStar, MdStarBorder } from "react-icons/md";
+import Loader from "@/components/Loader/Loader";
 
 const ProductReviews = () => {
   const [activeTab, setActiveTab] = useState("All");
@@ -83,7 +84,7 @@ const ProductReviews = () => {
     );
   };
 
-  if (!productData) return <p className="p-4 text-center">Loading...</p>;
+  if (!productData) return <Loader />;
   return (
     <div className="container mx-auto p-4 mb-6">
       {/* Header */}

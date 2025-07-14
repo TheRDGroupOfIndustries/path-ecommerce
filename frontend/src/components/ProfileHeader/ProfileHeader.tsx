@@ -59,7 +59,7 @@ const ProfileHeader = () => {
           </div>
         </div>
 
-        <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
+        <div className="w-10 h-10 primary-bg text-white rounded-full flex items-center justify-center">
           <Search size={20} />
         </div>
       </div>

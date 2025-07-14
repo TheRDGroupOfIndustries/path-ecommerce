@@ -47,7 +47,7 @@ const AllServicesPage = () => {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
-                activeTab === tab ? "bg-black text-white" : "text-muted-foreground"
+                activeTab === tab ? "primary-bg text-white" : "text-muted-foreground"
               }`}
             >
               {tab}

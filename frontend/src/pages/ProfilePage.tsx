@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 import PROIFLE_IMAGE from "@/assets/user_img.png";
 
 const ProfilePage = () => {
-  const { user } = useAuth();
+  const { user } = useAuth();  
   const navigate = useNavigate();
   const handleGoBack = () => {
     window.history.back();

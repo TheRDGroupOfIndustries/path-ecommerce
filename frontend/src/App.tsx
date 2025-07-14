@@ -199,9 +199,9 @@ function App() {
                     <Route
             path="/my-referrals"
             element={
-              // <ProtectedRoute>
-                <NotFound />
-              // </ProtectedRoute>
+              <ProtectedRoute>
+                <MyReferrals />
+               </ProtectedRoute>
             }
           />
 

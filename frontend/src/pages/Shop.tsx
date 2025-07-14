@@ -10,7 +10,7 @@ import ProductCard from "@/components/ProductCard/ProductCard";
 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { API_URL } from "@/lib/api.temp";
+import { API_URL } from "@/lib/api.env";
 
 const Shop = () => {
   const navigate = useNavigate();

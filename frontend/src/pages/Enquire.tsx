@@ -3,11 +3,15 @@ import React, { useEffect, useState } from "react";
 import SendEnquire from "./SendEnquire";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { API_URL } from "@/lib/api.temp";
+
+
 import { MdStar, MdStarBorder } from "react-icons/md";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/authContext";
+
+import { API_URL } from "@/lib/api.env";
+
 
 const Enquire = () => {
   const { user } = useAuth();

@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { API_URL } from "@/lib/api.temp";
+import { API_URL } from "@/lib/api.env";
 import axios from "axios";
 import { ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";

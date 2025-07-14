@@ -19,7 +19,7 @@
 
 //   //   const fetchdata=async()=>{
 //   //     try {
-//   //       const fetchedProduct=await axios.get(`http://localhost:8000/api/review/product/${productId}`)
+//   //       const fetchedProduct=await axios.get(`${API_URL}/api/review/product/${productId}`)
 
 //   //       console.log("fetchedProduct",fetchedProduct);
 //   //     } catch (err) {
@@ -35,8 +35,8 @@
 //     const fetchProductAndReviews = async () => {
 //       try {
 //         const [ productRes,reviewRes] = await Promise.all([
-//           axios.get(`http://localhost:8000/api/product/get-by-id/${productId}`),
-//           axios.get(`http://localhost:8000/api/review/product/${productId}`),
+//           axios.get(`${API_URL}/api/product/get-by-id/${productId}`),
+//           axios.get(`${API_URL}/api/review/product/${productId}`),
 //         ]);
 //         console.log("productRes: ",productRes);
 //         console.log("reviewRes: ",reviewRes);
@@ -265,6 +265,7 @@ import { MdStar, MdStarBorder } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Loader from "@/components/Loader/Loader";
+import { API_URL } from "@/lib/api.env";
 
 
 const ProductReviews = () => {
@@ -283,8 +284,8 @@ const ProductReviews = () => {
     const fetchProductAndReviews = async () => {
       try {
         const [productRes, reviewRes] = await Promise.all([
-          axios.get(`http://localhost:8000/api/product/get-by-id/${productId}`),
-          axios.get(`http://localhost:8000/api/review/product/${productId}`),
+          axios.get(`${API_URL}/api/product/get-by-id/${productId}`),
+          axios.get(`${API_URL}/api/review/product/${productId}`),
         ]);
         // console.log("reviewRes: ",reviewRes);
 

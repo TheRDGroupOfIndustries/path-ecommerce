@@ -5,7 +5,7 @@ import {  ChevronLeft, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '@/context/authContext';
-import { API_URL } from '@/lib/api.temp';
+import { API_URL } from '@/lib/api.env';
 import Loader from '@/components/Loader/Loader';
 
 
@@ -52,18 +52,6 @@ const ProductsList = () => {
   const { user } = useAuth();
   const [products, setProducts] = useState();
   const id = user?.id;
-  // console.log("id: ",id);
-
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       const res = await axios(`http://localhost:8000/api/seller/${id}`);
-//       // console.log("res: ",res);
-
-// <<<<<<< chetan-frontend
-//       setProducts(res.data.productSeller);
-//     };
-//     fetchData();
-//   }, [id]);
 
    useEffect(() => {
    const fetchData = async () => {

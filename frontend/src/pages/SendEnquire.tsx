@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { API_URL } from "@/lib/api.temp";
+import { API_URL } from "@/lib/api.env";
 
 const SendEnquire = ({ setShowPopup, type, id }) => {
   const [formData, setFormData] = useState({

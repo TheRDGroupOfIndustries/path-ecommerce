@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MdStar } from "react-icons/md";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/authContext";
-import { API_URL } from "@/lib/api.temp";
+import { API_URL } from "@/lib/api.env";
 import Loader from "@/components/Loader/Loader";
 
 const ProductDetail = () => {
@@ -115,7 +115,9 @@ const ProductDetail = () => {
     }
 
     try {
-      await axios.post("http://localhost:8000/api/review", {
+
+      await axios.post(`${API_URL}/api/review`, {
+
         productId: id,
         rating: userRating,
         comment: userReview,

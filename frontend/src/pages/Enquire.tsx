@@ -32,7 +32,7 @@ const Enquire = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:8000/api/review", {
+      const res = await axios.post(`${API_URL}/api/review`, {
         productId: id,
         rating: userRating,
         comment: userReview,

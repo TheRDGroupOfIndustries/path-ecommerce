@@ -1,3 +1,4 @@
+import Loader from "@/components/Loader/Loader";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { API_URL } from "@/lib/api.env";
@@ -6,25 +7,8 @@ import { ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Announcements() {
-//   const [announcements] = useState([
-//     {
-//       id: 1,
-//       title: "Admin",
-//       content:
-//         "Lorem ipsum dolor sit amet consectetur. Eleifend venenatis ornare proin non aliquam id. Proin eProin risus mauris lacum amet porta ultrices in. Facilisis nunc volutpat finibus pellentesque id. Sit viverra et eu et egestas ut a dictum molestie. Aliquam in. Diam arcu massa lacinia lectus massa ultrices justo. Diam sagittis aliquam imperdiet elementum aenean lectus. Vitae fermentum faucibus tempor diam magna. Lacusque aliquam et et turpis in mauris mauris et. Varius pellentesque nunc elit velit quam convallis vel.",
-//       isRead: false,
-//     },
-//     {
-//       id: 2,
-//       title: "Admin",
 
-//       content:
-//         "Lorem ipsum dolor sit amet consectetur. Eleifend venenatis ornare proin non aliquam id. Proin eget tortor faucibus at et eget rhoncus. Proin risus mauris lacum amet porta ultrices in. Facilisis nunc volutpat finibus pellentesque id. Sit viverra et eu et egestas ut a dictum molestie. Aliquam in. Diam arcu massa lacinia lectus massa ultrices justo. Diam sagittis aliquam imperdiet elementum aenean lectus. Vitae fermentum faucibus tempor diam magna. Lacusque aliquam et et turpis in mauris mauris et. Varius pellentesque nunc elit velit quam convallis vel.",
-//       isRead: true,
-//     },
-//   ]);
-
-const [announcements, setAnnouncements] = useState([]);
+const [announcements, setAnnouncements] = useState();
 
   const handleGoBack = () => {
     window.history.back();
@@ -42,6 +26,7 @@ const [announcements, setAnnouncements] = useState([]);
     fetchAnnouncements();
   }, []);
 
+  if(!announcements)return <Loader/>
   return (
     <div className="container mx-auto p-4 mb-18">
       {/* Header */}

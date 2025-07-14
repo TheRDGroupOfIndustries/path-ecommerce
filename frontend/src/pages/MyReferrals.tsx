@@ -4,10 +4,16 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Loader from "@/components/Loader/Loader";
 import { Button } from "@/components/ui/button";
+import { API_URL } from "@/lib/api.env";
+import { useAuth } from "@/context/authContext";
+import toast from "react-hot-toast";
 
-const Pills = ({ value }: { value: string }) => {
+const Pills = ({ value, onClick }: { value: string; onClick: () => void }) => {
   return (
-    <div className="flex justify-center items-center px-5  py-0.5 rounded-full bg-[#008DD320] w-fit">
+    <div
+      onClick={onClick}
+      className="flex justify-center items-center px-5 py-0.5 rounded-full bg-[#008DD320] w-fit cursor-pointer hover:bg-[#008DD340] transition"
+    >
       <p className="text-[#008DD3] text-base font-medium font-sans">{value}</p>
     </div>
   );
@@ -72,21 +78,60 @@ function Card({
 
 function MyReferrals() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const tempPillsData = ["adarsh-30", "adarsh-20", "adarsh-40"];
-  const [PillsData, setPills] = useState<string[]>(tempPillsData);
+  const [PillsData, setPills] = useState<string[]>();
   const [usedCardData, setUsedCardData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   async function CallApi() {
     try {
       setLoading(true);
-      const req = await axios.get(``);
+      const req = await axios.get(`${API_URL}/api/referral/all`);
 
       if (req.status === 200) {
-        // chetan ji set your data here
-        // setPills()
-        // setUsedCardData()
+        const allReferrals = req.data;
+
+        // Filter referrals created by the logged-in user
+        const myReferrals = allReferrals.filter(
+          (item) => item.createdForId === user.id
+        );
+
+        // PillsData = all referral codes you created
+        setPills(myReferrals.map((r) => r.referral));
+
+        // usedCardData = list of referral objects where the code was actually used
+        const usedReferrals = myReferrals.filter((r) => r.usedBy.length > 0);
+
+        // Format for Card UI (temporary mock)
+        const formattedUsed = await Promise.all(
+          usedReferrals.flatMap((referral) =>
+            referral.usedBy.map(async (usedById: string) => {
+              try {
+                const userRes = await axios.get(
+                  `${API_URL}/api/users/get-by-id/${usedById}`
+                );
+                const userData = userRes.data.user;
+
+                return {
+                  refferal_code: referral.referral,
+                  amount: "100", // (optional) Replace with actual logic if needed
+                  product_title: "Flat Booking", // (optional) Replace if you have product info
+                  user: {
+                    user_name: userData.name || "N/A",
+                    user_email: userData.email || "N/A",
+                  },
+                };
+              } catch (err) {
+                console.error(`Failed to fetch user for ID ${usedById}`, err);
+                return null;
+              }
+            })
+          )
+        );
+
+        // Remove nulls (failed fetches)
+        setUsedCardData(formattedUsed.filter(Boolean));
       }
     } catch (error) {
       console.log(error);
@@ -124,7 +169,14 @@ function MyReferrals() {
         <div className="flex justify-start items-center gap-1.5 gap-y-2 flex-wrap">
           {PillsData.length > 0 &&
             PillsData.map((value: string, index) => (
-              <Pills key={index} value={value} />
+              <Pills
+                key={index}
+                value={value}
+                onClick={() => {
+                  navigator.clipboard.writeText(value);
+                  toast.success(`Copied "${value}" to clipboard!`);
+                }}
+              />
             ))}
         </div>
       </div>
@@ -137,15 +189,17 @@ function MyReferrals() {
 
         <div className="w-full flex flex-col justify-center items-center gap-4 mb-32">
           {usedCardData.length > 0 &&
-            usedCardData.map((items, index) => <Card 
-            key={index}
-            amount={items.amount}
-            product_title={items.product_title}
-            refferal_code={items.refferal_code}
-            user_email={items.user.user_email}
-            user_name={items.user.user_name}
-            // NOTE - ALL THE USED VALUES ARE * imaginary * Please change!
-            />)}
+            usedCardData.map((items, index) => (
+              <Card
+                key={index}
+                amount={items.amount}
+                product_title={items.product_title}
+                refferal_code={items.refferal_code}
+                user_email={items.user.user_email}
+                user_name={items.user.user_name}
+                // NOTE - ALL THE USED VALUES ARE * imaginary * Please change!
+              />
+            ))}
         </div>
       </div>
     </div>

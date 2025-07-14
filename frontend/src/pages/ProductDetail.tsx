@@ -89,10 +89,18 @@ const ProductDetail = () => {
       }
     } else if (referralStep === "apply") {
       try {
-        const res = await axios.post(`${API_URL}/api/referral/apply`, {
-          code,
-          productId: id,
-        });
+        const res = await axios.post(
+          `${API_URL}/api/referral/apply`,
+          {
+            code,
+            productId: id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         if (res.status == 200) {
           const discount = parseInt(code.split("-")[1]);
           setReferralDiscount(discount);

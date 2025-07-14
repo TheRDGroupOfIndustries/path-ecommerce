@@ -24,6 +24,7 @@ import ReviewsList from "./pages/ReviewsList";
 import ChangeEmail from "./pages/ChangeEmail";
 import ChangePassword from "./pages/ChangePassword";
 import MyReferrals from "./pages/MyReferrals";
+import NotFound from "./components/Loader/Not-Found";
 
 function App() {
   const location = useLocation();
@@ -198,11 +199,19 @@ function App() {
                     <Route
             path="/testing"
             element={
-              <ProtectedRoute>
-                <MyReferrals />
-              </ProtectedRoute>
+              // <ProtectedRoute>
+                <NotFound />
+              // </ProtectedRoute>
             }
           />
+
+        <Route
+            path="*"
+            element={
+              <NotFound />
+            }
+          />
+
         </Routes>
         {!hideNavbar && <BottomNavBar/>}
       </div>

@@ -296,6 +296,7 @@
 
 
 
+import Loader from "@/components/Loader/Loader";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context/authContext";
 import axios from "axios";
@@ -346,7 +347,7 @@ const ReviewsList = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [productsWithReviews, setProductsWithReviews] = useState([]);
+  const [productsWithReviews, setProductsWithReviews] = useState();
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -390,6 +391,7 @@ const ReviewsList = () => {
 
     fetchReviews();
   }, []);
+  if (!productsWithReviews) return <Loader/>
 
   return (
     <div className="container mx-auto p-4 mb-16">

@@ -1,6 +1,5 @@
 import * as productModel from "../model/products.model.js"
 import { Request, Response } from "express"
-import { verifyToken } from "../utils/jwt.js"
 
 export const getAllProducts = async (req: Request, res: Response) => {
     try {

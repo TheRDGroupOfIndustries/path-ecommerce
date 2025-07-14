@@ -45,22 +45,22 @@ const handleSubmit = async (e) => {
       try {
         const kyc = await fetchDataFromApi("/kyc/my-kyc");
 
-        // If KYC exists, route based on its status
+        // If KYC exists, 
         if (!kyc || !kyc.status) {
-          window.location.href = "/kycc";   //  Fill KYC
+          window.location.href = "/kycc"; 
         } else if (kyc.status === "PENDING") {
-          window.location.href = "/kyc-status"; //  Wait
+          window.location.href = "/kyc-status"; 
         } else if (kyc.status === "APPROVED") {
-          window.location.href = "/dashboard"; //  Go ahead /seller-dashboard
+           window.location.href = "/dashboard"; 
         } else {
-          window.location.href = "/kyc-status?rejected=true"; //  Rejected
+          window.location.href = "/kyc-status?rejected=true"; 
         }
       } catch (kycError) {
         if (
           kycError?.response?.status === 404 &&
           kycError?.response?.data?.msg === "No KYC found."
         ) {
-          window.location.href = "/kycc"; //  Show KYC form
+          window.location.href = "/kycc"; 
         } else {
           console.error("Error fetching KYC:", kycError);
           context.setAlertBox({
@@ -71,7 +71,7 @@ const handleSubmit = async (e) => {
         }
       }
     } else {
-      window.location.href = "/dashboard"; //  Non-sellers or ADMIN 
+       window.location.href = "/dashboard";  
     }
   } catch (error) {
     console.error("Login failed:", error);

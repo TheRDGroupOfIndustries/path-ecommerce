@@ -32,7 +32,7 @@ export const getAllEnquiries = async (req: Request, res: Response): Promise<void
   try {
     const enquiries = await db.enquire.findMany({
       orderBy: {
-        createdAt: "desc", //  fetch latest first
+        createdAt: "desc", 
       },
     });
     res.status(200).json(enquiries);

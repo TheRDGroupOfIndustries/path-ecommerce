@@ -16,7 +16,7 @@ export const createOrUpdateReferral = async (req: Request, res: Response) => {
     const firstName = user.name.split(" ")[0].toLowerCase();
     const referralCode = `${firstName}-${percent}`;
 
-    // Check if referral code already exists for another user
+    // Check if referral code already exists 
     const existingCode = await db.referral.findUnique({ where: { referral: referralCode } });
     if (existingCode && existingCode.createdForId !== associateId) {
       return res.status(400).json({ error: "Referral code already exists for another associate" });
@@ -36,7 +36,7 @@ export const createOrUpdateReferral = async (req: Request, res: Response) => {
         },
       });
     } else {
-      //  Update referral code only, not usedBy
+      //  Update referral code 
       referral = await db.referral.update({
         where: { id: referral.id },
         data: {
@@ -105,7 +105,7 @@ export const applyReferralCode = async (req: Request, res: Response) => {
       return res.status(401).json({ error: "Unauthorized user" });
     }
 
-    const userId = req.user.id; // ✅ declare only once
+    const userId = req.user.id; 
 
     // 3. Find referral
     const referral = await db.referral.findUnique({
@@ -126,7 +126,6 @@ export const applyReferralCode = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    // 5. Parse percentage
     const parts = code.split("-");
     const percent = parseFloat(parts[1]);
     if (isNaN(percent)) {
@@ -184,8 +183,6 @@ export const applyReferralCode = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-
 
 // Get total commission per associate
 export const getAllReferralRevenue = async (req: Request, res: Response) => {
@@ -245,7 +242,6 @@ export const deleteReferral = async (req: Request, res: Response) => {
 
 
 //get 
-
 export const getReferralDetails = async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -344,10 +340,10 @@ export const getReferralDetails = async (req: Request, res: Response) => {
       })),
     });
   } catch (err) {
-    console.error("🔥 Error fetching referral details");
-console.error("➡️ Associate ID:", id);
-console.error("📛 Error Message:", err instanceof Error ? err.message : err);
-console.error("📄 Stack Trace:", err instanceof Error ? err.stack : err);
+    console.error("Error fetching referral details");
+console.error("Associate ID:", id);
+console.error("Error Message:", err instanceof Error ? err.message : err);
+console.error(" Stack Trace:", err instanceof Error ? err.stack : err);
 return res.status(500).json({ error: "Internal Server Error" });
   }
 };

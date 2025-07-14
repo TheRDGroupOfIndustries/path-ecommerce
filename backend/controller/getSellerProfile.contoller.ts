@@ -49,7 +49,7 @@ export const getSellerDashboardDetails = async (req: Request, res: Response) => 
         }
       },
 
-        // Reviews given by the user (if any)
+        // Reviews given by the user 
         reviews: {
           select: {
             id: true,
@@ -82,7 +82,7 @@ export const getSellerDashboardDetails = async (req: Request, res: Response) => 
           }
         },
 
-        // Orders placed by user (optional if seller buys too)
+        // Orders placed by user 
         orders: {
           select: {
             id: true,
@@ -140,6 +140,7 @@ export const getSellerEnquiries = async (req: Request, res: Response): Promise<v
       },
     });
 
+    
     // Get all property enquiries for the seller
     const propertyEnquiries = await db.property.findMany({
       where: { createdById: sellerId },

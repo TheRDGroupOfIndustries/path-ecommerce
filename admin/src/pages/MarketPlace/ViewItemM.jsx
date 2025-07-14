@@ -211,47 +211,49 @@ const ViewitemM = () => {
         )
       )}
 
-      {isModalOpen && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>Edit Item</h2>
-            <label>Name:</label>
-            <input name="name" value={editForm.name || ""} onChange={handleInputChange} />
+     {isModalOpen && (
+  <div className="modal-edit">
+    <div className="modal-edit-content">
+      <h2>Edit Item</h2>
 
-            <label>Description:</label>
-            <textarea name="description" value={editForm.description || ""} onChange={handleInputChange} />
+      <label>Name:</label>
+      <input name="name" value={editForm.name || ""} onChange={handleInputChange} />
 
-            <label>Category:</label>
-            <select name="category" value={editForm.category || ""} onChange={handleInputChange}>
-              <option value="CLOTH">Cloth</option>
-              <option value="MAKEUP">Makeup</option>
-              <option value="SHOES">Shoes</option>
-            </select>
+      <label>Description:</label>
+      <textarea name="description" value={editForm.description || ""} onChange={handleInputChange} />
 
-            <label>Images:</label>
-            <div className="image-edit-grid">
-              {editForm.imageUrl?.map((img, idx) => (
-                <div key={idx} className="item-edit-btn">
-                  <img src={img} alt={`img-${idx}`} width="60" height="60" />
-                  <button onClick={() => removeImage(idx)}>Remove</button>
-                </div>
-              ))}
-            </div>
-            <input
-              name="newImage"
-              value={editForm.newImage || ""}
-              onChange={handleInputChange}
-              placeholder="Add new image URL"
-            />
-            <button onClick={handleAddImage}>Add Image</button>
+      <label>Category:</label>
+      <select name="category" value={editForm.category || ""} onChange={handleInputChange}>
+        <option value="CLOTH">Cloth</option>
+        <option value="MAKEUP">Makeup</option>
+        <option value="SHOES">Shoes</option>
+      </select>
 
-            <div className="modal-actions">
-              <button onClick={handleSaveEdit}>Save</button>
-              <button onClick={() => setIsModalOpen(false)}>Cancel</button>
-            </div>
+      <label>Images:</label>
+      <div className="image-edit-grid">
+        {editForm.imageUrl?.map((img, idx) => (
+          <div key={idx} className="item-edit-btn">
+            <img src={img} alt={`img-${idx}`} width="60" height="60" />
+            <button onClick={() => removeImage(idx)}>Remove</button>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
+      <input
+        name="newImage"
+        value={editForm.newImage || ""}
+        onChange={handleInputChange}
+        placeholder="Add new image URL"
+      />
+      <div className="add-img-button-editmodel">
+       <button onClick={handleAddImage}>Add Image</button>
+      </div>
+      <div className="modal-actions">
+        <button onClick={handleSaveEdit}>Save</button>
+        <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };

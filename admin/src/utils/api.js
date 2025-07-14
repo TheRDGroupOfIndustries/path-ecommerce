@@ -9,9 +9,9 @@ export const fetchDataFromApi = async (url) => {
 
     const { data } = await axios.get(BASE_URL + url, {
       headers: {
-        Authorization: `Bearer ${token}`, // Token included
+        Authorization: `Bearer ${token}`, 
       },
-      withCredentials: true, // only if backend uses cookies
+      withCredentials: true,
     });
 
     return data;

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import db from "../client/connect.js"; // your Prisma client
+import db from "../client/connect.js"; 
 
 // Get all announcements
 export const getAllAnnouncements = async (req: Request, res: Response) => {
@@ -14,7 +14,7 @@ export const getAllAnnouncements = async (req: Request, res: Response) => {
   }
 };
 
-// Create a new announcement
+// Create new announcement
 export const createAnnouncement = async (req: Request, res: Response) => {
   const { text } = req.body;
   if (!text || text.trim() === "") {

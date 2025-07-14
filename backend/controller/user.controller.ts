@@ -104,7 +104,7 @@ export const deleteUser = async (req: Request, res: Response) => {
     await userModel.deleteUser(id);
     return res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    console.error("❌ Error deleting user:", error);
+    console.error(" Error deleting user:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -123,7 +123,12 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Invalid password" });
     }
 
-    const token = generateTokens(user);
+    const  token  = generateTokens({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
     const { password: _, ...userSafe } = user;
 
     return res.status(200).json({ user: userSafe, token });
@@ -132,6 +137,7 @@ export const login = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 export const promoteToAssociate = async (req: Request, res: Response) => {
   const { id } = req.params;

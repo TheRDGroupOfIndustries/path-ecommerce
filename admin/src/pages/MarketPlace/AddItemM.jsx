@@ -230,7 +230,7 @@ const AddItemM = () => {
                       >
                         ×
                       </button>
-                      <img src={image || "/placeholder.svg"} alt={`Product ${index + 1}`} style={{ maxWidth: 120, maxHeight: 80, borderRadius: 8 }} />
+                      <img src={image || "/placeholder.svg"} alt={`Product ${index + 1}`} style={{ maxWidth:150, maxHeight: 80, borderRadius: 8 }} />
                     </div>
                   ))}
                 </div>

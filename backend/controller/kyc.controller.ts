@@ -3,7 +3,7 @@ import db from "../client/connect.js";
 import { Prisma } from "@prisma/client";
 import { uploadBufferToCloudinary } from "../utils/uploadToCloudinary.js";
 
-// Extend Request to include `user` and `files` for TypeScript
+
 interface MulterRequest extends Request {
   user?: { id: string; role: string };
   files: {
@@ -80,6 +80,7 @@ export const getKycBySeller = async (req: Request, res: Response) => {
   }
 };
 
+
 // Get all KYC (admin only)
 export const getAllKyc = async (req: Request, res: Response) => {
   try {
@@ -93,6 +94,7 @@ export const getAllKyc = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Approve KYC
 export const approveKyc = async (req: Request, res: Response) => {
@@ -112,6 +114,7 @@ export const approveKyc = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Reject KYC
 export const rejectKyc = async (req: Request, res: Response) => {

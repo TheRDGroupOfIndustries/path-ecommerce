@@ -4,14 +4,12 @@ import SendEnquire from "./SendEnquire";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
-
 import { MdStar, MdStarBorder } from "react-icons/md";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/authContext";
 
 import { API_URL } from "@/lib/api.env";
-
 
 const Enquire = () => {
   const { user } = useAuth();
@@ -25,45 +23,85 @@ const Enquire = () => {
   const [userRating, setUserRating] = useState(0);
   const [userReview, setUserReview] = useState("");
 
+  const [reviews, setReviews] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+
   const handleSubmitReview = async () => {
     if (!userRating || !userReview.trim()) {
       toast.error("Please give a rating and write a review.");
       return;
     }
+    if (isSubmitting) return;
 
     try {
-      const res = await axios.post(`${API_URL}/api/review`, {
-        productId: id,
+      setIsSubmitting(true);
+      const payload: any = {
         rating: userRating,
         comment: userReview,
         userId: user?.id,
-      });
-      console.log("Res: ", res);
+      };
+
+      
+      if (type === "marketplace") {
+        payload.marketplaceId = id;
+      } else if (type === "property") {
+        payload.propertyId = id;
+      } else {
+        payload.productId = id;
+      }
+
+      const res = await axios.post(`${API_URL}/api/review`, payload);
+      // console.log("res ", res);
 
       toast.success("Review submitted successfully!");
       setUserRating(0);
       setUserReview("");
+      await fetchReviews();
     } catch (error) {
       console.error("Failed to submit review:", error);
       toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const fetchReviews = async () => {
+    try {
+      let endpoint = "";
+      if (type === "marketplace") {
+        endpoint = `${API_URL}/api/review/marketplace/${id}`;
+      } else if (type === "property") {
+        endpoint = `${API_URL}/api/review/property/${id}`;
+      } else {
+        return;
+      }
+
+      const res = await axios.get(endpoint);
+      setReviews(res.data);
+    } catch (err) {
+      console.error("Failed to fetch reviews", err);
+    }
+  };
+
+  const averageRating = reviews.length
+  ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)
+  : "0.0";
+
   useEffect(() => {
     const fetchProperty = async () => {
       try {
         const endpoint = `${API_URL}/api/${type}/get-by-id/${id}`;
         const res = await axios.get(endpoint);
-        // console.log("end: ", res);
         const list =
-          type == "marketplace" ? res.data.marketplace : res.data.properties;
+          type === "marketplace" ? res.data.marketplace : res.data.properties;
 
         const sellerId = list.createdById;
         const userEndpoint = `${API_URL}/api/users/get-by-id/${sellerId}`;
         const userRes = await axios.get(userEndpoint);
 
-        const userData = userRes.data.user;
         setProperty(list);
-        setSeller(userData);
+        setSeller(userRes.data.user);
         setMainImageIndex(0);
       } catch (err) {
         console.error("Failed to fetch property", err);
@@ -71,6 +109,7 @@ const Enquire = () => {
     };
 
     fetchProperty();
+    fetchReviews();
   }, [id, type]);
 
   const renderUserStars = (rating) =>
@@ -142,7 +181,8 @@ const Enquire = () => {
           {property?.name}
         </h1>
         <div className="flex items-center gap-1 bg-gray-200 w-fit px-1 ">
-          <span className="text-lg text-black">4.5</span>
+          <span className="text-lg text-black">{averageRating}</span>
+
           {/* Vertical divider */}
           <div className="h-4 w-px bg-black mx-2" />
           <Star className="w-4 h-4 fill-current text-cyan-400" />
@@ -160,7 +200,7 @@ const Enquire = () => {
       </div>
 
       <div className="px-4 mb-6">
-        <h2 className="text-md font-semibold mb-2 text-gray-800">
+        <h2 className="text-lg font-semibold mb-2 text-gray-800">
           Add a Review
         </h2>
         {/* Star Rating */}
@@ -189,8 +229,9 @@ const Enquire = () => {
           <Button
             onClick={handleSubmitReview}
             className="mt-3 primary-bg-dark hover:primary-bg text-white font-medium px-6 py-3 rounded-lg"
+            disabled={isSubmitting}
           >
-            Submit Review
+            {isSubmitting ? "Submitting..." : "Submit Review"}
           </Button>
         </div>
       </div>
@@ -199,59 +240,35 @@ const Enquire = () => {
       <div className="px-4">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Reviews</h2>
 
-        {/* Review 1 */}
-        <div className="flex gap-3 mb-4 flex-col">
-          <div className="flex flex-row justify-start items-center gap-3">
-            <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
-              alt="Adarsh Pandit"
-              className="w-10 h-10 rounded-full object-cover"
-            />
-            <div>
-              <span className="flex items-center">{renderUserStars(4)}</span>
-              <h3 className="font-medium text-gray-900 text-sm">
-                Adarsh Pandit
-              </h3>
+        {reviews.length > 0 ? (
+          reviews.map((review, idx) => (
+            <div key={idx} className="flex gap-3 mb-4 flex-col">
+              <div className="flex flex-row justify-start items-center gap-3">
+                <img
+                  src={review.user.imageUrl || "https://placehold.co/40x40"}
+                  alt={review.user.name}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+                <div>
+                  <span className="flex items-center">
+                    {renderUserStars(review.rating)}
+                  </span>
+                  <h3 className="font-medium text-gray-900 text-sm">
+                    {review.user.name}
+                  </h3>
+                </div>
+              </div>
+
+              <div className="flex-1">
+                <p className="text-gray-600 text-xs mt-1 leading-relaxed ">
+                  {review.comment}
+                </p>
+              </div>
             </div>
-          </div>
-
-          <div className="flex-1">
-            <p className="text-gray-600 text-xs mt-1 leading-relaxed">
-              Lorem ipsum dolor sit amet consectetur. Turpis sit ante ut velit
-              et sagittis aliquot in. Luctus nisi quam facilisis pretium
-              adipiscing nulla magna. Suspendisse fames quis gravida est.
-              Habitant vitae dictum feugiat lorem velit lobortis suspendisse
-              donec.
-            </p>
-          </div>
-        </div>
-
-        {/* Review 2 */}
-        <div className="flex gap-3 mb-4 flex-col">
-          <div className="flex flex-row justify-start items-center gap-3">
-            <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
-              alt="Adarsh Pandit"
-              className="w-10 h-10 rounded-full object-cover"
-            />
-           <div>
-              <span className="flex items-center">{renderUserStars(4)}</span>
-              <h3 className="font-medium text-gray-900 text-sm">
-                Adarsh Pandit
-              </h3>
-            </div>
-          </div>
-
-          <div className="flex-1">
-            <p className="text-gray-600 text-xs mt-1 leading-relaxed">
-              Lorem ipsum dolor sit amet consectetur. Turpis sit ante ut velit
-              et sagittis aliquot in. Luctus nisi quam facilisis pretium
-              adipiscing nulla magna. Suspendisse fames quis gravida est.
-              Habitant vitae dictum feugiat lorem velit lobortis suspendisse
-              donec.
-            </p>
-          </div>
-        </div>
+          ))
+        ) : (
+          <p className="text-gray-500 text-sm">No reviews yet.</p>
+        )}
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 z-60 w-full">

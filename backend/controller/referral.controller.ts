@@ -27,7 +27,7 @@ export const createOrUpdateReferral = async (req: Request, res: Response) => {
     });
 
     if (!referral) {
-      // ✅ Create referral with empty usedBy list
+      // Create referral with empty usedBy list
       referral = await db.referral.create({
         data: {
           referral: referralCode,
@@ -36,7 +36,7 @@ export const createOrUpdateReferral = async (req: Request, res: Response) => {
         },
       });
     } else {
-      // ✅ Update referral code only, not usedBy
+      //  Update referral code only, not usedBy
       referral = await db.referral.update({
         where: { id: referral.id },
         data: {
@@ -101,10 +101,11 @@ export const applyReferralCode = async (req: Request, res: Response) => {
     }
 
     // 2. Validate user from middleware
-    const userId = req.user?.id;
-    if (!userId) {
+    if (!req.user || !req.user.id) {
       return res.status(401).json({ error: "Unauthorized user" });
     }
+
+    const userId = req.user.id; // ✅ declare only once
 
     // 3. Find referral
     const referral = await db.referral.findUnique({
@@ -135,8 +136,7 @@ export const applyReferralCode = async (req: Request, res: Response) => {
     const originalPrice = typeof product.price === "string" ? parseFloat(product.price) : product.price;
     const discountAmount = (originalPrice * percent) / 100;
     const discountedPrice = originalPrice - discountAmount;
-
-    const commission = (originalPrice * percent) / 100;
+    const commission = discountAmount;
 
     console.log("Referral Debug Info:", {
       code,
@@ -152,8 +152,7 @@ export const applyReferralCode = async (req: Request, res: Response) => {
       data: {
         referralId: referral.id,
         associateId: referral.createdForId,
-        //@ts-ignore
-        userId: userId,
+        userId,
         productId: product.id,
         productName: product.name,
         price: originalPrice,
@@ -167,7 +166,7 @@ export const applyReferralCode = async (req: Request, res: Response) => {
       await db.referral.update({
         where: { id: referral.id },
         data: {
-          usedBy:[...referral.usedBy, userId]
+          usedBy: [...referral.usedBy, userId],
         },
       });
     }
@@ -185,6 +184,7 @@ export const applyReferralCode = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 
 // Get total commission per associate

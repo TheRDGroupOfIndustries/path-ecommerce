@@ -11,7 +11,7 @@ import Loader from "@/components/Loader/Loader";
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const {user}=useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [mainImageIndex, setMainImageIndex] = useState(0);
@@ -28,10 +28,8 @@ const ProductDetail = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(
-          `${API_URL}/api/product/get-by-id/${id}`
-        );
-        
+        const res = await axios.get(`${API_URL}/api/product/get-by-id/${id}`);
+
         const found = res.data;
         const sellerId = found.sellerId;
 
@@ -62,12 +60,9 @@ const ProductDetail = () => {
       }
 
       try {
-        const res = await axios.post(
-          `${API_URL}/api/referral/check`,
-          {
-            code,
-          }
-        );
+        const res = await axios.post(`${API_URL}/api/referral/check`, {
+          code,
+        });
 
         if (res.status != 200) {
           setReferralError("Referral code not found or expired.");
@@ -81,22 +76,23 @@ const ProductDetail = () => {
         // console.error("Referral validation failed:", err);
         // setReferralError("Something went wrong. Please try again.");
         if (err.response && err.response.status === 404) {
-        setReferralError("Referral code not found or expired.");
-      } else if (err.response && err.response.data && err.response.data.error) {
-        setReferralError(err.response.data.error);
-      } else {
-        setReferralError("Something went wrong. Please try again.");
-      }
+          setReferralError("Referral code not found or expired.");
+        } else if (
+          err.response &&
+          err.response.data &&
+          err.response.data.error
+        ) {
+          setReferralError(err.response.data.error);
+        } else {
+          setReferralError("Something went wrong. Please try again.");
+        }
       }
     } else if (referralStep === "apply") {
       try {
-        const res = await axios.post(
-          `${API_URL}/api/referral/apply`,
-          {
-            code,
-            productId: id,
-          }
-        );
+        const res = await axios.post(`${API_URL}/api/referral/apply`, {
+          code,
+          productId: id,
+        });
         if (res.status == 200) {
           const discount = parseInt(code.split("-")[1]);
           setReferralDiscount(discount);
@@ -119,16 +115,12 @@ const ProductDetail = () => {
     }
 
     try {
-
       await axios.post("http://localhost:8000/api/review", {
         productId: id,
         rating: userRating,
         comment: userReview,
-        userId:user?.id
+        userId: user?.id,
       });
-
-
-
 
       toast.success("Review submitted successfully!");
       setUserRating(0);
@@ -139,12 +131,7 @@ const ProductDetail = () => {
     }
   };
 
- 
-  
-
-
   if (!product) return <Loader />;
-
 
   return (
     <div className="w-full mx-auto bg-white min-h-screen relative pb-16">
@@ -273,7 +260,7 @@ const ProductDetail = () => {
         )}
         {referralStep === "apply" && (
           <p className="text-green-600 text-sm mt-1">
-             Referral code is valid. Click <strong>Apply</strong> to get{" "}
+            Referral code is valid. Click <strong>Apply</strong> to get{" "}
             {referralDiscount}% extra off.
           </p>
         )}
@@ -354,13 +341,13 @@ const ProductDetail = () => {
 
         {/* Submit Button */}
         <div className="flex justify-end">
-    <Button
-      onClick={handleSubmitReview}
-      className="mt-3 primary-bg-dark hover:primary-bg text-white font-medium px-6 py-3 rounded-lg"
-    >
-      Submit Review
-    </Button>
-    </div>
+          <Button
+            onClick={handleSubmitReview}
+            className="mt-3 primary-bg-dark hover:primary-bg text-white font-medium px-6 py-3 rounded-lg"
+          >
+            Submit Review
+          </Button>
+        </div>
       </div>
 
       {/* Inside the Box */}

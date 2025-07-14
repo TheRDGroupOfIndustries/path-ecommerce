@@ -244,7 +244,110 @@ export const deleteReferral = async (req: Request, res: Response) => {
 };
 
 
+//get 
 
+export const getReferralDetails = async (req: Request, res: Response) => {
+  const { id } = req.params;
 
+  try {
+    const referral = await db.referral.findUnique({
+      where: { createdForId: id },
+      include: {
+        createdFor: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            imageUrl: true,
+            role: true,
+            createdAt: true,
+          },
+        },
+        transactions: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+                imageUrl: true,
+              },
+            },
+            product: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                images: true,
+                category: true,
+              },
+            },
+            associate: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+                imageUrl: true,
+              },
+            },
+            referral: {
+              select: {
+                referral: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
 
+    if (!referral) {
+      return res.status(404).json({ error: "Referral not found for this associate." });
+    }
 
+    const usedByUsers = await db.user.findMany({
+      where: {
+        id: {
+          in: referral.usedBy,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        imageUrl: true,
+        createdAt: true,
+      },
+    });
+
+    return res.status(200).json({
+      referralCode: referral.referral,
+      createdFor: referral.createdFor,
+      usedByUsers,
+      totalUsedBy: referral.usedBy.length,
+      totalTransactions: referral.transactions.length,
+      transactions: referral.transactions.map((tx: { id: any; product: any; user: any; associate: any; price: any; percent: any; commission: any; createdAt: any; }) => ({
+        transactionId: tx.id,
+        product: tx.product,
+        usedBy: tx.user,
+        associate: tx.associate,
+        price: tx.price,
+        percent: tx.percent,
+        commission: tx.commission,
+        createdAt: tx.createdAt,
+      })),
+    });
+  } catch (err) {
+    console.error("🔥 Error fetching referral details");
+console.error("➡️ Associate ID:", id);
+console.error("📛 Error Message:", err instanceof Error ? err.message : err);
+console.error("📄 Stack Trace:", err instanceof Error ? err.stack : err);
+return res.status(500).json({ error: "Internal Server Error" });
+  }
+};

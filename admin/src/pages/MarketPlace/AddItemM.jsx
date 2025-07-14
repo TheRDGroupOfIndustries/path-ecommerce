@@ -143,9 +143,9 @@ const AddItemM = () => {
 
   return (
     <div className="add-item-container">
-      <div className="add-item-header">
-        <h1 className="add-item-title">Add Items</h1>
-        <p className="add-item-subtitle">Fill in the information below to add a new item</p>
+      <div className="add-item-header" style={{ background: '#353896', borderRadius: '20px', color: 'white', padding: '20px 0'}}>
+        <div style={{ fontSize: 20, fontWeight: 500, marginBottom: 8 }}>+ Add new</div>
+        <div style={{ fontSize: 14, opacity: 0.9 }}>Fill in the information below to add a new product</div>
       </div>
 
       {submitSuccess && (
@@ -155,7 +155,7 @@ const AddItemM = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="add-item-form">
+      <form onSubmit={handleSubmit} className="add-item-form" style={{ borderRadius: 20, boxShadow: '0 10px 30px rgba(53, 56, 150, 0.08)', padding: 40, background: 'white' }}>
         <div className="form-grid">
           {/* Name Field */}
           <div className="input-group1">
@@ -169,7 +169,8 @@ const AddItemM = () => {
               value={formData.name}
               onChange={handleInputChange}
               className={`form-input ${errors.name ? "input-error" : ""}`}
-              placeholder="Enter item name"
+              placeholder="Enter product name"
+              style={{ borderRadius: 12, fontSize: 16, padding: '16px 20px' }}
             />
             {errors.name && <span className="error-text">{errors.name}</span>}
           </div>
@@ -185,6 +186,7 @@ const AddItemM = () => {
               value={formData.category}
               onChange={handleInputChange}
               className={`form-select ${errors.category ? "input-error" : ""}`}
+              style={{ borderRadius: 12, fontSize: 16, padding: '16px 20px' }}
             >
               <option value="">Select a category</option>
               {categories.map((category) => (
@@ -198,8 +200,8 @@ const AddItemM = () => {
 
           {/* Product Images */}
           <div className="form-section">
-            <h3 className="section-title">Product Images</h3>
-            <div className="input-with-add">
+            <label className="form-label" style={{ fontWeight: 600, marginBottom: 8 }}>Product images</label>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 10 }}>
               <input
                 type="url"
                 name="image"
@@ -207,27 +209,28 @@ const AddItemM = () => {
                 onChange={handleTempInputChange}
                 placeholder="Enter image URL"
                 className="form-input"
+                style={{ borderRadius: 12, fontSize: 16, padding: '16px 20px', flex: 1 }}
               />
-              <button type="button" onClick={addImage} className="add-btn">
-                Add
+              <button type="button" onClick={addImage} className="add-btn" style={{ background: '#353896', color: 'white', borderRadius: 10, padding: '12px 28px', fontWeight: 600, fontSize: 16 }}>
+                + Add
               </button>
             </div>
 
             {formData.imageUrl.length > 0 && (
               <div className="preview-container">
-                <h4 className="preview-title">Image Preview</h4>
-                <div className="preview-grid">
+                <div className="preview-grid" style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
                   {formData.imageUrl.map((image, index) => (
-                    <div key={index} className="preview-item image-preview">
+                    <div key={index} className="preview-item image-preview" style={{ position: 'relative', borderRadius: 10, border: '1px solid #eee', padding: 8, background: '#f9f9f9' }}>
                       <button
                         type="button"
                         className="delete-preview-btn"
                         onClick={() => removeImage(index)}
                         title="Remove image"
+                        style={{ position: 'absolute', top: 2, right: 2, background: '#e74c3c', color: 'white', border: 'none', borderRadius: '50%', width: 22, height: 22, fontWeight: 700, cursor: 'pointer' }}
                       >
                         ×
                       </button>
-                      <img src={image || "/placeholder.svg"} alt={`Product ${index + 1}`} />
+                      <img src={image || "/placeholder.svg"} alt={`Product ${index + 1}`} style={{ maxWidth: 120, maxHeight: 80, borderRadius: 8 }} />
                     </div>
                   ))}
                 </div>
@@ -246,22 +249,24 @@ const AddItemM = () => {
               value={formData.description}
               onChange={handleInputChange}
               className={`form-textarea ${errors.description ? "input-error" : ""}`}
-              placeholder="Enter detailed description of the item"
-              rows="4"
+              placeholder="Enter detailed description of the product"
+              rows="3"
+              style={{ borderRadius: 12, fontSize: 16, padding: '16px 20px' }}
             />
             <div className="char-count">{formData.description.length} characters</div>
             {errors.description && <span className="error-text">{errors.description}</span>}
           </div>
         </div>
 
-        <div className="button-group">
-          <button type="button" onClick={handleReset} className="reset-button" disabled={isSubmitting}>
+        <div className="button-group" style={{ justifyContent: 'flex-end', gap: 20 }}>
+          <button type="button" onClick={handleReset} className="reset-button" disabled={isSubmitting} style={{ borderRadius: 30, padding: '12px 32px', fontWeight: 600, fontSize: 16 }}>
             Reset
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
             className={`submit-button ${isSubmitting ? "submit-button-disabled" : ""}`}
+            style={{ background: '#353896', color: 'white', borderRadius: 30, padding: '12px 32px', fontWeight: 600, fontSize: 16 }}
           >
             {isSubmitting ? (
               <>

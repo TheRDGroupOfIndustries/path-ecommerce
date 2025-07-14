@@ -4,6 +4,7 @@ import "./Product.css"
 import { useContext } from "react"
 import { myContext } from "../../App"
 import EditModal from "./EditModal";
+import { Eye,Pencil,Trash2 } from "lucide-react";
 
 const ViewProduct = () => {
   const context = useContext(myContext);
@@ -299,7 +300,6 @@ const ViewProduct = () => {
                   <th>Price</th>
                   <th>Discount</th>
                   <th>Rating</th>
-                  <th>Features</th>
                   <th>Category</th>
                   <th>Actions</th>
                 </tr>
@@ -336,34 +336,22 @@ const ViewProduct = () => {
                       <div className="rating-display">
                         {"★".repeat(product.ratings)}
                         {"☆".repeat(5 - product.ratings)}
-                        {/* <span className="rating-number">({product.ratings}/5)</span> */}
                       </div>
                     </td>
-                    <td>
-                      <div className="features-preview">
-                        {product.features.slice(0, 2).map((feature, index) => (
-                          <span key={index} className="feature-tag">
-                            {feature}
-                          </span>
-                        ))}
-                        {product.features.length > 2 && (
-                          <span className="more-features">+{product.features.length - 2} more</span>
-                        )}
-                      </div>
-                    </td>
+  
                     <td>
                        <strong>{product.category}</strong>
                     </td>
                     <td className="actions">
                       <div className="action-buttons">
                         <button onClick={() => handleViewDetails(product)} className="view-btn">
-                          View
+                          <Eye />
                         </button>
                         <button onClick={() => handleEdit(product)} className="edit-btn">
-                          Edit
+                         <Pencil />
                         </button>
                         <button onClick={() => handleDelete(product.id)} className="delete-btn">
-                          Delete
+                         <Trash2 />
                         </button>
                       </div>
                     </td>

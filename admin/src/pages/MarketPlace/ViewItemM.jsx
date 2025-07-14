@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { fetchDataFromApi, editData, deleteData } from "../../utils/api";
-import { MdDelete, MdEdit } from "react-icons/md";
+import { ChevronDown,Pencil,Trash2 } from "lucide-react";
 import './AddItemM.css'
 
 const ViewitemM = () => {
@@ -113,19 +113,27 @@ const ViewitemM = () => {
   return (
     <div className="user-container">
       <div className="user-header">
-        <h1>View Items</h1>
-        <div className="user-stats">
-          <span>Total Items: {filteredItem.length}</span>
+        <div className="user-header-main">
+          <h1>View Items</h1>
+          <div className="custom-select-wrapper">
+            <select
+              id="roleFilter"
+              value={selectedCategory}
+              onChange={handleRoleFilter}
+              className="role-filter"
+            >
+              <option value="Filter" disabled>Filter</option>
+              {category.map((role) => (
+                <option key={role} value={role}>{role}</option>
+              ))}
+            </select>
+            <span className="custom-arrow"><ChevronDown size={20} /></span>
+          </div>
         </div>
-      </div>
-
-      <div className="filter-section">
-        <label htmlFor="roleFilter">Filter by Category:</label>
-        <select id="roleFilter" value={selectedCategory} onChange={handleRoleFilter} className="role-filter">
-          {category.map((role) => (
-            <option key={role} value={role}>{role}</option>
-          ))}
-        </select>
+        <div className="user-stats">
+          <span>Total Items: {users.length}</span><br />
+           <span>current used: {filteredItem.length}</span>
+        </div>
       </div>
 
       {filteredItem.length === 0 ? (
@@ -150,8 +158,8 @@ const ViewitemM = () => {
                   <div className="user-category">{user.category}</div>
                   <div className="actions">
                     <div className="action-buttons">
-                      <button className="edit-btn" onClick={() => handleEdit(user)}><MdEdit /></button>
-                      <button className="delete-btn" onClick={() => handleDelete(user.id)}><MdDelete /></button>
+                      <button className="edit-btn" onClick={() => handleEdit(user)}><Pencil /></button>
+                      <button className="delete-btn" onClick={() => handleDelete(user.id)}><Trash2 /></button>
                     </div>
                   </div>
                 </div>
@@ -163,9 +171,8 @@ const ViewitemM = () => {
             <table className="user-table">
               <thead>
                 <tr>
-                  <th>Serial</th>
-                  <th>Name</th>
                   <th>Image</th>
+                  <th>Name</th>
                   <th>Description</th>
                   <th>Category</th>
                   <th>Actions</th>
@@ -174,8 +181,7 @@ const ViewitemM = () => {
               <tbody>
                 {filteredItem.map((user, index) => (
                   <tr key={user.id}>
-                    <td>{index + 1}</td>
-                    <td>{user.name}</td>
+  
                     <td>
                       {user.imageUrl?.[0] ? (
                         <img src={user.imageUrl[0]} alt={user.name} width="50" height="50" />
@@ -184,6 +190,8 @@ const ViewitemM = () => {
                       )}
                     </td>
 
+                     <td>{user.name}</td>
+
                     <td><div className="description-clamp">
                       {user.description}
                     </div></td>
@@ -191,8 +199,8 @@ const ViewitemM = () => {
                     <td>{user.category}</td>
                     <td>
                       <div className="action-buttons">
-                        <button className="edit-btn" onClick={() => handleEdit(user)}><MdEdit /></button>
-                        <button className="delete-btn" onClick={() => handleDelete(user.id)}><MdDelete /></button>
+                        <button className="edit-btn" onClick={() => handleEdit(user)}><Pencil /></button>
+                        <button className="delete-btn" onClick={() => handleDelete(user.id)}><Trash2 /></button>
                       </div>
                     </td>
                   </tr>

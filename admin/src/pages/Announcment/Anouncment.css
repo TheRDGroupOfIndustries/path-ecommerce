@@ -1,6 +1,6 @@
 .announcement-container {
   max-width:95%;
-  margin: 20px auto;
+  margin: 60px auto;
   padding: 2rem;
   font-family: Arial, sans-serif;
   background: #f9f9f9;
@@ -33,7 +33,7 @@
 .announcement-input button {
   align-self: flex-end;
   padding: 0.5rem 1rem;
-  background-color: #9668e4;
+  background-color: #4a3ce7;
   color: white;
   border: none;
   border-radius: 6px;
@@ -42,7 +42,7 @@
 }
 
 .announcement-input button:hover {
-  background-color: #6e29a0;
+  background-color: #4309f1;
 }
 
 .announcement-list {
@@ -59,11 +59,14 @@
 }
 
 .announcement-item .timestamp {
-  display: block;
+  display:flex;
+  align-items: center;
+  gap:3px;
   margin-top: 0.5rem;
   font-size: 0.85rem;
   color: #777;
 }
+
 
 .no-announcement {
   color: #999;
@@ -188,3 +191,4 @@
 .dark .no-announcement {
   color: #94a3b8;
 }
+

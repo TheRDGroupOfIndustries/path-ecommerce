@@ -1,8 +1,9 @@
 import { useState, useEffect, useContext } from "react";
 import "./User.css";
 import { fetchDataFromApi, editData, deleteData } from "../../utils/api";
-import { MdDelete, MdEdit } from "react-icons/md";
 import { myContext } from "../../App";
+import { ChevronDown,Pencil,Trash2 } from "lucide-react";
+
 
 const ViewUser = () => {
   const context = useContext(myContext);
@@ -109,19 +110,27 @@ const ViewUser = () => {
   return (
     <div className="user-container">
       <div className="user-header">
-        <h1>User Details</h1>
-        <div className="user-stats">
-          <span className="total-users">Total Users: {filteredUsers.length}</span>
+        <div className="user-header-main">
+          <h1>Members</h1>
+          <div className="custom-select-wrapper" data-selected={selectedRole}>
+            <select
+              id="roleFilter"
+              value={selectedRole}
+              onChange={handleRoleFilter}
+              className="role-filter"
+            >
+              <option value="Filter" disabled>Filter</option>
+              {roles.map((role) => (
+                <option key={role} value={role}>{role}</option>
+              ))}
+            </select>
+            <span className="custom-arrow"><ChevronDown size={20} /></span>
+          </div>
         </div>
-      </div>
-
-      <div className="filter-section">
-        <label htmlFor="roleFilter">Filter by Role:</label>
-        <select id="roleFilter" value={selectedRole} onChange={handleRoleFilter} className="role-filter">
-          {roles.map((role) => (
-            <option key={role} value={role}>{role}</option>
-          ))}
-        </select>
+        <div className="user-stats">
+          <span>Total members: {users.length}</span><br />
+          <span>current used: {filteredUsers.length}</span>
+        </div>
       </div>
 
       {filteredUsers.length === 0 ? (
@@ -130,12 +139,13 @@ const ViewUser = () => {
         <div className="user-list">
           {filteredUsers.map((user) => (
             <div className="user-card" key={user.id}>
+              <img src={user.imageUrl || "/placeholder.svg"} alt="User" className="user-photo" />
               <div style={{ flex: 1 }}>
                 {editingUser === user.id ? (
                   <>
                     <input type="text" name="name" value={editForm.name || ""} onChange={handleInputChange} className="edit-input" placeholder="Name" />
                     <input type="email" name="email" value={editForm.email || ""} onChange={handleInputChange} className="edit-input" placeholder="Email" />
-                    <input type="tel" name="phone" value={editForm.phone || ""} onChange={handleInputChange} className="edit-input" placeholder="Phone" />
+                    <input type="tel" name="phone" value={editForm.phone || ""} onChange={handleInputChange} className="edit-input" placeholder="Mobile" />
                     <select name="role" value={editForm.role} onChange={handleInputChange} className="edit-select">
                       <option value="ADMIN">Admin</option>
                       <option value="SELLER">Seller</option>
@@ -152,11 +162,11 @@ const ViewUser = () => {
                     <div className="user-name"><strong>{user.name}</strong></div>
                     <div className="user-description">{user.email}</div>
                     <div className="user-description">{user.phone}</div>
-                    <div className="user-category">{user.role}</div>
+                    <span className={`role-badge role-${user.role?.toLowerCase()}`}>{user.role}</span>
                     <div className="actions">
                       <div className="action-buttons">
-                        <button className="edit-btn" onClick={() => handleEdit(user)}><MdEdit /></button>
-                        <button className="delete-btn" onClick={() => handleDelete(user.id)}><MdDelete /></button>
+                        <button className="edit-btn" onClick={() => handleEdit(user)}><Pencil /></button>
+                        <button className="delete-btn" onClick={() => handleDelete(user.id)}><Trash2 /></button>
                       </div>
                     </div>
                   </>
@@ -170,53 +180,27 @@ const ViewUser = () => {
           <table className="user-table">
             <thead>
               <tr>
-                <th>Serial No.</th>
-                <th>Image</th>
+                <th>Photo</th>
                 <th>Name</th>
+                <th>Mobile</th>
                 <th>Email</th>
-                <th>Phone</th>
-                <th>Role</th>
-                <th>Actions</th>
+                <th>Status</th>
+                <th>Operation</th>
               </tr>
             </thead>
             <tbody>
               {filteredUsers.map((user, index) => (
                 <tr key={user.id}>
-                  <td>{index + 1}</td>
                   <td>
-                    {editingUser === user.id ? (
-                      <div>
-                        <input
-                          type="file"
-                          name="imageFile"
-                          accept="image/*"
-                          onChange={(e) => setEditForm((prev) => ({
-                            ...prev,
-                            imageFile: e.target.files[0],
-                            imageUrl: URL.createObjectURL(e.target.files[0])
-                          }))}
-                          className="edit-input"
-                        />
-                        {/* {editForm.imageUrl && (
-                          <img
-                            src={editForm.imageUrl}
-                            alt="Preview"
-                            className="image-preview"
-                            style={{ width: 40, height: 40, objectFit: "cover", marginTop: 5 }}
-                          />
-                        )} */}
-                      </div>
-                    ) : (
-                      <img
-                        src={user.imageUrl || "/placeholder.svg"}
-                        alt="User"
-                        style={{ width: 40, height: 40, objectFit: "cover" }}
-                      />
-                    )}
+                    <img
+                      src={user.imageUrl || "/placeholder.svg"}
+                      alt="User"
+                      className="user-photo"
+                    />
                   </td>
                   <td>{editingUser === user.id ? <input type="text" name="name" value={editForm.name || ""} onChange={handleInputChange} className="edit-input" /> : user.name}</td>
-                  <td>{editingUser === user.id ? <input type="email" name="email" value={editForm.email || ""} onChange={handleInputChange} className="edit-input" /> : user.email}</td>
                   <td>{editingUser === user.id ? <input type="tel" name="phone" value={editForm.phone || ""} onChange={handleInputChange} className="edit-input" /> : user.phone}</td>
+                  <td>{editingUser === user.id ? <input type="email" name="email" value={editForm.email || ""} onChange={handleInputChange} className="edit-input" /> : user.email}</td>
                   <td>{editingUser === user.id ? (
                     <select name="role" value={editForm.role} onChange={handleInputChange} className="edit-select">
                       <option value="ADMIN">Admin</option>
@@ -235,8 +219,8 @@ const ViewUser = () => {
                       </div>
                     ) : (
                       <div className="action-buttons">
-                        <button onClick={() => handleEdit(user)} className="edit-btn" title="Edit"><MdEdit /></button>
-                        <button onClick={() => handleDelete(user.id)} className="delete-btn" title="Delete"><MdDelete /></button>
+                        <button onClick={() => handleEdit(user)} className="edit-btn" title="Edit"><Pencil /></button>
+                        <button onClick={() => handleDelete(user.id)} className="delete-btn" title="Delete"><Trash2 /></button>
                       </div>
                     )}
                   </td>

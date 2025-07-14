@@ -13,6 +13,7 @@ enum Role {
   ASSOCIATE
   ADMIN
 }
+
 model User {
   id            String        @id @default(cuid())
   email         String        @unique
@@ -25,7 +26,6 @@ model User {
   updatedAt     DateTime      @updatedAt
   role          Role          @default(USER)
 
-  // Relations
   reviews       Review[]
   marketplaces  Marketplace[]
   properties    Property[]
@@ -33,15 +33,13 @@ model User {
   createdById   String?
   associate     Associate?
 
-  // Referrals
   createdReferrals Referral[]                     @relation("CreatedReferrals")
   associateTransactions ReferralTransaction[]     @relation("AssociateUser")
   usedReferralTransactions ReferralTransaction[]  @relation("ReferredUser")
 
-  orders Order[]
-  kyc    Kyc?
+  orders        Order[]
+  kyc           Kyc?
 }
-
 
 model Marketplace {
   id          String    @id @default(cuid())
@@ -68,7 +66,7 @@ model Property {
   reviews     Review[]
   enquires    Enquire[]
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  updatedAt   DateTime  @default(now()) @updatedAt
 }
 
 model Review {
@@ -78,9 +76,10 @@ model Review {
   userId        String
   marketplaceId String?
   propertyId    String?
+  productId     String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
-  productId     String?
+
   product       Products?    @relation(fields: [productId], references: [id])
   user          User         @relation(fields: [userId], references: [id])
   marketplace   Marketplace? @relation(fields: [marketplaceId], references: [id])
@@ -95,26 +94,25 @@ model Enquire {
   subject       String?
   message       String
   marketplaceId String?
-  propertyId  String?
-  marketplace Marketplace? @relation(fields: [marketplaceId], references: [id])
-  property    Property?    @relation(fields: [propertyId], references: [id])
+  propertyId    String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now()) @updatedAt
-}
 
-// Flow - Ask question - Goes to seller dashboard who listed product - he/she answer appear in user side
+  marketplace   Marketplace? @relation(fields: [marketplaceId], references: [id])
+  property      Property?    @relation(fields: [propertyId], references: [id])
+}
 
 model Faq {
   id        String   @id @default(cuid())
-  question  String // Judge sahabbb product ke bare me sawalat hai apse!~ ye, ye seller batayange mujhe iska jawab...
+  question  String
   answer    String?
   productId String
+
   product   Products @relation(fields: [productId], references: [id])
 }
 
 model Products {
   id          String   @id @default(cuid())
-  // Basic Details - These keys are must provided by listing creator ~ east or west nukkar wali chai dukan is best...!
   name        String
   description String
   images      String[]
@@ -125,48 +123,61 @@ model Products {
   highlights  String[]
   insideBox   String[]
   isTrendy    Boolean  @default(false)
+  category    String?
+  sellerId    String
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime? @updatedAt
 
-  // Filled from backend ~ Get id from Token and parse it futher into sellerId - seller will automatically fetch user with it
-  category String?
-  sellerId String
-  seller   User    @relation(fields: [sellerId], references: [id])
+  seller      User     @relation(fields: [sellerId], references: [id])
 
-  referralBy         String? //associateid
-  referralPercentage Int? //40
+  referralBy         String?
+  referralPercentage Int?
 
-  // User side questions ~ Shakii log, bharosa to hai nahi aaye bare reviews dekhne...
-  review Review[]
-  Faq    Faq[]
-  orders Order[]
+  review   Review[]
+  Faq      Faq[]
+  orders   Order[]
+  transactions ReferralTransaction[] // Added for back relation (optional)
 }
-
-// Further Refreal will appear here ~ ek mota hathi gumne gya...
-// #---------- Associate ------------#
 
 model Associate {
   id        String   @id @default(uuid())
   userId    String   @unique
   level     Int
   percent   Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Referral {
   id           String   @id @default(uuid())
-  referral     String   @unique // e.g., "adarsh-40"
-  createdFor   User     @relation("CreatedReferrals", fields: [createdForId], references: [id])
+  referral     String   @unique
   createdForId String   @unique
-  usedBy       String[]  @default([])//  Now optional
+  usedBy       String[] @default([])
   createdAt    DateTime @default(now())
 
+  createdFor   User     @relation("CreatedReferrals", fields: [createdForId], references: [id])
   transactions ReferralTransaction[]
 }
 
-// as of now - order 
+model ReferralTransaction {
+  id           String   @id @default(uuid())
+  referralId   String
+  associateId  String
+  userId       String?
+  productId    String?
+  productName  String
+  price        Float
+  percent      Float
+  commission   Float
+  createdAt    DateTime @default(now())
+
+  referral     Referral @relation(fields: [referralId], references: [id])
+  associate    User     @relation("AssociateUser", fields: [associateId], references: [id])
+  user         User?    @relation("ReferredUser", fields: [userId], references: [id])
+  product     Products? @relation(fields: [productId], references: [id]) 
+}
 
 model Order {
   id          String   @id @default(cuid())
@@ -177,11 +188,9 @@ model Order {
   status      String
   createdAt   DateTime @default(now())
 
-  product Products? @relation(fields: [productId], references: [id])
-  user    User?     @relation(fields: [userId], references: [id])
+  product     Products? @relation(fields: [productId], references: [id])
+  user        User?     @relation(fields: [userId], references: [id])
 }
-
-//KYC
 
 model Kyc {
   id              String   @id @default(cuid())
@@ -199,37 +208,16 @@ model Kyc {
   bankStatement   String?
   salarySlip      String?
   image           String
-  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  status          String   @default("PENDING")
   sellerId        String   @unique
-  seller          User     @relation(fields: [sellerId], references: [id])
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-}
 
+  seller          User     @relation(fields: [sellerId], references: [id])
+}
 
 model Announcement {
   id        String   @id @default(cuid())
   text      String
   createdAt DateTime @default(now())
 }
-
-
-model ReferralTransaction {
-  id           String   @id @default(uuid())
-  referralId   String
-  associateId  String
-  userId       String?
-  productId    String
-  productName  String
-  price        Float
-  percent      Float
-  commission   Float
-  createdAt    DateTime @default(now())
-
-  referral     Referral @relation(fields: [referralId], references: [id])
-  associate    User     @relation("AssociateUser", fields: [associateId], references: [id])
-  user         User?     @relation("ReferredUser", fields: [userId], references: [id])
-}
-
-
-

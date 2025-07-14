@@ -8,6 +8,7 @@ import {
 } from "../../utils/api";
 import { MdEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
+import { Volume2,Clock2} from "lucide-react";
 
 const AdminAnnouncment = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -72,7 +73,7 @@ const AdminAnnouncment = () => {
 
   return (
     <div className="announcement-container">
-      <h2 className="announcement-title">📢 Announcements</h2>
+      <h2 className="announcement-title"><Volume2 /> Announcements</h2>
 
       <div className="announcement-input">
         <textarea
@@ -104,9 +105,14 @@ const AdminAnnouncment = () => {
                 <>
                   <p>{a.text}</p>
                   <div className="announcement-meta">
-                    <span className="timestamp">
-                      🕒 {new Date(a.createdAt).toLocaleString()}
-                    </span>
+                    <div className="timestamp">
+                      <div className="clock">
+                       <Clock2 height={15}/>
+                      </div>
+                       <div className="date">
+                        {new Date(a.createdAt).toLocaleString()}
+                       </div>
+                    </div>
                     <div className="actions">
                       <button onClick={() => handleEdit(a.id, a.text)}><MdEdit /></button>
                       <button onClick={() => handleDelete(a.id)}><MdDelete/></button>

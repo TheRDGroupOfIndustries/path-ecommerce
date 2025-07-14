@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { fetchDataFromApi, editData, deleteData } from "../../utils/api";
-import { MdDelete } from "react-icons/md";
+import { Trash2 } from "lucide-react";
 
 const Enquiry = () => {
   const [users, setUsers] = useState([]);
@@ -98,7 +98,7 @@ const Enquiry = () => {
                     <td>{user.phone}</td>
                     <td>
                       <div className="action-buttons">
-                      <button className="delete-btn" onClick={() => handleDelete(user.id)}><MdDelete /></button>
+                      <button className="delete-btn" onClick={() => handleDelete(user.id)}><Trash2 /></button>
                       </div>
                     </td>
                   </tr>

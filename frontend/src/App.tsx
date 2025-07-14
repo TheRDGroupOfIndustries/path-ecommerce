@@ -139,7 +139,7 @@ function App() {
             }
           />
           <Route
-            path="/product-reviews"
+            path="/product-reviews/:productId"
             element={
               <ProtectedRoute>
                 <ProductReviews />

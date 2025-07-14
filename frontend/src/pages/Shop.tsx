@@ -12,8 +12,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const Shop = () => {
-
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("For You");
   const [activeIndex, setActiveIndex] = useState(0);
   const [products, setProducts] = useState([]);
@@ -27,7 +26,6 @@ const Shop = () => {
         );
         setTrendy(res.data);
         // console.log("trendy: ",res.data);
-       
       } catch (err) {
         console.error("Failed to fetch Trendy Product", err);
       }
@@ -63,46 +61,52 @@ const Shop = () => {
     <div className="container mx-auto p-4">
       <ProfileHeader />
 
-      <Carousel
-        className="w-full max-w-2xl overflow-visible mt-10"
-        opts={{ loop: false }}
-        setApi={(api) => {
-          api.on("select", () => setActiveIndex(api.selectedScrollSnap()));
-        }}
-      >
-        <CarouselContent className="-ml-4">
-          {trendy.slice(0, 6).map((offer, index) => (
-            <CarouselItem key={offer.id} className="pl-4 basis-[75%]" onClick={() => navigate(`/product-detail/${offer.id}`)}>
-              <div
-                className="relative h-54 rounded-lg shadow-lg bg-cover bg-center flex items-center"
-                style={{ backgroundImage: `url(${offer.images[0]})` }}
+      {trendy.length > 0 && (
+        <Carousel
+          className="w-full max-w-2xl overflow-visible mt-10"
+          opts={{ loop: false }}
+          setApi={(api) => {
+            api.on("select", () => setActiveIndex(api.selectedScrollSnap()));
+          }}
+        >
+          <CarouselContent className="-ml-4">
+            {trendy.slice(0, 6).map((offer, index) => (
+              <CarouselItem
+                key={offer?.id}
+                className="pl-4 basis-[75%]"
+                onClick={() => navigate(`/product-detail/${offer?.id}`)}
               >
-                <div className="absolute inset-0 bg-black/30 rounded-lg" />
-                <div className="relative z-10 flex flex-col justify-center h-full w-full px-4 ">
-                  <div className="flex flex-col flex-1 justify-end h-1/4 gap-1">
-                    <p className="text-sm text-white font-semibold">
-                      {offer.discount} % OFF
-                    </p>
-                    <h3 className="text-2xl font-semibold text-white">
-                      {offer.name}
-                    </h3>
-                    <p className="text-[10px] mb-2 text-white font-light">
-                      {offer.description.length > 110
-                        ? offer.description.slice(0, 115) + "..."
-                        : offer.description}
-                    </p>
-                  </div>
-                  <div className="flex justify-end">
-                    <Button className="bg-transparent underline underline-offset-3 tracking-widest text-xs font-light text-white" >
-                     Buy Now
-                    </Button>
+                <div
+                  className="relative h-54 rounded-lg shadow-lg bg-cover bg-center flex items-center"
+                  style={{ backgroundImage: `url(${offer?.images?.[0] || "https://placehold.co/600x400"})` }}
+                >
+                  <div className="absolute inset-0 bg-black/30 rounded-lg" />
+                  <div className="relative z-10 flex flex-col justify-center h-full w-full px-4 ">
+                    <div className="flex flex-col flex-1 justify-end h-1/4 gap-1">
+                      <p className="text-sm text-white font-semibold">
+                        {offer?.discount} % OFF
+                      </p>
+                      <h3 className="text-2xl font-semibold text-white">
+                        {offer?.name}
+                      </h3>
+                      <p className="text-[10px] mb-2 text-white font-light">
+                        {offer?.description.length > 110
+                          ? offer?.description.slice(0, 115) + "..."
+                          : offer?.description}
+                      </p>
+                    </div>
+                    <div className="flex justify-end">
+                      <Button className="bg-transparent underline underline-offset-3 tracking-widest text-xs font-light text-white">
+                        Buy Now
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      )}
 
       <div className="flex justify-center mt-3 gap-1">
         {trendy.slice(0, 6).map((_, index) => (

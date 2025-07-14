@@ -336,7 +336,7 @@ const ProductReviews = () => {
   if (!productInfo) return <Loader />;
 
   return (
-    <div className="container mx-auto p-4 mb-6">
+    <div className="container mx-auto p-4 mb-10">
       {/* Header */}
       <div className="flex items-center h-14 mb-4 text-black">
         <ChevronLeft

@@ -1,11 +1,4 @@
 
-import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, Star } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { useAuth } from "@/context/authContext";
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import {  ChevronLeft, Star } from 'lucide-react';

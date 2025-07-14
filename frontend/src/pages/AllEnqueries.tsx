@@ -1,3 +1,4 @@
+import Loader from "@/components/Loader/Loader";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context/authContext";
 import { API_URL } from "@/lib/api.temp";
@@ -68,7 +69,7 @@ export default function AllEnqueries() {
 
     if (user?.id) fetchEnquiries();
   }, [user?.id]);
-   if (!enquiries) return <p className="p-4 text-center ">Loading...</p>;
+   if (!enquiries) return <Loader/>
 
   return (
     <div className="container mx-auto p-4 mb-18">

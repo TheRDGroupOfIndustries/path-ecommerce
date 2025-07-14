@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import ProfileHeader from "@/components/ProfileHeader/ProfileHeader";
 import CardComponent from "@/components/CardComponent/CardComponent";
 import axios from "axios";
-import { API_URL } from "@/lib/api.temp";
+import { API_URL } from "@/lib/api.env";
 
 const HousesPlots = () => {
   const [activeTab, setActiveTab] = useState("All Properties");

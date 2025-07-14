@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { API_URL } from "@/lib/api.temp";
+import { API_URL } from "@/lib/api.env";
 
 export default function ChangePassword() {
   const { user } = useAuth();

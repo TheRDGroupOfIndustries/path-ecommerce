@@ -8,7 +8,7 @@
 //     }}
 
 // src/services/authservices.ts
-import { API_URL } from "@/lib/api.temp";
+import { API_URL } from "@/lib/api.env";
 import axios from "axios";
 
 export interface LoginCredentials {

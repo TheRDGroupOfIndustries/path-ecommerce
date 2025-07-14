@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import SendEnquire from "./SendEnquire";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { API_URL } from "@/lib/api.temp";
+import { API_URL } from "@/lib/api.env";
 
 const Enquire = () => {
   const [showPopup, setShowPopup] = useState(false);

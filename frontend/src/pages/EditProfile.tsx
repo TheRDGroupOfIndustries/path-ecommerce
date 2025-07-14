@@ -8,7 +8,7 @@ import PROIFLE_IMAGE from "@/assets/user_img.png";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { API_URL } from "@/lib/api.temp";
+import { API_URL } from "@/lib/api.env";
 
 const EditProfile = () => {
   const { user, setUser } = useAuth();

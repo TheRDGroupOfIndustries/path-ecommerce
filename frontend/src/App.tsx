@@ -23,6 +23,7 @@ import Announcements from "./pages/Announcements";
 import ReviewsList from "./pages/ReviewsList";
 import ChangeEmail from "./pages/ChangeEmail";
 import ChangePassword from "./pages/ChangePassword";
+import MyReferrals from "./pages/MyReferrals";
 
 function App() {
   const location = useLocation();
@@ -191,6 +192,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ChangePassword/>
+              </ProtectedRoute>
+            }
+          />
+                    <Route
+            path="/testing"
+            element={
+              <ProtectedRoute>
+                <MyReferrals />
               </ProtectedRoute>
             }
           />

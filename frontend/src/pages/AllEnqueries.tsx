@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context/authContext";
+import { API_URL } from "@/lib/api.temp";
 import axios from "axios";
 import { ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -18,7 +19,7 @@ export default function AllEnqueries() {
     const fetchEnquiries = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/api/seller/seller-enquiry/${user.id}`
+          `${API_URL}/api/seller/seller-enquiry/${user.id}`
         );
         // console.log("AllEnquiry : ", res);
 

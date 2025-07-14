@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { MdStar } from "react-icons/md";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/authContext";
+import { API_URL } from "@/lib/api.temp";
+import Loader from "@/components/Loader/Loader";
+
 const ProductDetail = () => {
   const { id } = useParams();
   const {user}=useAuth();
@@ -26,13 +29,13 @@ const ProductDetail = () => {
     const fetchProduct = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/api/product/get-by-id/${id}`
+          `${API_URL}/api/product/get-by-id/${id}`
         );
         
         const found = res.data;
         const sellerId = found.sellerId;
 
-        const userEndpoint = `http://localhost:8000/api/users/get-by-id/${sellerId}`;
+        const userEndpoint = `${API_URL}/api/users/get-by-id/${sellerId}`;
         const userRes = await axios.get(userEndpoint);
 
         const userData = userRes.data.user;
@@ -60,7 +63,7 @@ const ProductDetail = () => {
 
       try {
         const res = await axios.post(
-          "http://localhost:8000/api/referral/check",
+          `${API_URL}/api/referral/check`,
           {
             code,
           }
@@ -88,7 +91,7 @@ const ProductDetail = () => {
     } else if (referralStep === "apply") {
       try {
         const res = await axios.post(
-          "http://localhost:8000/api/referral/apply",
+          `${API_URL}/api/referral/apply`,
           {
             code,
             productId: id,
@@ -116,6 +119,7 @@ const ProductDetail = () => {
     }
 
     try {
+
       await axios.post("http://localhost:8000/api/review", {
         productId: id,
         rating: userRating,
@@ -123,7 +127,8 @@ const ProductDetail = () => {
         userId:user?.id
       });
 
-      
+
+
 
       toast.success("Review submitted successfully!");
       setUserRating(0);
@@ -136,7 +141,10 @@ const ProductDetail = () => {
 
  
   
-  if (!product) return <p className="p-4 text-center">Loading...</p>;
+
+
+  if (!product) return <Loader />;
+
 
   return (
     <div className="w-full mx-auto bg-white min-h-screen relative pb-16">
@@ -348,7 +356,7 @@ const ProductDetail = () => {
         <div className="flex justify-end">
     <Button
       onClick={handleSubmitReview}
-      className="mt-3 bg-black hover:bg-gray-900 text-white font-medium px-6 py-3 rounded-lg"
+      className="mt-3 primary-bg-dark hover:primary-bg text-white font-medium px-6 py-3 rounded-lg"
     >
       Submit Review
     </Button>
@@ -376,12 +384,12 @@ const ProductDetail = () => {
 
       {/* Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 w-full">
-        <div className="relative  w-full bg-black text-white py-5 px-8 shadow-lg flex items-center justify-between [background:radial-gradient(circle_at_center,_#031a67_0%,_#000_100%)]">
-          <Button className="bg-white text-black px-8 py-4 rounded-full text-lg  font-medium  shadow  transition-all">
+        <div className="relative  w-full bg-black text-white py-5 px-4 shadow-lg flex items-center justify-between primary-bg-dark">
+          <Button className="bg-white text-black px-8 py-4 rounded-full text-base  font-medium  shadow  transition-all">
             Buy Now
           </Button>
 
-          <Button className="bg-transparent px-8 py-4 rounded-full text-lg  font-medium shadow  border-2">
+          <Button className="bg-transparent px-10 py-4 rounded-full text-base  font-medium shadow  border-2">
             Add to Cart
           </Button>
         </div>

@@ -119,7 +119,7 @@
 
 
 import React, { useState } from "react";
-import SPC from "@/assets/Logo_2.jpg";
+import SPC from "@/assets/SPC.jpg";
 import { Eye, EyeOff } from "lucide-react";
 import { FaGoogle } from "react-icons/fa";
 import { Card, CardContent } from "@/components/ui/card";
@@ -221,7 +221,9 @@ const Login = () => {
               type="submit"
               disabled={isLoading}
               className="w-full text-white py-7 text-xl
-              [background:radial-gradient(circle_at_center,_#031a67_0%,_#000_100%)]"
+              primary-bg
+              "
+              // [background:radial-gradient(circle_at_center,_#031a67_0%,_#000_100%)]
             >
               {isLoading ? "Logging in..." : "Login"}
             </Button>

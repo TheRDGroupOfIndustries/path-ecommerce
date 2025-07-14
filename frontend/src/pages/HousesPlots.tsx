@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ProfileHeader from "@/components/ProfileHeader/ProfileHeader";
 import CardComponent from "@/components/CardComponent/CardComponent";
 import axios from "axios";
+import { API_URL } from "@/lib/api.temp";
 
 const HousesPlots = () => {
   const [activeTab, setActiveTab] = useState("All Properties");
@@ -11,7 +12,7 @@ const HousesPlots = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/property/get-all");
+        const res = await axios.get(`${API_URL}/api/property/get-all`);
         const data = res.data?.properties || [];
         // console.log("house: ",res.data);
         
@@ -46,7 +47,7 @@ const HousesPlots = () => {
               onClick={() => setActiveTab(tab)}
               className={`px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
                 activeTab === tab
-                  ? "bg-black text-white"
+                  ? "primary-bg text-white"
                   : "text-muted-foreground"
               }`}
             >

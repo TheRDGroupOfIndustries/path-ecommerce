@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { API_URL } from "@/lib/api.temp";
 
 const SendEnquire = ({ setShowPopup, type, id }) => {
   const [formData, setFormData] = useState({
@@ -44,7 +45,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
       };
 
       const res = await axios.post(
-        "http://localhost:8000/api/enquiry",
+        `${API_URL}/api/enquiry`,
         payload
       );
       toast.success("Enquiry sent successfully!");
@@ -71,7 +72,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
       onClick={() => setShowPopup(false)}
     >
       <div
-        className="[background:radial-gradient(circle_at_center,_#0a1b57_0%,_#000_60%)] text-white w-full max-w-md rounded-t-4xl p-6 h-[65vh] overflow-auto animate-slide-up flex flex-col"
+        className="primary-bg-dark text-white w-full max-w-md rounded-t-4xl p-6 h-[90vh] overflow-auto animate-slide-up flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
@@ -83,14 +84,14 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
           {type === "marketplace" ? "service" : "property"}!
         </p>
 
-        <div className="flex flex-col gap-2 mb-4">
+        <div className="flex flex-col gap-4 mb-4">
           <Input
             name="name"
             type="text"
             value={formData.name}
             onChange={handleChange}
             placeholder="Full name"
-            className="w-full p-2 bg-transparent text-white rounded border-none"
+            className="w-full p-4 py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50"
           />
           <Input
             name="email"
@@ -98,7 +99,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
             value={formData.email}
             onChange={handleChange}
             placeholder="Your email"
-            className="w-full p-2 bg-transparent text-white rounded border-none"
+            className="w-full p-4 py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50"
           />
           <Input
             name="phone"
@@ -106,7 +107,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
             value={formData.phone}
             onChange={handleChange}
             placeholder="Phone number"
-            className="w-full p-2 bg-transparent text-white rounded border-none"
+            className="w-full p-4 py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50"
           />
           <Input
             name="subject"
@@ -114,14 +115,14 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
             value={formData.subject}
             onChange={handleChange}
             placeholder="Subject"
-            className="w-full p-2 bg-transparent text-white rounded border-none"
+            className="w-full p-4 py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50"
           />
           <Textarea
             name="message"
             value={formData.message}
             onChange={handleChange}
             placeholder="Your message..."
-            className="w-full p-2 bg-transparent text-white rounded h-20 border-none"
+            className="w-full p-4 py-4 h-32 bg-white/20 text-white rounded-lg resize-none border-none font-light placeholder:text-white/50"
           />
         </div>
 

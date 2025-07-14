@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ProfileHeader from "@/components/ProfileHeader/ProfileHeader";
 import CardComponent from "@/components/CardComponent/CardComponent";
 import axios from "axios";
+import { API_URL } from "@/lib/api.temp";
 
 const AllServicesPage = () => {
   const [activeTab, setActiveTab] = useState("All Services");
@@ -11,7 +12,7 @@ const AllServicesPage = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/marketplace/get-all");
+        const response = await axios.get(`${API_URL}/api/marketplace/get-all`);
         const marketplaces = response.data?.marketplaces || [];
         // console.log("market : ",response.data);
         setServices(marketplaces);
@@ -46,7 +47,7 @@ const AllServicesPage = () => {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
-                activeTab === tab ? "bg-black text-white" : "text-muted-foreground"
+                activeTab === tab ? "primary-bg text-white" : "text-muted-foreground"
               }`}
             >
               {tab}

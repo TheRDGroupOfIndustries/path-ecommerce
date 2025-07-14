@@ -1,6 +1,6 @@
 // import type { AuthResponse, LoginCredentials } from "../types/auth"
 
-// const API_BASE_URL="http://localhost:8000/api/users"
+// const API_BASE_URL=`${API_URL}/api/users`
 
 // export const authservices={
 //     async login(credentials:LoginCredentials):Promise<AuthResponse>{
@@ -8,6 +8,7 @@
 //     }}
 
 // src/services/authservices.ts
+import { API_URL } from "@/lib/api.temp";
 import axios from "axios";
 
 export interface LoginCredentials {
@@ -31,7 +32,7 @@ export interface AuthResponse {
   };
 }
 
-const API_BASE_URL = "http://localhost:8000/api/users";
+const API_BASE_URL = `${API_URL}/api/users`;
 
 export const authservices = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {

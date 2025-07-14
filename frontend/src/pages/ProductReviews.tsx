@@ -261,8 +261,11 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft } from "lucide-react";
 import { MdStar, MdStarBorder } from "react-icons/md";
+
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import Loader from "@/components/Loader/Loader";
+
 
 const ProductReviews = () => {
   const [activeTab, setActiveTab] = useState("All");
@@ -327,7 +330,10 @@ const ProductReviews = () => {
     );
   // console.log("productInfo: ", productInfo);
 
-  if (!productInfo) return <p className="p-4 text-center">Loading...</p>;
+ 
+
+
+  if (!productInfo) return <Loader />;
 
   return (
     <div className="container mx-auto p-4 mb-6">

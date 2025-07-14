@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import SendEnquire from "./SendEnquire";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "@/lib/api.temp";
 
 const Enquire = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -15,12 +16,12 @@ const Enquire = () => {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const endpoint =`http://localhost:8000/api/${type}/get-by-id/${id}`
+        const endpoint =`${API_URL}/api/${type}/get-by-id/${id}`
         const res = await axios.get(endpoint);
         const list = type =="marketplace"? res.data.marketplace:res.data.properties;
 
         const sellerId=list.createdById
-        const userEndpoint =`http://localhost:8000/api/users/get-by-id/${sellerId}`
+        const userEndpoint =`${API_URL}/api/users/get-by-id/${sellerId}`
          const userRes  = await axios.get(userEndpoint);
         
          const userData=userRes.data.user
@@ -170,14 +171,14 @@ const Enquire = () => {
       </div>
       
       <div className="fixed bottom-0 left-0 right-0 z-60 w-full">
-        <div className="relative w-full bg-black text-white  py-5 px-8 shadow-lg flex items-center justify-center  [background:radial-gradient(circle_at_center,_#031a67_0%,_#000_100%)]">
-          <span className="text-lg font-semibold mx-auto"  onClick={() => setShowPopup(true)}>Enquire Now</span>
+        <div className="relative w-full bg-black text-white  py-5 px-4 shadow-lg flex items-center justify-between  primary-bg-dark">
+          <span className="text-base w-5/6 text-center px-6 py-2 rounded-full bg-white/20"  onClick={() => setShowPopup(true)}>Enquire Now</span>
           <button
             className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center justify-center"
             aria-label="Like"
            
           >
-            <Heart className="w-7 h-7 text-white" />
+            <Heart className="w-6 h-6 text-white" />
           </button>
         </div>
       </div>

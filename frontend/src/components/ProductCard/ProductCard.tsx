@@ -45,9 +45,9 @@ const ProductCard = ({
     <CardTitle className="text-base font-semibold leading-snug text-black">
       {title}
     </CardTitle>
-    <CardDescription className="text-[10px] text-gray-600 mb-1 leading-tight">
-      {description.length > 80
-        ? description.slice(0, 80) + "..."
+    <CardDescription className="text-[10px] text-gray-400 mb-1 leading-tight">
+      {description.length > 40
+        ? description.slice(0, 40) + "..."
         : description}
     </CardDescription>
 
@@ -62,12 +62,12 @@ const ProductCard = ({
           ({discount} off%) 
         </span>
       </p>
-      <button
+      {/* <button
         className="bg-blue-900 text-white p-1 rounded-full flex items-center justify-center w-6 h-6"
         aria-label="Add to cart"
       >
         <Plus size={14} />
-      </button>
+      </button> */}
     </div>
   </CardContent>
 </Card>

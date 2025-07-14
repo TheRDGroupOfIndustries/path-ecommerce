@@ -19,7 +19,7 @@ const BottomNavBar= () => {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 w-full ">
-      <div className="mx-auto [background:radial-gradient(circle_at_center,_#0a1b57_0%,_#000_60%)] text-white py-3 px-6 flex gap-10 items-center shadow-lg">
+      <div className="mx-auto primary-bg-dark text-white py-3 px-2 flex gap-10 items-center shadow-lg">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = location.pathname === tab.path;
@@ -32,11 +32,11 @@ const BottomNavBar= () => {
             >
               <Icon
                 size={24}
-                className={isActive ? "text-white" : "text-muted-foreground"}
+                className={isActive ? "text-white" : "text-white/50"}
               />
               <span
-                className={`text-[8px] ${
-                  isActive ? "text-white font-regular" : "font-light text-muted-foreground"
+                className={`text-[10px] ${
+                  isActive ? "text-white font-regular" : "font-light text-white/50"
                 }`}
               >
                 {tab.name}

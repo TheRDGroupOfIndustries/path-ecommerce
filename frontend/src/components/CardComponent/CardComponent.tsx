@@ -31,15 +31,15 @@ const CardComponent = ({ service, btnText, type }) => {
             : service.title}
         </CardTitle>
         <CardDescription className="mt-2 text-xs mb-2">
-          {service.description.length > 80
-            ? service.description.slice(0, 100) + "..."
+          {service.description.length > 45
+            ? service.description.slice(0, 45) + "..."
             : service.description}
         </CardDescription>
 
         <Button
-          className={`mt-auto py-4 w-full rounded-3xl border-2 border-black hover:text-white ${
+          className={`mt-auto py-4 w-full rounded-3xl hover:text-white ${
             btnText === "View"
-              ? "text-white bg-black"
+              ? "text-white primary-bg-dark"
               : "bg-transparent text-black"
           }`}
         >

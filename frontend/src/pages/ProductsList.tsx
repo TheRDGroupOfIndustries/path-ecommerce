@@ -1,9 +1,20 @@
+
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "@/context/authContext";
+
+import React, { useEffect, useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import {  ChevronLeft, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useAuth } from '@/context/authContext';
+import { API_URL } from '@/lib/api.temp';
+import Loader from '@/components/Loader/Loader';
+
 
 const ProductListItem = ({ image, rating, title, description, productId }) => {
   const navigate = useNavigate();
@@ -50,22 +61,38 @@ const ProductsList = () => {
   const id = user?.id;
   // console.log("id: ",id);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await axios(`http://localhost:8000/api/seller/${id}`);
-      // console.log("res: ",res);
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       const res = await axios(`http://localhost:8000/api/seller/${id}`);
+//       // console.log("res: ",res);
 
-      setProducts(res.data.productSeller);
-    };
-    fetchData();
-  }, [id]);
+// <<<<<<< chetan-frontend
+//       setProducts(res.data.productSeller);
+//     };
+//     fetchData();
+//   }, [id]);
+
+   useEffect(() => {
+   const fetchData = async () => {
+    const res = await axios(`${API_URL}/api/seller/${id}`);
+    // console.log("res: ",res);
+    
+    setProducts(res.data.productSeller)
+    
+  };
+  fetchData();
+}, [id]);
+
 
   // console.log("res:",products );
 
   const handleGoBack = () => {
     window.history.back();
   };
-  if (!products) return <p className="p-4 text-center ">Loading...</p>;
+
+
+ if (!products) return <Loader />;
+
 
   return (
     <div className="container mx-auto p-4 mb-16">

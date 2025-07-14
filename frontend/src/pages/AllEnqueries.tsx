@@ -10,7 +10,7 @@ export default function AllEnqueries() {
     const { user } = useAuth();
 //   console.log("user: ", user.id);
 
-  const [enquiries, setEnquiries] = useState([]);
+  const [enquiries, setEnquiries] = useState();
   const navigate = useNavigate();
   //   const handleGoBack = () => {
   //     window.history.back();
@@ -68,6 +68,7 @@ export default function AllEnqueries() {
 
     if (user?.id) fetchEnquiries();
   }, [user?.id]);
+   if (!enquiries) return <p className="p-4 text-center ">Loading...</p>;
 
   return (
     <div className="container mx-auto p-4 mb-18">

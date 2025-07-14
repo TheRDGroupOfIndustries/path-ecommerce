@@ -5,14 +5,17 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { MdStar } from "react-icons/md";
 import toast from "react-hot-toast";
+import { useAuth } from "@/context/authContext";
 import { API_URL } from "@/lib/api.temp";
 import Loader from "@/components/Loader/Loader";
+
 const ProductDetail = () => {
   const { id } = useParams();
+  const {user}=useAuth();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [mainImageIndex, setMainImageIndex] = useState(0);
-  const [user, setUser] = useState(null);
+  const [seller, setSeller] = useState(null);
 
   const [referralCode, setReferralCode] = useState("");
   const [referralStep, setReferralStep] = useState("check"); // check | apply | applied
@@ -28,6 +31,7 @@ const ProductDetail = () => {
         const res = await axios.get(
           `${API_URL}/api/product/get-by-id/${id}`
         );
+        
         const found = res.data;
         const sellerId = found.sellerId;
 
@@ -37,7 +41,7 @@ const ProductDetail = () => {
         const userData = userRes.data.user;
 
         setProduct(found);
-        setUser(userData);
+        setSeller(userData);
         setMainImageIndex(0);
       } catch (err) {
         console.error("Failed to fetch product", err);
@@ -115,11 +119,16 @@ const ProductDetail = () => {
     }
 
     try {
-      // await axios.post(`${API_URL}/api/reviews/create`, {
-      //   productId: id,
-      //   rating: userRating,
-      //   comment: userReview,
-      // });
+
+      await axios.post("http://localhost:8000/api/review", {
+        productId: id,
+        rating: userRating,
+        comment: userReview,
+        userId:user?.id
+      });
+
+
+
 
       toast.success("Review submitted successfully!");
       setUserRating(0);
@@ -130,7 +139,12 @@ const ProductDetail = () => {
     }
   };
 
+ 
+  
+
+
   if (!product) return <Loader />;
+
 
   return (
     <div className="w-full mx-auto bg-white min-h-screen relative pb-16">
@@ -172,7 +186,7 @@ const ProductDetail = () => {
       {/* Product Info */}
       <div className="px-4 mb-4 flex flex-col gap-2">
         <p className="text-cyan-400 text-sm  underline underline-offset-2">
-          {user?.name}
+          {seller?.name}
         </p>
         <h1 className="text-3xl font-semibold text-gray-900 ">
           {product.name}

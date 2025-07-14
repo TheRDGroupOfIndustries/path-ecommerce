@@ -11,7 +11,7 @@ const Enquire = () => {
   const [user, setUser] = useState(null);
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const { id, type } = useParams();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -36,9 +36,9 @@ const Enquire = () => {
     fetchProperty();
   }, [id, type]);
   
-   const handleGoBack = () => {
-    window.history.back();
-  };
+  //  const handleGoBack = () => {
+  //   window.history.back();
+  // };
   
 
   return (
@@ -54,7 +54,7 @@ const Enquire = () => {
           //     navigate("/houses-plots");
           //   }
           // }}
-           onClick={handleGoBack}
+           onClick={()=>navigate(-1)}
         />
 
         <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-medium">

@@ -3,7 +3,6 @@ import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Loader from "@/components/Loader/Loader";
-import { Button } from "@/components/ui/button";
 import { API_URL } from "@/lib/api.env";
 import { useAuth } from "@/context/authContext";
 import toast from "react-hot-toast";
@@ -32,7 +31,7 @@ function Card({
   user_name: string;
   user_email: string;
 }) {
-  // const router =
+
   return (
     <div className="w-full min-h-48 h-auto rounded-2xl primary-bg relative overflow-hidden py-4 z-50">
       <div className="w-48 h-48 rounded-full absolute -right-10 -top-16 bg-[#6469F380] -z-50"></div>

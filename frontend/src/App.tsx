@@ -15,7 +15,6 @@ import MyOrders from "./pages/MyOrders";
 import Settings from "./pages/Settings";
 import EditProfile from "./pages/EditProfile";
 import TrackOrders from "./pages/TrackOrders";
-import ProductReviews from "./pages/ProductReviews";
 import ProtectedRoute from "./Auth/ProtectedRoute";
 import AllEnqueries from "./pages/AllEnqueries";
 import EnquiryDetail from "./pages/EnquiryDetail";
@@ -25,6 +24,7 @@ import ChangeEmail from "./pages/ChangeEmail";
 import ChangePassword from "./pages/ChangePassword";
 import MyReferrals from "./pages/MyReferrals";
 import NotFound from "./components/Loader/Not-Found";
+import ReviewsPage from "./pages/ReviewsPage";
 
 function App() {
   const location = useLocation();
@@ -45,7 +45,7 @@ function App() {
               fontSize: "14px", // Smaller text on mobile
               padding: "10px 16px",
               maxWidth: "90%", // Prevents overflow
-            }
+            },
           }}
         />
 
@@ -141,13 +141,14 @@ function App() {
             }
           />
           <Route
-            path="/product-reviews/:productId"
+            path="/reviews/:type/:id"
             element={
               <ProtectedRoute>
-                <ProductReviews />
+                <ReviewsPage />
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/all-enquires"
             element={
@@ -196,22 +197,16 @@ function App() {
               </ProtectedRoute>
             }
           />
-                    <Route
+          <Route
             path="/my-referrals"
             element={
               <ProtectedRoute>
                 <MyReferrals />
-               </ProtectedRoute>
+              </ProtectedRoute>
             }
           />
 
-        <Route
-            path="*"
-            element={
-              <NotFound />
-            }
-          />
-
+          <Route path="*" element={<NotFound />} />
         </Routes>
         {!hideNavbar && <BottomNavBar/>}
       </div>

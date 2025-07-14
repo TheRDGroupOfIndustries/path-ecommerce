@@ -1,7 +1,7 @@
 import { Request } from "express";
 import jwt from "jsonwebtoken";
 
-// ✅ Extended payload includes role
+//  Extended payload includes role
 export interface UserPayload {
   id: string;
   email: string;
@@ -12,7 +12,7 @@ interface Tokens {
   accessToken: string;
 }
 
-// ✅ Token generation with full payload
+//  Token generation with full payload
 export const generateTokens = (user: UserPayload): Tokens => {
   const payload: UserPayload = {
     id: user.id,
@@ -21,13 +21,13 @@ export const generateTokens = (user: UserPayload): Tokens => {
   };
 
   const accessToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
-    expiresIn: "1d", // Optional: set expiry
+    expiresIn: "1d",
   });
 
   return { accessToken };
 };
 
-// ✅ Token verification returns full payload
+// Token verification returns full payload
 export const verifyToken = (req: Request): UserPayload | false => {
   const authHeader = req.headers.authorization;
 

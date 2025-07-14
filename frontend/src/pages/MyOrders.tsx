@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context/authContext";
 import { ChevronLeft, Search, Star } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -10,6 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
+import { API_URL } from "@/lib/api.env";
 
 const MyOrderItem = ({
   date,
@@ -149,6 +151,34 @@ export default function MyOrders() {
         "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
     },
   ];
+
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(false)
+
+  const getOrders = async () => {
+    try {
+      setLoading(true)
+          const requests = await axios.get(`${API_URL}/api/users/get-orders`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    })
+
+    if (requests.status === 200) {
+      setData(requests.data.users.orders)
+    }
+    } catch (error) {
+      console.log(error);
+    }
+    finally {
+      setLoading(false)
+    }
+
+  }
+
+  useEffect(() => {
+    getOrders()
+  }, [])
 
   return (
     <div className="container mx-auto p-4 mb-16">

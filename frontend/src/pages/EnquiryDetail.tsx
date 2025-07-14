@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function EnquiryDetail() {
   const location = useLocation();
+  const navigate = useNavigate()
   const enquiryData = location.state?.enquiry;
   //   console.log("enquiryData: ",enquiryData);
 
@@ -12,15 +13,15 @@ export default function EnquiryDetail() {
   }
 
   const handleGoBack = () => {
-    window.history.back();
+    navigate(-1)
   };
 
-  //   const handleReplyViaGmail = () => {
-  //     const subject = encodeURIComponent(`Re: ${enquiryData.subject}`);
-  //     const body = encodeURIComponent(`Hello ${enquiryData.customerName},\n\nThank you for your enquiry.\n\n`);
-  //     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${enquiryData.email}&su=${subject}&body=${body}`;
-  //     window.open(gmailUrl, '_blank');
-  //   };
+    const handleReplyViaGmail = () => {
+      const subject = encodeURIComponent(`Re: ${enquiryData.subject}`);
+      const body = encodeURIComponent(`Hello ${enquiryData.customerName},\n\nThank you for your enquiry.\n\n`);
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${enquiryData.email}&su=${subject}&body=${body}`;
+      window.open(gmailUrl, '_blank');
+    };
 
   return (
     <div className="container mx-auto p-4 mb-18">
@@ -61,7 +62,7 @@ export default function EnquiryDetail() {
         {/* Reply Button */}
         <div className="pt-4 flex justify-end  w-full">
           <Button
-            // onClick={handleReplyViaGmail}
+            onClick={handleReplyViaGmail}
             className=" bg-blue-900 text-white py-3 rounded-lg "
           >
             Reply via Gmail

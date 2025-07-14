@@ -91,7 +91,7 @@ const ReviewsPage = () => {
           onClick={() => navigate(-1)}
         />
         <h2 className="flex-1 text-xl text-center">
-          {type.charAt(0).toUpperCase() + type.slice(1)} Reviews: {entityInfo.name}
+          {entityInfo.name}
         </h2>
       </div>
 

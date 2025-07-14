@@ -25,6 +25,8 @@ import ChangePassword from "./pages/ChangePassword";
 import MyReferrals from "./pages/MyReferrals";
 import NotFound from "./components/Loader/Not-Found";
 import ReviewsPage from "./pages/ReviewsPage";
+import SearchPage from "./components/Search/SearchPage";
+import ForgetPass from "./pages/Forget-Password";
 
 function App() {
   const location = useLocation();
@@ -153,7 +155,7 @@ function App() {
             path="/all-enquires"
             element={
               <ProtectedRoute>
-                <AllEnqueries/>
+                <AllEnqueries />
               </ProtectedRoute>
             }
           />
@@ -161,7 +163,7 @@ function App() {
             path="/enquiry-detail/:id"
             element={
               <ProtectedRoute>
-                <EnquiryDetail/>
+                <EnquiryDetail />
               </ProtectedRoute>
             }
           />
@@ -169,7 +171,7 @@ function App() {
             path="/announcements"
             element={
               <ProtectedRoute>
-                <Announcements/>
+                <Announcements />
               </ProtectedRoute>
             }
           />
@@ -177,7 +179,7 @@ function App() {
             path="/my-reviews"
             element={
               <ProtectedRoute>
-                <ReviewsList/>
+                <ReviewsList />
               </ProtectedRoute>
             }
           />
@@ -185,7 +187,7 @@ function App() {
             path="/change-email"
             element={
               <ProtectedRoute>
-                <ChangeEmail/>
+                <ChangeEmail />
               </ProtectedRoute>
             }
           />
@@ -193,10 +195,11 @@ function App() {
             path="/change-password"
             element={
               <ProtectedRoute>
-                <ChangePassword/>
+                <ChangePassword />
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/my-referrals"
             element={
@@ -206,9 +209,34 @@ function App() {
             }
           />
 
+          <Route
+            path="/search/:type"
+            element={
+              <ProtectedRoute>
+                <SearchPage />
+              </ProtectedRoute>
+            }
+          />
+
+                    <Route
+            path="/search/:type"
+            element={
+              <ProtectedRoute>
+                <SearchPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+                <ForgetPass />
+            }
+          />
+
+
           <Route path="*" element={<NotFound />} />
         </Routes>
-        {!hideNavbar && <BottomNavBar/>}
+        {!hideNavbar && <BottomNavBar />}
       </div>
     </AuthProvider>
   );

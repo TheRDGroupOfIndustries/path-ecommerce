@@ -17,6 +17,15 @@ export const getById = async (req: Request, res: Response) => {
     res.status(201).json(products)
 }
 
+
+
+export const getSearchResults = async (req: Request, res: Response) => {
+    const {value} = req.params
+    const products = await productModel.getSearchResults(value)
+    res.status(201).json(products)
+}
+
+
 export const getByCategory = async (req: Request, res: Response) => {
   try {
     const { category } = req.params;

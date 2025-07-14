@@ -33,6 +33,22 @@ export const userById = async (req: Request, res: Response) => {
   }
 };
 
+export const userByEmail = async (req: Request, res: Response) => {
+  const { email } = req.params;
+  console.log(email)
+  try {
+    const user = await userModel.userByGmail(email);
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+    return res.status(200).json({ user });
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
 export const createUser = async (req: Request, res: Response) => {
   const { name, email, password, confirmPassword, phone, role } = req.body;
 
@@ -73,6 +89,22 @@ export const createUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const updatePassword = async (req: Request, res: Response) => {
+  const { email } = req.params;
+  const {password} = req.body;
+
+  try {
+      const newPass = await bcrypt.hash(password, 10);
+    await userModel.updatePassword(email, newPass);
+
+    return res.status(200).json({ message: "User updated successfully" });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 
 export const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -200,6 +232,22 @@ export const getMe = async (req: Request, res: Response) => {
     return res.status(200).json({ user: userSafe });
   } catch (error) {
     console.error("Error in getMe:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getOrders = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized: user id plz?" });
+    }
+
+    const user = await userModel.getOrders(userId);
+    return res.status(200).json({ user: user });
+  } catch (error) {
+    console.error("Error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };

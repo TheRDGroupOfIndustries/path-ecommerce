@@ -38,10 +38,15 @@ import { Search } from "lucide-react";
 import React from "react";
 import { useAuth } from "@/context/authContext";
 import PROIFLE_IMAGE from "@/assets/user_img.png";
-const ProfileHeader = () => {
-  const { user } = useAuth(); 
-  
+import { useNavigate } from "react-router-dom";
 
+
+const ProfileHeader = ({type}: {
+  type?: string
+}) => {
+  const { user } = useAuth(); 
+
+  const navigation = useNavigate()
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -59,9 +64,9 @@ const ProfileHeader = () => {
           </div>
         </div>
 
-        <div className="w-10 h-10 primary-bg text-white rounded-full flex items-center justify-center">
+        <button onClick={() => navigation(`/search/${type}`)} className="w-10 h-10 primary-bg text-white rounded-full flex items-center justify-center">
           <Search size={20} />
-        </div>
+        </button>
       </div>
 
       <div className="relative w-2/3 mt-4">

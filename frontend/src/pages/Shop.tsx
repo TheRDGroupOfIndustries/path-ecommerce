@@ -60,7 +60,7 @@ const Shop = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <ProfileHeader />
+      <ProfileHeader type="products" />
 
       {trendy.length > 0 && (
         <Carousel

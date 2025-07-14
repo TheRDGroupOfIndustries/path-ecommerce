@@ -14,6 +14,12 @@ export const allMarketplaces = async (req: Request, res: Response) => {
     }
 };
 
+export const getSearchResults = async (req: Request, res: Response) => {
+    const {value} = req.params
+    const products = await marketPlaceModel.getSearchResults(value)
+    res.status(201).json(products)
+}
+
 export const marketplaceByCat = async (req: Request, res: Response) => {
     const { category } = req.params;
     try {

@@ -11,6 +11,17 @@ route.get("/get-by-category/:category", async (req, res) => {
   await propertyController.propertyByCat(req, res);
 });
 
+
+route.get("/search/:value", async (req, res) => {
+  try {
+    await propertyController.getSearchResults(req, res);
+  } catch (error) {
+    console.error("Error in getById:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
 route.get("/get-by-id/:id", async (req, res) => {
   await propertyController.propertiesById(req, res);
 });

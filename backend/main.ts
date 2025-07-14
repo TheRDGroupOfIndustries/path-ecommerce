@@ -16,6 +16,8 @@ import kycRoute from "./routes/kyc.route.js"
 import announcementRoute from "./routes/announcement.route.js"
 import associateRoute from "./routes/getAssociateProfile.route.js"
 import reviewRoute from "./routes/review.route.js"
+import verify from "./routes/sendotp.route.js"
+
 
 const app = express();
 const PORT = 8000;
@@ -61,6 +63,7 @@ app.use("/api/kyc",kycRoute);
 app.use("/api/announcement",announcementRoute);
 app.use("/api/associate",associateRoute);  //profile
 app.use("/api/review",reviewRoute);
+app.use("/api/verification", verify)
 
 // Error handling for CORS
 import type { Request, Response, NextFunction } from 'express';

@@ -15,6 +15,18 @@ route.get("/get-by-id/:id", async (req: Request, res: Response) => {
   await userController.userById(req, res);
 });
 
+
+route.get("/get-orders", isAuthenticated, async (req: Request, res: Response) => {
+  await userController.getOrders(req, res);
+});
+
+route.get("/get-by-email/:email", async (req: Request, res: Response) => {
+  await userController.userByEmail(req, res);
+});
+
+route.put("/update-password/:email", async (req: Request, res: Response) => {
+  await userController.updatePassword(req, res)})
+
 //  Create a new user
 
 route.post("/create-user", upload.single("image"), async (req: Request, res: Response) => {

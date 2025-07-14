@@ -15,6 +15,16 @@ route.get("/get-by-id/:id", async (req, res) => {
   await marketPlaceController.marketplaceById(req, res);
 });
 
+route.get("/search/:value", async (req, res) => {
+  try {
+    await marketPlaceController.getSearchResults(req, res);
+  } catch (error) {
+    console.error("Error in getById:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
 route.get("/get-by-user/:userId", async (req, res) => {
   await marketPlaceController.marketplaceByUser(req, res);
 });

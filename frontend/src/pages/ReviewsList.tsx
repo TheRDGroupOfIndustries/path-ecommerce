@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context/authContext";
 import { API_URL } from "@/lib/api.env";
 import axios from "axios";
-import { ChevronLeft, Star } from "lucide-react";
+import { ChevronLeft, LucideArrowRight, Star } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -12,11 +12,11 @@ const ProductCard = ({ name, images, avgRating, totalReviews, type, id}) => {
 const image = Array.isArray(images) ? images[0] : images;
   return (
     <Card
-      className="rounded-lg mb-4 bg-gray-100 min-h-36 border-none shadow-none cursor-pointer"
+      className="rounded-lg mb-4 bg-gray-100 min-h-28 border-none shadow-none cursor-pointer"
        onClick={() => navigate(`/reviews/${type}/${id}`)}
     >
       <CardContent className="flex items-center justify-between px-4">
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col justify-between gap-1">
           <h3 className="text-base font-semibold text-black">{name}</h3>
 
           {/* Rating */}
@@ -29,12 +29,13 @@ const image = Array.isArray(images) ? images[0] : images;
                 }`}
               />
             ))}
-            <span className="text-xs text-blue-600">
-             ({avgRating.toFixed(1)} / 5) • {totalReviews} review
-{totalReviews > 1 ? "s" : ""}
+            <span className="text-xs text-yellow-400">
+             ({avgRating.toFixed(1)} / 5)
             </span>
           </div>
-          <p className="text-sm">{id}</p>
+          <p className="text-lg mt-8">{totalReviews} Review
+{totalReviews > 1 ? "s" : ""}</p>
+          <p className="text-base text-blue-600 mt-0 font-sans flex flex-row  items-center gap-1">View <LucideArrowRight size={16} /></p>
         </div>
 
         <img

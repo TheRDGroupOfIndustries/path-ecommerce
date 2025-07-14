@@ -29,6 +29,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
       !formData.name ||
       !formData.email ||
       !formData.message ||
+      !formData.subject ||
       !formData.phone
     ) {
       setResponseMsg("Please fill in all required fields.");

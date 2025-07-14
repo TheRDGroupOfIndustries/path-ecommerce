@@ -9,6 +9,46 @@ export const marketplaceByCat = async (category: string) =>
 export const marketplaceById = async (id: string) =>
   db.marketplace.findUnique({ where: { id } });
 
+
+export const getSearchResults = async (query: string) => {
+    return await db.marketplace.findMany({
+        where: {
+            OR: [
+                {
+                    name: {
+                        contains: query,
+                        mode: "insensitive",
+                    }
+                },
+                {
+                    category: {
+                        contains: query,
+                        mode: "insensitive",
+                    }
+                },
+                {
+                    description: {
+                        contains: query,
+                        mode: 'insensitive'
+                    }
+                },
+                {
+                    createdBy: {
+                        name: {
+                            contains: query,
+                            mode: 'insensitive'
+                        }
+                    }
+                }
+            ]
+        },
+        include: {
+            createdBy: true
+        }
+    })
+}
+
+
 export const createMarketplace = async (data: CreateMarketplaceInput) => {
     await db.marketplace.create({
         data: {

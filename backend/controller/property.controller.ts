@@ -15,6 +15,12 @@ export const allProperty = async (req: Request, res: Response) => {
     }
 };
 
+export const getSearchResults = async (req: Request, res: Response) => {
+    const {value} = req.params
+    const products = await property.getSearchResults(value)
+    res.status(201).json(products)
+}
+
 export const propertyByCat = async (req: Request, res: Response) => {
     const { category } = req.params;
     try {

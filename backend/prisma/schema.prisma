@@ -182,18 +182,20 @@ model ReferralTransaction {
 }
 
 model Order {
-  id          String   @id @default(cuid())
-  productId   String
-  userId      String
-  quantity    Int
-  totalAmount Float
-  status      String
-  address     String
-  paymentMode String   @default("COD")
-  createdAt   DateTime @default(now())
-  product     Products? @relation(fields: [productId], references: [id])
-  user        User?     @relation(fields: [userId], references: [id])
+  id            String   @id @default(cuid())
+  productId     String
+  userId        String
+  quantity      Int
+  totalAmount   Float
+  status        String
+  address       String
+  paymentMode   String   @default("COD")
+  referralCode  String?  
+  createdAt     DateTime @default(now())
+  product       Products? @relation(fields: [productId], references: [id])
+  user          User?     @relation(fields: [userId], references: [id])
 }
+
 
 model CartItem {
   id        String   @id @default(cuid())

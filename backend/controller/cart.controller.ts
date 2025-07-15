@@ -73,6 +73,14 @@ export const getCartItems = async (req: Request, res: Response): Promise<void> =
             description: true,
             ratings: true,
             features: true,
+            seller: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                imageUrl: true,
+              },
+            },
           },
         },
       },
@@ -84,3 +92,4 @@ export const getCartItems = async (req: Request, res: Response): Promise<void> =
     res.status(500).json({ message: "Failed to fetch cart items" });
   }
 };
+

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import * as userModel from "../model/user.model.js";
 import bcrypt from "bcrypt";
-import { generateTokens } from "../utils/jwt.js";
+import { generateTokens, verifyTokenFromHeader } from "../utils/jwt.js";
 import * as associateModel from "../model/associate.model.js";
 import { Role } from "@prisma/client";
 import { uploadBufferToCloudinary } from "../utils/uploadToCloudinary.js";
@@ -107,9 +107,13 @@ export const updatePassword = async (req: Request, res: Response) => {
 
 
 export const updateUser = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  let { id } = req.params;
+  if (req.headers.authorization) {
+    const data = verifyTokenFromHeader(req.headers.authorization as string)
+    // console.log(data?.id)
+    id = data?.id as string
+  }
   const body = req.body;
-
   try {
     if (body.password) {
       body.password = await bcrypt.hash(body.password, 10);
@@ -120,7 +124,10 @@ export const updateUser = async (req: Request, res: Response) => {
       body.imageUrl = imageUrl;
     }
 
-    await userModel.updateUser(id, body);
+    if (!id) {
+      return res.status(400).json({error: "No id found"})
+    }
+      await userModel.updateUser(id, body);
 
     return res.status(200).json({ message: "User updated successfully" });
   } catch (error) {

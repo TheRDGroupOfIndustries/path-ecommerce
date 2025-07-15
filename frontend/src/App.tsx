@@ -28,11 +28,14 @@ import ReviewsPage from "./pages/ReviewsPage";
 import SearchPage from "./components/Search/SearchPage";
 import ForgetPass from "./pages/Forget-Password";
 import MyCart from "./pages/MyCart";
+import ChangeAddress from "./pages/ChangeAddress";
+import BuyNow from "./pages/BuyNow";
+import Thanks from "./pages/Thanks";
 
 function App() {
   const location = useLocation();
 
-  const hiddenPaths = ["/enquire", "/login", "/signup", "/product-detail"];
+  const hiddenPaths = ["/enquire", "/login", "/signup", "/product-detail", "/thanks", "/forgot-password", "/buy-now", "/my-cart", "/change-address"];
   const hideNavbar = hiddenPaths.some((path) =>
     location.pathname.startsWith(path)
   );
@@ -219,14 +222,6 @@ function App() {
             }
           />
 
-                    <Route
-            path="/search/:type"
-            element={
-              <ProtectedRoute>
-                <SearchPage />
-              </ProtectedRoute>
-            }
-          />
           <Route
             path="/forgot-password"
             element={
@@ -238,6 +233,34 @@ function App() {
             element={
                 <MyCart />
             }
+          />
+
+        <Route
+          path="/thanks"
+          element={
+            <ProtectedRoute>
+              <Thanks />
+            </ProtectedRoute>
+          }
+          />
+
+
+          <Route
+          path="/buy-now/:id"
+          element={
+            <ProtectedRoute>
+              <BuyNow />
+            </ProtectedRoute>
+          }
+          />
+
+          <Route
+          path="/change-address/:address"
+          element={
+            <ProtectedRoute>
+              <ChangeAddress />
+            </ProtectedRoute>
+          }
           />
 
 

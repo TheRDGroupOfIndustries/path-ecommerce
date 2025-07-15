@@ -3,6 +3,7 @@ import { ChevronLeft, IndianRupee } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CartItemCard from "@/components/CartItemCard/CartItemCard";
+import ShadeBtn from "@/components/ui/ShadeBtn";
 
 export default function MyCart() {
   const [cartItems, setCartItems] = useState([
@@ -84,9 +85,7 @@ export default function MyCart() {
           <p className="text-sm text-black">Total Items - {totalItems}</p>
 
           {/* CTA Button */}
-          <Button className="w-full bg-indigo-200 hover:bg-blue-300 text-indigo-900 py-5 rounded-lg text-xl">
-            Proceed To Buy
-          </Button>
+          <ShadeBtn action={() => {}} title="Proceed To Buy"/>
         </div>
 
         <div className="w-full h-px bg-neutral-400 rounded"></div>

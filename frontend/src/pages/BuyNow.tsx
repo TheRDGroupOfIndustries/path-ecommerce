@@ -7,6 +7,7 @@ import { API_URL } from "@/lib/api.env";
 import { useAuth } from "@/context/authContext";
 import toast from "react-hot-toast";
 import ShadeBtn from "@/components/ui/ShadeBtn";
+import CartItemCard from "@/components/CartItemCard/CartItemCard";
 
 
 
@@ -17,7 +18,24 @@ function BuyNow() {
   const [PillsData, setPills] = useState<string[]>();
   const [usedCardData, setUsedCardData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [address, setAddress] = useState<string | null>(null)
+  const [name, setName] = useState("")
 
+  async function GetAddress() {
+    const req = await axios.get(`${API_URL}/api/users/me`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    })
+    if (req.status === 200) {
+      setName(req.data.user.name)
+      setAddress(req.data.user.address)
+    }
+  }
+
+  useEffect(() => {
+    GetAddress()
+  }, [])
 
   if (loading) {
     return <Loader />;
@@ -36,10 +54,24 @@ function BuyNow() {
       {/* Selected address */}
       <div className="px-4 py-2 pb-6 border-b-2 border-gray-300">
         <h2 className="text-2xl font-black text-black mb-2 font-sans">
-          Delivering to Riya Verma
+          Delivering to {name}
         </h2>
-        <p className="text-lg font-normal font-sans text-gray-700">1745 Albany Road, McCulloughview 86420, Poland, (926) 710-3357 x4276</p>
-        <p className="text-sm font-normal mt-1 font-sans text-sky-600">Change Address?</p>
+        
+        {
+          address ? (
+
+            <>
+          <p className="text-lg font-normal font-sans text-gray-700">{address}</p>
+          <button onClick={() => navigate(`/change-address/${btoa(address)}`)} className="text-sm font-normal mt-1 font-sans text-sky-600">Change Address?</button>
+          </> 
+        )
+          :  (
+            <>
+                      <p className="text-lg font-normal font-sans text-gray-700">No Address Found</p>
+          <button onClick={() => navigate(`/change-address/${btoa(address)}`)} className="text-sm font-normal mt-1 font-sans text-sky-600">Add Address</button>
+          </>
+          )
+        }
       </div>
 
       {/* Payment methods */}
@@ -63,10 +95,14 @@ function BuyNow() {
                 <h2 className="text-2xl font-bold font-sans text-black mb-2">
           Items
         </h2>
+
+        {/* <CartItemCard 
+        item={}
+        /> */}
       </div>
 
       <div className="fixed bottom-4 w-full px-4">
-        <ShadeBtn title="Place Order" action={""}/>
+        <ShadeBtn title="Place Order" action={() => {}}/>
       </div>
     </div>
   );

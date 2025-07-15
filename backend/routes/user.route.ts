@@ -20,6 +20,12 @@ route.get("/get-orders", isAuthenticated, async (req: Request, res: Response) =>
   await userController.getOrders(req, res);
 });
 
+route.put("/update-auth-user", isAuthenticated, async (req: Request, res: Response) => {
+  await userController.updateUser(req, res);
+});
+
+
+
 route.get("/get-by-email/:email", async (req: Request, res: Response) => {
   await userController.userByEmail(req, res);
 });
@@ -37,6 +43,7 @@ route.post("/create-user", upload.single("image"), async (req: Request, res: Res
 route.put("/update-user/:id", upload.single("image"), async (req: Request, res: Response) => {
   await userController.updateUser(req, res);
 });
+
 
 //  Delete user
 route.delete("/delete-user/:id", async (req: Request, res: Response) => {

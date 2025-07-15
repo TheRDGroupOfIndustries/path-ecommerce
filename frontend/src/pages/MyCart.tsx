@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import CartItemCard from "@/components/CartItemCard/CartItemCard";
 import { API_URL } from "@/lib/api.env";
 import Loader from "@/components/Loader/Loader";
+import ShadeBtn from "@/components/ui/ShadeBtn";
 
 export default function MyCart() {
   const [cartItems, setCartItems] = useState([]);
@@ -144,9 +145,10 @@ export default function MyCart() {
           </div>
           <p className="text-sm text-black">Total Items - {totalItems}</p>
 
-          <Button className="w-full bg-indigo-200 hover:bg-blue-300 text-indigo-900 py-5 rounded-lg text-xl">
-            Proceed To Buy
-          </Button>
+
+          {/* CTA Button */}
+          <ShadeBtn action={() => {}} title="Proceed To Buy"/>
+
         </div>
 
         <div className="w-full h-px bg-neutral-400 rounded"></div>

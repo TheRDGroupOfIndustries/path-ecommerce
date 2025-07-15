@@ -27,6 +27,7 @@ import NotFound from "./components/Loader/Not-Found";
 import ReviewsPage from "./pages/ReviewsPage";
 import SearchPage from "./components/Search/SearchPage";
 import ForgetPass from "./pages/Forget-Password";
+import MyCart from "./pages/MyCart";
 
 function App() {
   const location = useLocation();
@@ -230,6 +231,12 @@ function App() {
             path="/forgot-password"
             element={
                 <ForgetPass />
+            }
+          />
+          <Route
+            path="/my-cart"
+            element={
+                <MyCart />
             }
           />
 

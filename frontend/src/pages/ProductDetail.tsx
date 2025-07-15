@@ -123,9 +123,7 @@ const ProductDetail = () => {
     }
 
     try {
-
       await axios.post(`${API_URL}/api/review`, {
-
         productId: id,
         rating: userRating,
         comment: userReview,
@@ -138,6 +136,39 @@ const ProductDetail = () => {
     } catch (error) {
       console.error("Failed to submit review:", error);
       toast.error("Something went wrong. Please try again.");
+    }
+  };
+
+  const handleAddToCart = async () => {
+    if (!user) {
+      toast.error("Please login to add items to your cart.");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        `${API_URL}/api/cart/add`,
+        {
+          productId: id,
+          quantity: 1,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      
+      console.log("res: ", res);
+
+      toast.success("Item added to cart!");
+    } catch (error) {
+      console.error("Add to cart failed:", error);
+      if (error.response?.status === 401) {
+        toast.error("Unauthorized. Please login.");
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -194,20 +225,6 @@ const ProductDetail = () => {
           <Star className="w-4 h-4 fill-current text-cyan-400" />
         </div>
         <p className="text-gray-600 text-sm mb-2">{product.description}</p>
-
-        {/* <div className="mt-2 text-lg font-semibold text-cyan-700">
-          ₹{" "}
-          {(
-            product.price -
-            (product.price * (product.discount + referralDiscount)) / 100
-          ).toFixed(0)}
-          <span className="text-sm text-gray-500 line-through ml-2">
-            ₹ {product.price}
-          </span>
-          <span className="ml-2 text-red-600 font-medium">
-            ({product.discount + referralDiscount}% OFF)
-          </span>
-        </div> */}
 
         <div className="mt-2 text-2xl font-semibold text-cyan-700">
           ₹{" "}
@@ -386,7 +403,10 @@ const ProductDetail = () => {
             Buy Now
           </Button>
 
-          <Button className="bg-transparent px-10 py-4 rounded-full text-base  font-medium shadow  border-2">
+          <Button
+            className="bg-transparent px-10 py-4 rounded-full text-base  font-medium shadow  border-2"
+            onClick={handleAddToCart}
+          >
             Add to Cart
           </Button>
         </div>

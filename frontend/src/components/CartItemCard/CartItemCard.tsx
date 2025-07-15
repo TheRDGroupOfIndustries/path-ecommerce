@@ -13,6 +13,8 @@ const CartItemCard = ({ item, updateQuantity, price, discount }: {
   setQuantity: any
 }) => {
 
+  const dis = discount ? discount.split("-")[1] : 0
+
   return (
     <Card className="w-full shadow-none border-none" key={item.id}>
       <CardContent className=" flex gap-6 px-0">
@@ -80,14 +82,14 @@ const CartItemCard = ({ item, updateQuantity, price, discount }: {
 
           {/* Price & discount */}
           <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-gray-900">
-              ₹{item.finalPrice }
+            <span className="text-base font-bold text-gray-900">
+              ₹ {" "} {price}
             </span>
-            <span className="text-gray-400 text-sm line-through">
+            <span className="text-gray-400 text-xs line-through">
               ₹{item.price }
             </span>
-            <span className="text-sm text-orange-300 ">
-              {item.discount}%OFF
+            <span className="text-xs text-orange-300 ">
+              {item.discount + Number(dis)}%OFF
             </span>
           </div>
         </div>

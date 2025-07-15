@@ -67,7 +67,20 @@ function BuyNow() {
 
 
   const placeOrder = async () => {
-    // const res = await axios.post()
+    const res = await axios.post(`${API_URL}/api/order/buynow`, {
+      productId: id,
+      paymentMode: "COD",
+      referralCode: code || "",
+      quantity: quantity
+    }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    })
+
+    if (res.status === 201) {
+      navigate("/thanks")
+    }
   }
 
   if (loading) {
@@ -157,7 +170,7 @@ function BuyNow() {
       </div>
 
       <div className="fixed bottom-4 w-full px-4">
-        <ShadeBtn title="Place Order" action={() => {}} />
+        <ShadeBtn title="Place Order" action={() => placeOrder()} />
       </div>
     </div>
   );

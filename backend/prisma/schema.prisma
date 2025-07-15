@@ -39,6 +39,7 @@ model User {
 
   orders        Order[]
   kyc           Kyc?
+  cartItems     CartItem[]
 }
 
 model Marketplace {
@@ -137,7 +138,8 @@ model Products {
   review   Review[]
   Faq      Faq[]
   orders   Order[]
-  transactions ReferralTransaction[] // Added for back relation (optional)
+  transactions ReferralTransaction[] 
+  cartItems CartItem[] @relation("ProductCartItems")
 }
 
 model Associate {
@@ -191,6 +193,19 @@ model Order {
   product     Products? @relation(fields: [productId], references: [id])
   user        User?     @relation(fields: [userId], references: [id])
 }
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Products @relation("ProductCartItems", fields: [productId], references: [id], onDelete: Cascade)
+}
+
+
 
 model Kyc {
   id              String   @id @default(cuid())

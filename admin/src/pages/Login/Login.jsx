@@ -21,19 +21,28 @@ const Login = () => {
       [name]: value,
     }));
   };
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
   e.preventDefault();
   try {
     const response = await postData("/users/login", formData);
+
+    // Get token and user
     const token = response.token?.accessToken || "";
     const user = response.user || {};
 
+    console.log("JWT Token:", token);
+    console.log("User Info:", user);
+
+    //  Save to localStorage
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
 
+    //  Decode and print token payload
     const decoded = jwtDecode(token);
-    console.log("Decoded Token:", decoded);
-    console.log("User Role from Token:", decoded.role);
+    console.log("Decoded Token Payload:", decoded);
+    console.log("User ID:", decoded.id);
+    console.log("User Email:", decoded.email);
+    console.log("User Role:", decoded.role);
 
     context.setAlertBox({
       open: true,
@@ -44,25 +53,26 @@ const handleSubmit = async (e) => {
     if (user.role === "SELLER") {
       try {
         const kyc = await fetchDataFromApi("/kyc/my-kyc");
+        console.log("KYC Response:", kyc);
 
-        // If KYC exists, 
         if (!kyc || !kyc.status) {
-          window.location.href = "/kycc"; 
+          window.location.href = "/kycc";
         } else if (kyc.status === "PENDING") {
-          window.location.href = "/kyc-status"; 
+          window.location.href = "/kyc-status";
         } else if (kyc.status === "APPROVED") {
-           window.location.href = "/dashboard"; 
+          window.location.href = "/dashboard";
         } else {
-          window.location.href = "/kyc-status?rejected=true"; 
+          window.location.href = "/kyc-status?rejected=true";
         }
       } catch (kycError) {
+        console.error("Error fetching KYC:", kycError);
+
         if (
           kycError?.response?.status === 404 &&
           kycError?.response?.data?.msg === "No KYC found."
         ) {
-          window.location.href = "/kycc"; 
+          window.location.href = "/kycc";
         } else {
-          console.error("Error fetching KYC:", kycError);
           context.setAlertBox({
             open: true,
             msg: "Error fetching KYC",
@@ -71,7 +81,7 @@ const handleSubmit = async (e) => {
         }
       }
     } else {
-       window.location.href = "/dashboard";  
+      window.location.href = "/dashboard";
     }
   } catch (error) {
     console.error("Login failed:", error);
@@ -82,7 +92,6 @@ const handleSubmit = async (e) => {
     });
   }
 };
-
 
   return (
     <div className="login-container">

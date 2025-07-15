@@ -18,6 +18,7 @@ import associateRoute from "./routes/getAssociateProfile.route.js"
 import reviewRoute from "./routes/review.route.js"
 import verify from "./routes/sendotp.route.js"
 import cartRoute from "./routes/cart.route.js"
+import orderRoute from "./routes/order.route.js"
 
 
 const app = express();
@@ -66,6 +67,7 @@ app.use("/api/associate",associateRoute);  //profile
 app.use("/api/review",reviewRoute);
 app.use("/api/verification", verify)
 app.use("/api/cart",cartRoute)
+app.use("/api/order",orderRoute);
 
 // Error handling for CORS
 import type { Request, Response, NextFunction } from 'express';

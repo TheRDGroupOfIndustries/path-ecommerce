@@ -174,3 +174,50 @@ export const getSellerEnquiries = async (req: Request, res: Response): Promise<v
     });
   }
 };
+
+
+//get all order for the seller 
+export const getSellerOrders = async (req: Request, res: Response) => {
+  const sellerId = req.user?.id;
+
+  if (!sellerId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const sellerProductsWithOrders = await db.products.findMany({
+      where: {
+        sellerId: sellerId, 
+      },
+      select: {
+        id: true,
+        name: true,
+        images: true,
+        orders: {
+          select: {
+            id: true,
+            userId: true,
+            quantity: true,
+            totalAmount: true,
+            status: true,
+            address: true,
+            paymentMode: true,
+            createdAt: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return res.status(200).json({ orders: sellerProductsWithOrders });
+  } catch (error) {
+    console.error("Error fetching seller orders:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};

@@ -10,7 +10,7 @@ router.post("/add", isAuthenticated, async (req, res) => {
 
 router.get("/", isAuthenticated, getCartItems);
 
-router.put("/cart/update-quantity", isAuthenticated, async (req, res) => {
+router.put("/update-quantity", isAuthenticated, async (req, res) => {
   await updateCartItemQuantity(req, res);
 });
 

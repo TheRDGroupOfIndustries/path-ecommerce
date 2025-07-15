@@ -31,6 +31,8 @@ const ProductDetail = () => {
         const res = await axios.get(`${API_URL}/api/product/get-by-id/${id}`);
 
         const found = res.data;
+        // console.log("found: ",found);
+        
         const sellerId = found.sellerId;
 
         const userEndpoint = `${API_URL}/api/users/get-by-id/${sellerId}`;

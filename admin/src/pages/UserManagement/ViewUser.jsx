@@ -13,6 +13,9 @@ const ViewUser = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const USERS_PER_PAGE = 5;
 
   const roles = ["All", "ADMIN", "SELLER", "USER", "ASSOCIATE"];
 
@@ -43,7 +46,19 @@ const ViewUser = () => {
         ? users
         : users.filter((user) => user.role === selectedRole);
     setFilteredUsers(filtered);
+    setCurrentPage(1); // Reset to first page on filter change
   }, [selectedRole, users]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * USERS_PER_PAGE,
+    currentPage * USERS_PER_PAGE
+  );
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
 
   const handleRoleFilter = (e) => setSelectedRole(e.target.value);
 
@@ -137,7 +152,7 @@ const ViewUser = () => {
         <div className="no-products"><p>No User found.</p></div>
       ) : isMobile ? (
         <div className="user-list">
-          {filteredUsers.map((user) => (
+          {paginatedUsers.map((user) => (
             <div className="user-card" key={user.id}>
               <img src={user.imageUrl || "/placeholder.svg"} alt="User" className="user-photo" />
               <div style={{ flex: 1 }}>
@@ -174,6 +189,21 @@ const ViewUser = () => {
               </div>
             </div>
           ))}
+          
+          {/* Pagination Controls */}
+          <div className="pagination-controls">
+            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>&lt; Prev</button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                className={currentPage === i + 1 ? "active" : ""}
+                onClick={() => handlePageChange(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next &gt;</button>
+          </div>
         </div>
       ) : (
         <div className="table-container">
@@ -189,7 +219,7 @@ const ViewUser = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((user, index) => (
+              {paginatedUsers.map((user, index) => (
                 <tr key={user.id}>
                   <td>
                     <img
@@ -228,6 +258,21 @@ const ViewUser = () => {
               ))}
             </tbody>
           </table>
+
+          {/* Pagination Controls */}
+          <div className="pagination-controls">
+            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>&lt; Prev</button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                className={currentPage === i + 1 ? "active" : ""}
+                onClick={() => handlePageChange(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next &gt;</button>
+          </div>
         </div>
       )}
     </div>

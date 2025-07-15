@@ -5,6 +5,7 @@ import "./AdminKycList.css";
 const AdminKYCList = () => {
   const [kycs, setKycs] = useState([]);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 700);
 
   useEffect(() => {
     const fetchKycs = async () => {
@@ -15,8 +16,13 @@ const AdminKYCList = () => {
         console.error("Failed to fetch KYC data:", err);
       }
     };
-
     fetchKycs();
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 700);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handleApproval = async (id, status) => {
@@ -42,52 +48,99 @@ const AdminKYCList = () => {
   return (
     <div className="admin-kyc-wrapper">
       <h3 className="admin-kyc-title">All KYC Submissions</h3>
-      <div className="table-container">
-        <table className="admin-kyc-table">
-          <thead>
-            <tr>
-              <th>Full Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Address</th>
-              <th>Aadhar Number</th>
-              <th>PAN Number</th>
-              <th>Salary Slip</th>
-              <th>Passport</th>
-              <th>Bank Statement</th>
-              <th>Aadhar Front</th>
-              <th>Aadhar Back</th>
-              <th>PAN Card</th>
-              <th>Profile Image</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {kycs.map((kyc) => (
-              <tr key={kyc.id}>
-                <td>{kyc.fullName}</td>
-                <td>{kyc.email}</td>
-                <td>{kyc.phoneNumber}</td>
-                <td>{kyc.address}</td>
-                <td>{kyc.aadharNumber}</td>
-                <td>{kyc.panNumber}</td>
-                {["salarySlip", "passport", "bankStatement", "aadharFront", "aadharBack", "panCard", "image"].map((field) => (
-                  <td key={field}>
-                    {kyc[field] ? (
-                      <span className="view-link" onClick={() => handlePreview(kyc[field])}>
-                        View
-                      </span>
+      {!isMobile && (
+        <div className="table-container">
+          <table className="admin-kyc-table">
+            <thead>
+              <tr>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Aadhar Number</th>
+                <th>PAN Number</th>
+                <th>Salary Slip</th>
+                <th>Passport</th>
+                <th>Bank Statement</th>
+                <th>Aadhar Front</th>
+                <th>Aadhar Back</th>
+                <th>PAN Card</th>
+                <th>Profile Image</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {kycs.map((kyc) => (
+                <tr key={kyc.id}>
+                  <td>{kyc.fullName}</td>
+                  <td>{kyc.email}</td>
+                  <td>{kyc.phoneNumber}</td>
+                  <td>{kyc.address}</td>
+                  <td>{kyc.aadharNumber}</td>
+                  <td>{kyc.panNumber}</td>
+                  {["salarySlip", "passport", "bankStatement", "aadharFront", "aadharBack", "panCard", "image"].map((field) => (
+                    <td key={field}>
+                      {kyc[field] ? (
+                        <span className="view-link" onClick={() => handlePreview(kyc[field])}>
+                          View
+                        </span>
+                      ) : (
+                        <span className="no-file">N/A</span>
+                      )}
+                    </td>
+                  ))}
+                  <td className={`status ${kyc.status?.toLowerCase()}`}>
+                    {kyc.status}
+                  </td>
+                  <td>
+                    {kyc.status?.toUpperCase() === "PENDING" ? (
+                      <div className="action-buttons">
+                        <button
+                          className="approve-btn"
+                          onClick={() => handleApproval(kyc.id, "APPROVED")}
+                        >
+                          ✅ Approve
+                        </button>
+                        <button
+                          className="reject-btn"
+                          onClick={() => handleApproval(kyc.id, "REJECTED")}
+                        >
+                          ❌ Reject
+                        </button>
+                      </div>
                     ) : (
-                      <span className="no-file">N/A</span>
+                      <span>{kyc.status}</span>
                     )}
                   </td>
-                ))}
-                <td className={`status ${kyc.status?.toLowerCase()}`}>
-                  {kyc.status}
-                </td>
-
-              <td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {isMobile && (
+        <div className="kyc-mobile-list">
+          {kycs.map((kyc) => (
+            <div className="kyc-mobile-card" key={kyc.id}>
+              <div className="kyc-card-row"><span className="kyc-card-label">Full Name:</span> <span className="kyc-card-value">{kyc.fullName}</span></div>
+              <div className="kyc-card-row"><span className="kyc-card-label">Email:</span> <span className="kyc-card-value">{kyc.email}</span></div>
+              <div className="kyc-card-row"><span className="kyc-card-label">Phone:</span> <span className="kyc-card-value">{kyc.phoneNumber}</span></div>
+              <div className="kyc-card-row"><span className="kyc-card-label">Address:</span> <span className="kyc-card-value">{kyc.address}</span></div>
+              <div className="kyc-card-row"><span className="kyc-card-label">Aadhar Number:</span> <span className="kyc-card-value">{kyc.aadharNumber}</span></div>
+              <div className="kyc-card-row"><span className="kyc-card-label">PAN Number:</span> <span className="kyc-card-value">{kyc.panNumber}</span></div>
+              {["salarySlip", "passport", "bankStatement", "aadharFront", "aadharBack", "panCard", "image"].map((field) => (
+                <div className="kyc-card-row" key={field}>
+                  <span className="kyc-card-label">{field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</span>
+                  {kyc[field] ? (
+                    <span className="kyc-card-value view-link" onClick={() => handlePreview(kyc[field])}>View</span>
+                  ) : (
+                    <span className="kyc-card-value no-file">N/A</span>
+                  )}
+                </div>
+              ))}
+              <div className="kyc-card-row"><span className="kyc-card-label">Status:</span> <span className={`kyc-card-value status ${kyc.status?.toLowerCase()}`}>{kyc.status}</span></div>
+              <div className="kyc-card-row">
                 {kyc.status?.toUpperCase() === "PENDING" ? (
                   <div className="action-buttons">
                     <button
@@ -106,14 +159,11 @@ const AdminKYCList = () => {
                 ) : (
                   <span>{kyc.status}</span>
                 )}
-              </td>
-
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
       {previewUrl && (
         <DocumentModal fileUrl={previewUrl} onClose={() => setPreviewUrl(null)} />
       )}

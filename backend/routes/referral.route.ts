@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createOrUpdateReferral , checkReferralCode , applyReferralCode, getReferralDetails, } from "../controller/referral.controller.js";
+import { createReferral , checkReferralCode , applyReferralCode, getReferralDetails, } from "../controller/referral.controller.js";
 import db from "../client/connect.js";
 import { getAllReferralRevenue ,deleteReferral } from "../controller/referral.controller.js";
 import { isAuthenticated } from "../middlewares/auth.js";
@@ -8,7 +8,7 @@ import { isAuthenticated } from "../middlewares/auth.js";
 const router = Router();
 
 router.post("/create-or-update", async (req, res) => {
-  await createOrUpdateReferral(req, res);
+  await createReferral(req, res);
 });
 
 router.post("/check", async (req, res) => {

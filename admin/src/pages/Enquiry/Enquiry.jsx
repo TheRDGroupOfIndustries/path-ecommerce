@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchDataFromApi, editData, deleteData } from "../../utils/api";
+import { fetchDataFromApi, deleteData } from "../../utils/api";
 import { Trash2 } from "lucide-react";
 
 const Enquiry = () => {
@@ -65,7 +65,7 @@ const Enquiry = () => {
                    <div className="user-category">{user.phone}</div>
                   <div className="actions">
                     <div className="action-buttons">
-                      <button className="delete-btn" onClick={() => handleDelete(user.id)}><MdDelete /></button>
+                      <button className="delete-btn" onClick={() => handleDelete(user.id)}><Trash2 /></button>
                     </div>
                   </div>
                 </div>

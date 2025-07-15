@@ -15,6 +15,8 @@ const ViewProduct = () => {
   const [filterRating, setFilterRating] = useState("all")
   const [filterCategory, setFilterCategory] = useState("all");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
+  const [currentPage, setCurrentPage] = useState(1);
+  const PRODUCTS_PER_PAGE = 3;
   
    const [editFormData, setEditFormData] = useState({
       name: "",
@@ -59,6 +61,30 @@ const ViewProduct = () => {
   }
 }, [filterCategory]);
 
+
+  const filteredProducts = products.filter((product) => {
+  const ratingMatch =
+    filterRating === "all" ||
+    product.ratings === Number.parseInt(filterRating);
+  const categoryMatch =
+    filterCategory === "all" ||
+    product.category.toLowerCase() === filterCategory.toLowerCase();
+
+  return ratingMatch && categoryMatch;
+});
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterRating, filterCategory, products]);
+
+  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * PRODUCTS_PER_PAGE,
+    currentPage * PRODUCTS_PER_PAGE
+  );
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
   
     const fetchingProduct = () => {
       fetchDataFromApi("/product/get-all")
@@ -194,17 +220,6 @@ const ViewProduct = () => {
       return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-  const filteredProducts = products.filter((product) => {
-  const ratingMatch =
-    filterRating === "all" ||
-    product.ratings === Number.parseInt(filterRating);
-  const categoryMatch =
-    filterCategory === "all" ||
-    product.category.toLowerCase() === filterCategory.toLowerCase();
-
-  return ratingMatch && categoryMatch;
-});
-
   return (
     <div className="product-container">
       <div className="product-header">
@@ -249,7 +264,7 @@ const ViewProduct = () => {
       ) : (
         isMobile ? (
           <div className="product-list">
-            {filteredProducts.map((product) => (
+            {paginatedProducts.map((product) => (
               <div className="product-card" key={product.id}>
                 <div className="product-image-cell">
                   {product.images.length > 0 ? (
@@ -289,6 +304,19 @@ const ViewProduct = () => {
                 </div>
               </div>
             ))}
+            <div className="pagination-controls">
+              <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>&lt; Prev</button>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i + 1}
+                  className={currentPage === i + 1 ? "active" : ""}
+                  onClick={() => handlePageChange(i + 1)}
+                >
+                  {i + 1}
+                </button>
+              ))}
+              <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next &gt;</button>
+            </div>
           </div>
         ) : (
           <div className="table-container">
@@ -305,7 +333,7 @@ const ViewProduct = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredProducts.map((product) => (
+                {paginatedProducts.map((product) => (
                   <tr key={product.id}>
                     <td>
                       <div className="product-image-cell">
@@ -359,6 +387,19 @@ const ViewProduct = () => {
                 ))}
               </tbody>
             </table>
+            <div className="pagination-controls">
+              <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>&lt; Prev</button>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i + 1}
+                  className={currentPage === i + 1 ? "active" : ""}
+                  onClick={() => handlePageChange(i + 1)}
+                >
+                  {i + 1}
+                </button>
+              ))}
+              <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next &gt;</button>
+            </div>
           </div>
         )
       )}

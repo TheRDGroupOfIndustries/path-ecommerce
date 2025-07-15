@@ -11,7 +11,7 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 20px;
-  margin-top: 70px;
+  margin-top: 60px !important;
 }
 
 .user-header-main {
@@ -230,7 +230,6 @@
   transition: background 0.2s;
 }
 
-/* Only show the ::before 'Filter' label if the select value is 'Filter' */
 .custom-select-wrapper[data-selected='Filter']::before {
   content: 'Filter';
   position: absolute;
@@ -248,13 +247,11 @@
   content: '';
 }
 
-/* Show the selected value in the select if not 'Filter' */
 .custom-select-wrapper:not([data-selected='Filter']) .role-filter {
   color: #fff;
   text-shadow: none;
 }
 
-/* Hide the selected value if 'Filter' is selected */
 .custom-select-wrapper[data-selected='Filter'] .role-filter {
   color: transparent;
   text-shadow: 0 0 0 #fff;
@@ -282,7 +279,7 @@
   width: 100%;
   padding: 8px 10px;
   font-size: 1rem;
-  border: 2px solid #353896; /* Your theme's blue shade */
+  border: 2px solid #353896; 
   border-radius: 8px;
   outline: none;
   font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -291,5 +288,172 @@
 
 .edit-input:focus,
 .edit-select:focus {
-  border-color: #23244a; /* Darker border on focus */
+  border-color: #23244a; 
+}
+
+.dark .user-container {
+  background: #181c2f;
+  color: #f1f5f9;
+}
+
+.dark .user-header {
+  background: #23294a;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+
+.dark .user-header h1 {
+  color: #a99cff;
+}
+
+.dark .user-stats {
+  color: #a99cff;
+}
+
+.dark .table-container {
+  background: #23294a;
+  border: 1px solid #4a5568;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+}
+
+.dark .user-table th {
+  background: #23294a;
+  color: #a99cff;
+  border-bottom: 1px solid #4a5568;
+}
+
+.dark .user-table td {
+  color: #f1f5f9;
+  border-bottom: 1px solid #4a5568;
+}
+
+.dark .role-badge {
+  background: #353896;
+  color: #fff;
+}
+
+.dark .role-admin {
+  background: #1a7f37;
+  color: #e6f9ed;
+}
+.dark .role-seller {
+  background: #a259d9;
+  color: #f3e8ff;
+}
+.dark .role-user {
+  background: #2d7be5;
+  color: #e6f4ff;
+}
+.dark .role-associate {
+  background: #d72660;
+  color: #ffe6f2;
+}
+
+.dark .edit-input, .dark .edit-select {
+  background: #23294a;
+  color: #f1f5f9;
+  border: 2px solid #a99cff;
+}
+
+.dark .edit-input:focus, .dark .edit-select:focus {
+  border-color: #a99cff;
+}
+
+.dark .custom-select-wrapper {
+  background: #353896;
+  border-radius: 8px;
+}
+.dark .role-filter {
+  background: #353896;
+  color: #fff;
+}
+.dark .custom-arrow {
+  color: #a99cff;
+}
+
+@media (max-width: 600px) {
+  .user-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 8px;
+    margin-top: 20px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+  }
+  .user-header h1 {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+  }
+  .user-stats {
+    font-size: 0.95rem;
+    text-align: left;
+    margin-top: 0;
+  }
+  .user-header-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .user-card img,
+.user-table img {
+height:50% !important;
+width: 100% !important;
+}
+.actions-button{
+  display: flex !important;
+}
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin: 18px 0 ;
+  flex-wrap: wrap;
+}
+.pagination-controls button {
+  background: #edeaff;
+  color: #353896;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin: 0 2px;
+}
+.pagination-controls button.active {
+  background: #353896;
+  color: #fff;
+  font-weight: 700;
+}
+.pagination-controls button:disabled {
+  background: #f3f3f3;
+  color: #aaa;
+  cursor: not-allowed;
+}
+.dark .pagination-controls button {
+  background: #23294a;
+  color: #a99cff;
+}
+.dark .pagination-controls button.active {
+  background: #a99cff;
+  color: #23294a;
+}
+.dark .pagination-controls button:disabled {
+  background: #181c2f;
+  color: #555;
+}
+@media (max-width: 600px) {
+  .pagination-controls {
+    gap: 2px;
+    margin: 10px 0 ;
+  }
+  .pagination-controls button {
+    padding: 6px 10px;
+    font-size: 0.95rem;
+  }
 }

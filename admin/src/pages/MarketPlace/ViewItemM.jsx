@@ -11,6 +11,8 @@ const ViewitemM = () => {
   const [editForm, setEditForm] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 5;
 
   const category = ["All", "Cloth", "Makeup", "Shoes","Furniture","Electronic"];
 
@@ -44,7 +46,17 @@ const ViewitemM = () => {
               user.category?.toLowerCase() === selectedCategory.toLowerCase()
           );
     setFilteredItem(filtered);
+    setCurrentPage(1); // Reset to first page on filter change
   }, [selectedCategory, users]);
+
+  const totalPages = Math.ceil(filteredItem.length / ITEMS_PER_PAGE);
+  const paginatedItems = filteredItem.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
 
   const handleRoleFilter = (e) => setSelectedCategory(e.target.value);
 
@@ -112,6 +124,7 @@ const ViewitemM = () => {
 
   return (
     <div className="user-container">
+      {isModalOpen && <div className={`global-modal-overlay${document.body.classList.contains('dark') ? ' dark' : ''}`}></div>}
       <div className="user-header">
         <div className="user-header-main">
           <h1>View Items</h1>
@@ -143,7 +156,7 @@ const ViewitemM = () => {
       ) : (
         isMobile ? (
           <div className="user-list">
-            {filteredItem.map((user) => (
+            {paginatedItems.map((user) => (
               <div className="user-card" key={user.id}>
                 <div>
                   {user.imageUrl?.[0] ? (
@@ -165,6 +178,19 @@ const ViewitemM = () => {
                 </div>
               </div>
             ))}
+            <div className="pagination-controls">
+              <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>&lt; Prev</button>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i + 1}
+                  className={currentPage === i + 1 ? "active" : ""}
+                  onClick={() => handlePageChange(i + 1)}
+                >
+                  {i + 1}
+                </button>
+              ))}
+              <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next &gt;</button>
+            </div>
           </div>
         ) : (
           <div className="table-container">
@@ -179,7 +205,7 @@ const ViewitemM = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredItem.map((user, index) => (
+                {paginatedItems.map((user, index) => (
                   <tr key={user.id}>
   
                     <td>
@@ -207,6 +233,19 @@ const ViewitemM = () => {
                 ))}
               </tbody>
             </table>
+            <div className="pagination-controls">
+              <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>&lt; Prev</button>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i + 1}
+                  className={currentPage === i + 1 ? "active" : ""}
+                  onClick={() => handlePageChange(i + 1)}
+                >
+                  {i + 1}
+                </button>
+              ))}
+              <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next &gt;</button>
+            </div>
           </div>
         )
       )}

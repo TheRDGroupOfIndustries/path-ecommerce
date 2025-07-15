@@ -50,7 +50,7 @@ const AddAssociate = () => {
 
 const waitForRoleUpdate = async (userId, expectedRole, maxRetries = 5) => {
   for (let i = 0; i < maxRetries; i++) {
-    const res = await fetchDataFromApi(`/users/get-by-id/${userId}`); // Add a GET endpoint to fetch user
+    const res = await fetchDataFromApi(`/users/get-by-id/${userId}`); 
     if (res?.user?.role === expectedRole) return true;
     await new Promise((res) => setTimeout(res, 300));
   }
@@ -90,7 +90,22 @@ const handleSubmit = async (e) => {
     setTimeout(() => setSubmitSuccess(false), 3000);
   } catch (error) {
     console.error("Error submitting associate referral form:", error);
-    alert("Failed to process associate referral data.");
+    const errorMsg = error?.response?.data?.error;
+if (errorMsg?.includes("already exists for this associate")) {
+  setErrors(prev => ({
+    ...prev,
+    percent: "Referral code already exists for this associate. Try another percent.",
+  }));
+} else if (errorMsg?.includes("already exists for another associate")) {
+  setErrors(prev => ({
+    ...prev,
+    percent: "Referral code already exists for a different associate. Please try a different percent.",
+  }));
+} else {
+  alert("Failed to process associate referral data.");
+}
+
+
   } finally {
     setIsSubmitting(false);
   }
@@ -131,9 +146,14 @@ const handleSubmit = async (e) => {
               className={`form-select ${errors.users ? "input-error" : ""}`}
             >
               <option value="">Select a User</option>
-              {users.filter(user => user.role === "USER").map(user => (
-                <option key={user.id} value={user.id}>{user.name}</option>
-              ))}
+              {users
+              .filter(user => user.role === "USER" || user.role === "ASSOCIATE")
+              .map(user => (
+                <option key={user.id} value={user.id}>
+                  {user.name} ({user.role})
+                </option>
+            ))}
+
             </select>
             {errors.users && <span className="error-text">{errors.users}</span>}
           </div>

@@ -143,9 +143,9 @@ const AddItemM = () => {
 
   return (
     <div className="add-item-container">
-      <div className="add-item-header" style={{ background: '#353896', borderRadius: '20px', color: 'white', padding: '20px 0'}}>
-        <div style={{ fontSize: 20, fontWeight: 500, marginBottom: 8 }}>+ Add new</div>
-        <div style={{ fontSize: 14, opacity: 0.9 }}>Fill in the information below to add a new product</div>
+      <div className="add-item-header">
+        <div className="add-item-title">+ Add new</div>
+        <div className="add-item-subtitle">Fill in the information below to add a new product</div>
       </div>
 
       {submitSuccess && (
@@ -155,7 +155,7 @@ const AddItemM = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="add-item-form" style={{ borderRadius: 20, boxShadow: '0 10px 30px rgba(53, 56, 150, 0.08)', padding: 40, background: 'white' }}>
+      <form onSubmit={handleSubmit} className="add-item-form">
         <div className="form-grid">
           {/* Name Field */}
           <div className="input-group1">

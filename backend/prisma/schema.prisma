@@ -153,7 +153,7 @@ model Associate {
 model Referral {
   id           String   @id @default(uuid())
   referral     String   @unique
-  createdForId String   @unique
+  createdForId String   
   usedBy       String[] @default([])
   createdAt    DateTime @default(now())
 

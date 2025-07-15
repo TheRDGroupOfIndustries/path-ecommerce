@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
 import db from "../client/connect.js";
-import { getReferralByUser, createReferral } from "../model/referral.model.js";
 
-//  Create or Update Referral
-export const createOrUpdateReferral = async (req: Request, res: Response) => {
+//  Create Referral 
+export const createReferral = async (req: Request, res: Response) => {
   const { associateId, percent } = req.body;
 
   try {
@@ -16,43 +15,34 @@ export const createOrUpdateReferral = async (req: Request, res: Response) => {
     const firstName = user.name.split(" ")[0].toLowerCase();
     const referralCode = `${firstName}-${percent}`;
 
-    // Check if referral code already exists 
-    const existingCode = await db.referral.findUnique({ where: { referral: referralCode } });
-    if (existingCode && existingCode.createdForId !== associateId) {
-      return res.status(400).json({ error: "Referral code already exists for another associate" });
-    }
-
-    let referral = await db.referral.findUnique({
-      where: { createdForId: associateId },
+    const existingCode = await db.referral.findUnique({
+    where: { referral: referralCode },
     });
 
-    if (!referral) {
-      // Create referral with empty usedBy list
-      referral = await db.referral.create({
-        data: {
-          referral: referralCode,
-          createdForId: associateId,
-          usedBy: [],
-        },
-      });
-    } else {
-      //  Update referral code 
-      referral = await db.referral.update({
-        where: { id: referral.id },
-        data: {
-          referral: referralCode,
-        },
-      });
+    if (existingCode) {
+      if (existingCode.createdForId === associateId) {
+        return res.status(400).json({ error: "Referral code already exists for this associate" });
+      } else {
+        return res.status(400).json({ error: "Referral code already exists for another associate" });
+      }
     }
 
-    res.status(200).json({ message: "Referral processed successfully", referral });
+    const referral = await db.referral.create({
+      data: {
+        referral: referralCode,
+        createdForId: associateId,
+        usedBy: [],
+      },
+    });
+
+    res.status(201).json({ message: "Referral created successfully", referral });
   } catch (err) {
-    console.error("Error processing referral:", err);
+    console.error("Error creating referral:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-// Check Referral Code 
+//  Check Referral Code
 export const checkReferralCode = async (req: Request, res: Response) => {
   const { code } = req.body;
 
@@ -74,7 +64,7 @@ export const checkReferralCode = async (req: Request, res: Response) => {
       return res.status(404).json({ valid: false, error: "Referral code is invalid" });
     }
 
-    return res.status(200).json({
+    res.status(200).json({
       valid: true,
       message: "Referral code is valid",
       referral: {
@@ -89,64 +79,42 @@ export const checkReferralCode = async (req: Request, res: Response) => {
   }
 };
 
-
-//apply
+// Apply Referral Code
 export const applyReferralCode = async (req: Request, res: Response) => {
   const { code, productId } = req.body;
 
   try {
-    // 1. Validate input
-    if (!code || typeof code !== "string" || !productId) {
+    if (!code || !productId || typeof code !== "string") {
       return res.status(400).json({ error: "Referral code and productId are required" });
     }
 
-    // 2. Validate user from middleware
     if (!req.user || !req.user.id) {
       return res.status(401).json({ error: "Unauthorized user" });
     }
 
-    const userId = req.user.id; 
+    const userId = req.user.id;
 
-    // 3. Find referral
     const referral = await db.referral.findUnique({
       where: { referral: code },
       include: { createdFor: true },
     });
 
-    if (!referral) {
-      return res.status(404).json({ error: "Invalid referral code" });
+    if (!referral) return res.status(404).json({ error: "Invalid referral code" });
+
+    if (referral.usedBy.includes(userId)) {
+      return res.status(400).json({ error: "You already used this referral code" });
     }
 
-    // 4. Find product
-    const product = await db.products.findUnique({
-      where: { id: productId },
-    });
+    const product = await db.products.findUnique({ where: { id: productId } });
+    if (!product) return res.status(404).json({ error: "Product not found" });
 
-    if (!product) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-
-    const parts = code.split("-");
-    const percent = parseFloat(parts[1]);
-    if (isNaN(percent)) {
-      return res.status(400).json({ error: "Invalid referral percentage format" });
-    }
+    const percent = parseFloat(code.split("-")[1]);
+    if (isNaN(percent)) return res.status(400).json({ error: "Invalid referral format" });
 
     const originalPrice = typeof product.price === "string" ? parseFloat(product.price) : product.price;
     const discountAmount = (originalPrice * percent) / 100;
     const discountedPrice = originalPrice - discountAmount;
-    const commission = discountAmount;
 
-    console.log("Referral Debug Info:", {
-      code,
-      userId,
-      productPriceRaw: product.price,
-      originalPrice,
-      percent,
-      commission,
-    });
-
-    // 6. Record referral transaction
     await db.referralTransaction.create({
       data: {
         referralId: referral.id,
@@ -156,33 +124,30 @@ export const applyReferralCode = async (req: Request, res: Response) => {
         productName: product.name,
         price: originalPrice,
         percent,
-        commission,
+        commission: discountAmount,
       },
     });
 
-    // 7. Update usedBy only if user hasn't used it before
-    if (!referral.usedBy.includes(userId)) {
-      await db.referral.update({
-        where: { id: referral.id },
-        data: {
-          usedBy: [...referral.usedBy, userId],
-        },
-      });
-    }
+    await db.referral.update({
+      where: { id: referral.id },
+      data: {
+        usedBy: [...referral.usedBy, userId],
+      },
+    });
 
-    // 8. Return response
-    return res.status(200).json({
+    res.status(200).json({
       message: "Referral applied successfully",
       originalPrice,
       discountPercent: percent,
       discountedPrice,
-      commission,
+      commission: discountAmount,
     });
   } catch (err) {
-    console.error("Error applying referral code:", err);
+    console.error("Error applying referral:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 // Get total commission per associate
 export const getAllReferralRevenue = async (req: Request, res: Response) => {
@@ -215,22 +180,15 @@ export const getAllReferralRevenue = async (req: Request, res: Response) => {
 };
 
 
-// DELETE /referral/:id
+// Delete Referral By ID
 export const deleteReferral = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const existing = await db.referral.findUnique({ where: { id } });
+    const referral = await db.referral.findUnique({ where: { id } });
+    if (!referral) return res.status(404).json({ error: "Referral not found" });
 
-    if (!existing) {
-      return res.status(404).json({ error: "Referral not found" });
-    }
-
-    // Delete associated transactions
-      //@ts-ignore
     await db.referralTransaction.deleteMany({ where: { referralId: id } });
-
-    // Delete the referral
     await db.referral.delete({ where: { id } });
 
     res.status(200).json({ message: "Referral deleted successfully" });
@@ -240,110 +198,64 @@ export const deleteReferral = async (req: Request, res: Response) => {
   }
 };
 
-
-//get 
+// Get All Referrals for Associate
 export const getReferralDetails = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const referral = await db.referral.findUnique({
+    const referrals = await db.referral.findMany({
       where: { createdForId: id },
       include: {
-        createdFor: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true,
-            imageUrl: true,
-            role: true,
-            createdAt: true,
-          },
-        },
         transactions: {
           include: {
             user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                phone: true,
-                imageUrl: true,
-              },
+              select: { id: true, name: true, email: true, phone: true, imageUrl: true },
             },
             product: {
-              select: {
-                id: true,
-                name: true,
-                price: true,
-                images: true,
-                category: true,
-              },
+              select: { id: true, name: true, price: true, images: true, category: true },
             },
             associate: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                phone: true,
-                imageUrl: true,
-              },
+              select: { id: true, name: true, email: true, phone: true, imageUrl: true },
             },
             referral: {
-              select: {
-                referral: true,
-              },
+              select: { referral: true },
             },
           },
-          orderBy: {
-            createdAt: "desc",
+          orderBy: { createdAt: "desc" },
+        },
+        createdFor: {
+          select: {
+            id: true, name: true, email: true, phone: true, imageUrl: true, role: true, createdAt: true,
           },
         },
       },
     });
 
-    if (!referral) {
-      return res.status(404).json({ error: "Referral not found for this associate." });
+    if (!referrals || referrals.length === 0) {
+      return res.status(404).json({ error: "No referrals found for this associate" });
     }
 
+    const allUsedByIds = referrals.flatMap((r: { usedBy: any; }) => r.usedBy);
+
     const usedByUsers = await db.user.findMany({
-      where: {
-        id: {
-          in: referral.usedBy,
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        imageUrl: true,
-        createdAt: true,
-      },
+      where: { id: { in: allUsedByIds } },
+      select: { id: true, name: true, email: true, phone: true, imageUrl: true, createdAt: true },
     });
 
-    return res.status(200).json({
-      referralCode: referral.referral,
-      createdFor: referral.createdFor,
-      usedByUsers,
-      totalUsedBy: referral.usedBy.length,
-      totalTransactions: referral.transactions.length,
-      transactions: referral.transactions.map((tx: { id: any; product: any; user: any; associate: any; price: any; percent: any; commission: any; createdAt: any; }) => ({
-        transactionId: tx.id,
-        product: tx.product,
-        usedBy: tx.user,
-        associate: tx.associate,
-        price: tx.price,
-        percent: tx.percent,
-        commission: tx.commission,
-        createdAt: tx.createdAt,
+    res.status(200).json({
+      totalReferralCodes: referrals.length,
+      referrals: referrals.map((r: { id: any; referral: any; usedBy: string | any[]; transactions: string | any[]; }) => ({
+        id: r.id,
+        referralCode: r.referral,
+        totalUsedBy: r.usedBy.length,
+        totalTransactions: r.transactions.length,
+        transactions: r.transactions,
       })),
+      createdFor: referrals[0].createdFor,
+      usedByUsers,
     });
   } catch (err) {
-    console.error("Error fetching referral details");
-console.error("Associate ID:", id);
-console.error("Error Message:", err instanceof Error ? err.message : err);
-console.error(" Stack Trace:", err instanceof Error ? err.stack : err);
-return res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error fetching referral details", err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };

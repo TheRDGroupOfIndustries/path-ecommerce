@@ -213,6 +213,7 @@ export const getOrderById = async (req: Request, res: Response) => {
   }
 };
 
+
 // Buy Now from Cart (All Products)
 export const buyNowFromCart = async (req: Request, res: Response) => {
   const userId = req.user?.id;
@@ -346,3 +347,21 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const updateStatus = async function (req: Request, res: Response) {
+  const {id} = req.params;
+  const {status} = req.body
+  try {
+    await db.order.update({
+      where: {id},
+      data: {
+        status: status
+      }
+    })
+    res.status(200).json({ message: "Done"})
+  } 
+  catch (error) {
+    console.error(error);
+    
+  }
+}

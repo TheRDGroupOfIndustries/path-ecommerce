@@ -37,7 +37,11 @@ export const getUsersByRole = async (role: Role) => {
 
 export const getOrders = async (id: string) =>
   db.user.findMany({ where: { id }, include: {
-    orders: true
+    orders: {
+      include: {
+        product: true
+      }
+    },
   } });
 
 // Create a new user

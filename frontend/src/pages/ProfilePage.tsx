@@ -80,7 +80,7 @@ const ProfilePage = () => {
       {
         label: "Orders",
         icon: <ShoppingCart className="text-black font-bold" />,
-        desc: "already have 10 orders",
+        desc: "List of your ordered products",
         path: "/my-orders",
       },
       {

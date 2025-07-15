@@ -7,12 +7,12 @@ import {
   rejectKyc,
 } from "../controller/kyc.controller.js";
 import { isAuthenticated } from "../middlewares/auth.js";
-import { authorizeRole } from "../middlewares/role.js";
+import { authorizeRole } from "../middlewares/roleee.js";
 import { upload } from "../middlewares/multer.js";
 
 const router = Router();
 
-// Define accepted file fields
+
 const fileFields = [
   { name: "aadharFront", maxCount: 1 },
   { name: "aadharBack", maxCount: 1 },
@@ -23,7 +23,7 @@ const fileFields = [
   { name: "image", maxCount: 1 },
 ];
 
-// ✅ Route to create KYC with file uploads
+//  Route to create KYC with file uploads
 router.post(
   "/",
   isAuthenticated,
@@ -41,17 +41,17 @@ router.post(
 );
 
 
-//✅ Seller's own KYC
+// Seller's own KYC
 router.get("/my-kyc", isAuthenticated, async (req, res) => {
   await getKycBySeller(req, res);
 });
 
-// ✅ Admin: View all KYC
+// Admin: View all KYC
 router.get("/all", isAuthenticated, authorizeRole("ADMIN"), async (req, res) => {
   await getAllKyc(req, res);
 });
 
-// ✅ Admin: Approve KYC
+//  Admin: Approve KYC
 router.patch("/approve/:id", isAuthenticated, authorizeRole("ADMIN"), async (req, res) => {
   await approveKyc(req, res);
 });

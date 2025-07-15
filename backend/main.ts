@@ -66,10 +66,9 @@ app.use("/api/announcement",announcementRoute);
 app.use("/api/associate",associateRoute);  //profile
 app.use("/api/review",reviewRoute);
 app.use("/api/verification", verify)
-app.use("/api/cart",cartRoute)
+app.use("/api/cart",cartRoute);
 app.use("/api/order",orderRoute);
 
-// Error handling for CORS
 import type { Request, Response, NextFunction } from 'express';
 
 app.use((err: { message: string; }, _req: Request, res: Response, next: NextFunction) => {

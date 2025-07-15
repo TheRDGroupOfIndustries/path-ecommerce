@@ -16,7 +16,7 @@ export const userById = async (id: string) =>
 export const userByGmail = async (email: string) =>
   db.user.findUnique({ where: { email } });
 
-// Get users by role (e.g. ASSOCIATE)
+// Get users by role 
 export const getUsersByRole = async (role: Role) => {
   return await db.user.findMany({
     where: { role },
@@ -26,7 +26,6 @@ export const getUsersByRole = async (role: Role) => {
       email: true,
       phone: true,
       associate: {
-        //added this for view association
         select: {
           level: true,
           percent: true,
@@ -56,7 +55,7 @@ export const createUser = async (data: CreateUserInput) => {
     select: {
       id: true,
       email: true,
-      role: true, // Add this
+      role: true, 
     },
   });
 };

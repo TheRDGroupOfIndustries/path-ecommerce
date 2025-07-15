@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Trash2, Plus, Star } from "lucide-react";
 import React from "react";
 
+
 const CartItemCard = ({ item, updateQuantity }: {
   item: any,
   updateQuantity: any
 }) => {
+
   return (
     <Card className="w-full shadow-none border-none" key={item.id}>
       <CardContent className=" flex gap-6 px-0">
@@ -60,8 +62,7 @@ const CartItemCard = ({ item, updateQuantity }: {
           </h2>
 
           <p className="text-gray-500 text-sm mb-2 leading-tight line-clamp-3">
-            {item.description ||
-              "Lorem ipsum dolor sit amet consectetur. Tellus odio feugiat dolor odio enim vel ultrices egestas sapien."}
+            {item.description }
           </p>
 
           <Button
@@ -74,13 +75,13 @@ const CartItemCard = ({ item, updateQuantity }: {
           {/* Price & discount */}
           <div className="flex items-center gap-2">
             <span className="text-2xl font-bold text-gray-900">
-              ₹{item.finalPrice || 800}
+              ₹{item.finalPrice }
             </span>
             <span className="text-gray-400 text-sm line-through">
-              ₹{item.price || 1200}
+              ₹{item.price }
             </span>
             <span className="text-sm text-orange-300 ">
-              (40% OFF)
+              {item.discount}%OFF
             </span>
           </div>
         </div>

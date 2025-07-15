@@ -1,50 +1,86 @@
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, IndianRupee } from "lucide-react";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { ChevronLeft, IndianRupee } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import CartItemCard from "@/components/CartItemCard/CartItemCard";
+import { API_URL } from "@/lib/api.env";
+import Loader from "@/components/Loader/Loader";
 import ShadeBtn from "@/components/ui/ShadeBtn";
 
 export default function MyCart() {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Green Bottle",
-      description:
-        "Eco-friendly reusable green bottle made from stainless steel. Keeps your drinks cool or hot for hours.",
-      rating: 4.5,
-      finalPrice: 800,
-      price: 1200,
-      quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=300&fit=crop",
-      sellerName: "John's Store",
-    },
-    {
-      id: 2,
-      name: "Eco Mug",
-      description:
-        "Reusable eco-friendly travel mug. Ideal for coffee and tea on the go.",
-      rating: 4.2,
-      finalPrice: 650,
-      price: 1000,
-      quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=300&fit=crop",
-      sellerName: "EcoShop",
-    },
-  ]);
-
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const updateQuantity = (id, change) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + change) }
-          : item
-      )
-    );
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/api/cart`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        const mapped = res.data.map((item) => ({
+          id: item.id,
+          name: item.product.name,
+          description: item.product.description,
+          discount: item.product.discount,
+          rating: item.product.ratings,
+          finalPrice: Math.floor(
+            item.product.price * (1 - item.product.discount / 100)
+          ),
+          price: item.product.price,
+          quantity: item.quantity,
+          image: item.product.images?.[0],
+          sellerName: "Put Seller",
+        }));
+
+        setCartItems(mapped);
+      } catch (err) {
+        console.error("Error fetching cart items:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCart();
+  }, []);
+
+  const updateQuantity = async (id, change) => {
+    const targetItem = cartItems.find((item) => item.id === id);
+    if (!targetItem) return;
+
+    const newQuantity = targetItem.quantity + change;
+
+    try {
+      await axios.put(
+        `${API_URL}/api/cart/update-quantity`,
+        {
+          cartItemId: id,
+          quantity: newQuantity,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (newQuantity <= 0) {
+        setCartItems((items) => items.filter((item) => item.id !== id));
+      } else {
+        setCartItems((items) =>
+          items.map((item) =>
+            item.id === id ? { ...item, quantity: newQuantity } : item
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+    }
   };
 
   const subtotal = cartItems.reduce(
@@ -56,6 +92,32 @@ export default function MyCart() {
     0
   );
 
+  if (loading) return <Loader />;
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-center px-4">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png"
+          alt="Empty Cart"
+          className="w-40 h-40 mb-6"
+        />
+        <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+          Your Cart is Empty
+        </h2>
+        <p className="text-gray-500 mb-6">
+          Looks like you haven’t added anything yet.
+        </p>
+        <Button
+          onClick={() => navigate("/")}
+          className="bg-indigo-600 text-white"
+        >
+          Go to Home
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen mb-18">
       {/* Header */}
@@ -65,7 +127,7 @@ export default function MyCart() {
             className="w-8 h-8 cursor-pointer"
             onClick={() => navigate(-1)}
           />
-          <h2 className="flex-1 text-2xl font-sans text-center font-semibold ">
+          <h2 className="flex-1 text-2xl font-sans text-center font-semibold">
             My Cart
           </h2>
         </div>
@@ -75,7 +137,6 @@ export default function MyCart() {
       <div className="px-4 py-4">
         {/* Cart Summary */}
         <div className="mb-4 space-y-4">
-          {/* Subtotal and Total Items in one line */}
           <div className="flex items-center justify-between text-black">
             <h2 className="text-lg font-semibold flex items-center">
               Subtotal - <IndianRupee className="w-4 h-4 ml-1 mr-1" />{" "}
@@ -84,14 +145,16 @@ export default function MyCart() {
           </div>
           <p className="text-sm text-black">Total Items - {totalItems}</p>
 
+
           {/* CTA Button */}
           <ShadeBtn action={() => {}} title="Proceed To Buy"/>
+
         </div>
 
         <div className="w-full h-px bg-neutral-400 rounded"></div>
 
         {/* Cart Items */}
-        <div>
+        <div className="space-y-4 mt-4">
           {cartItems.map((item) => (
             <CartItemCard
               key={item.id}

@@ -55,7 +55,7 @@ const ProductsList = () => {
 
    useEffect(() => {
    const fetchData = async () => {
-    const res = await axios(`${API_URL}/api/seller/${id}`);
+    const res = await axios(`${API_URL}/api/seller/get-seller/${id}`);
     // console.log("res: ",res);
     
     setProducts(res.data.productSeller)

@@ -95,6 +95,46 @@ export const getCartItems = async (req: Request, res: Response): Promise<void> =
 
 
 // Update Cart Item Quantity
+// export const updateCartItemQuantity = async (req: Request, res: Response): Promise<void> => {
+//   const userId = req.user?.id;
+//   const { cartItemId, quantity } = req.body;
+
+//   if (!userId) {
+//     res.status(401).json({ message: "Unauthorized" });
+//     return;
+//   }
+
+//   if (!cartItemId || quantity === undefined) {
+//     res.status(400).json({ message: "Cart item ID and quantity are required" });
+//     return;
+//   }
+
+//   try {
+//     const existingItem = await db.cartItem.findFirst({
+//       where: {
+//         id: cartItemId,
+//         userId,
+//       },
+//     });
+
+//     if (!existingItem) {
+//       res.status(404).json({ message: "Cart item not found" });
+//       return;
+//     }
+
+//     const updatedItem = await db.cartItem.update({
+//       where: { id: cartItemId },
+//       data: { quantity },
+//     });
+
+//     res.status(200).json(updatedItem);
+//   } catch (error) {
+//     console.error("Update quantity error:", error);
+//     res.status(500).json({ message: "Failed to update cart item quantity" });
+//   }
+// };
+
+
 export const updateCartItemQuantity = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
   const { cartItemId, quantity } = req.body;
@@ -122,6 +162,14 @@ export const updateCartItemQuantity = async (req: Request, res: Response): Promi
       return;
     }
 
+    
+    if (quantity <= 0) {
+      await db.cartItem.delete({ where: { id: cartItemId } });
+      res.status(200).json({ message: "Cart item deleted" });
+      return;
+    }
+
+    
     const updatedItem = await db.cartItem.update({
       where: { id: cartItemId },
       data: { quantity },

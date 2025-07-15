@@ -182,8 +182,6 @@ const Enquire = () => {
         </h1>
         <div className="flex items-center gap-1 bg-gray-200 w-fit px-1 ">
           <span className="text-lg text-black">{averageRating}</span>
-
-          {/* Vertical divider */}
           <div className="h-4 w-px bg-black mx-2" />
           <Star className="w-4 h-4 fill-current text-cyan-400" />
         </div>

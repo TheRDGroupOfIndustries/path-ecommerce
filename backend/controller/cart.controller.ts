@@ -93,48 +93,7 @@ export const getCartItems = async (req: Request, res: Response): Promise<void> =
   }
 };
 
-
-// Update Cart Item Quantity
-// export const updateCartItemQuantity = async (req: Request, res: Response): Promise<void> => {
-//   const userId = req.user?.id;
-//   const { cartItemId, quantity } = req.body;
-
-//   if (!userId) {
-//     res.status(401).json({ message: "Unauthorized" });
-//     return;
-//   }
-
-//   if (!cartItemId || quantity === undefined) {
-//     res.status(400).json({ message: "Cart item ID and quantity are required" });
-//     return;
-//   }
-
-//   try {
-//     const existingItem = await db.cartItem.findFirst({
-//       where: {
-//         id: cartItemId,
-//         userId,
-//       },
-//     });
-
-//     if (!existingItem) {
-//       res.status(404).json({ message: "Cart item not found" });
-//       return;
-//     }
-
-//     const updatedItem = await db.cartItem.update({
-//       where: { id: cartItemId },
-//       data: { quantity },
-//     });
-
-//     res.status(200).json(updatedItem);
-//   } catch (error) {
-//     console.error("Update quantity error:", error);
-//     res.status(500).json({ message: "Failed to update cart item quantity" });
-//   }
-// };
-
-
+//update quantity
 export const updateCartItemQuantity = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
   const { cartItemId, quantity } = req.body;
@@ -179,5 +138,45 @@ export const updateCartItemQuantity = async (req: Request, res: Response): Promi
   } catch (error) {
     console.error("Update quantity error:", error);
     res.status(500).json({ message: "Failed to update cart item quantity" });
+  }
+};
+
+
+//delete 
+export const deleteCartItem = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.user?.id;
+  const { cartItemId } = req.params;
+
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  if (!cartItemId) {
+    res.status(400).json({ message: "Cart item ID is required" });
+    return;
+  }
+
+  try {
+    const existingItem = await db.cartItem.findFirst({
+      where: {
+        id: cartItemId,
+        userId,
+      },
+    });
+
+    if (!existingItem) {
+      res.status(404).json({ message: "Cart item not found or does not belong to user" });
+      return;
+    }
+
+    await db.cartItem.delete({
+      where: { id: cartItemId },
+    });
+
+    res.status(200).json({ message: "Cart item deleted successfully" });
+  } catch (error) {
+    console.error("Delete cart item error:", error);
+    res.status(500).json({ message: "Failed to delete cart item" });
   }
 };

@@ -31,7 +31,6 @@ function Card({
   user_name: string;
   user_email: string;
 }) {
-
   return (
     <div className="w-full min-h-48 h-auto rounded-2xl primary-bg relative overflow-hidden py-4 z-50">
       <div className="w-48 h-48 rounded-full absolute -right-10 -top-16 bg-[#6469F380] -z-50"></div>
@@ -86,54 +85,45 @@ function MyReferrals() {
   async function CallApi() {
     try {
       setLoading(true);
-      const req = await axios.get(`${API_URL}/api/referral/all`);
 
-      if (req.status === 200) {
-        const allReferrals = req.data;
+      const res = await axios.get(`${API_URL}/api/referral/detail/${user.id}`);
+      const data = res.data;
 
-        // Filter referrals created by the logged-in user
-        const myReferrals = allReferrals.filter(
-          (item) => item.createdForId === user.id
-        );
+      // Show only codes which have at least 1 transaction
+      const usedReferrals = data.referrals.filter(
+        (ref: any) => ref.transactions.length > 0
+      );
 
-        // PillsData = all referral codes you created
-        setPills(myReferrals.map((r) => r.referral));
+      // Pills from used codes only
+      const allReferralCodes = data.referrals.map(
+        (ref: any) => ref.referralCode
+      );
+      setPills(allReferralCodes);
 
-        // usedCardData = list of referral objects where the code was actually used
-        const usedReferrals = myReferrals.filter((r) => r.usedBy.length > 0);
+      // Flatten all transactions from used referrals
+      const formattedUsed = usedReferrals.flatMap((ref: any) =>
+        ref.transactions.map((tx: any) => ({
+          refferal_code: ref.referralCode,
+          amount: tx.commission,
+          product_title: tx.product?.name || "N/A",
+          user: {
+            user_name: tx.user?.name || "N/A",
+            user_email: tx.user?.email || "N/A",
+          },
+          createdAt: tx.createdAt,
+        }))
+      );
 
-        // Format for Card UI (temporary mock)
-        const formattedUsed = await Promise.all(
-          usedReferrals.flatMap((referral) =>
-            referral.usedBy.map(async (usedById: string) => {
-              try {
-                const userRes = await axios.get(
-                  `${API_URL}/api/users/get-by-id/${usedById}`
-                );
-                const userData = userRes.data.user;
+      // Sort by most recent first
+      formattedUsed.sort(
+        (a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
 
-                return {
-                  refferal_code: referral.referral,
-                  amount: "100", // (optional) Replace with actual logic if needed
-                  product_title: "Flat Booking", // (optional) Replace if you have product info
-                  user: {
-                    user_name: userData.name || "N/A",
-                    user_email: userData.email || "N/A",
-                  },
-                };
-              } catch (err) {
-                console.error(`Failed to fetch user for ID ${usedById}`, err);
-                return null;
-              }
-            })
-          )
-        );
-
-        // Remove nulls (failed fetches)
-        setUsedCardData(formattedUsed.filter(Boolean));
-      }
+      setUsedCardData(formattedUsed);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching referral data", error);
+      toast.error("Failed to load referral data.");
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,6 @@
 import express from "express";
 import { Request, Response } from "express";
-import { sendOtpMail } from "../utils/nodemailer";
+import { sendOtpMail } from "../utils/nodemailer.js";
 
 const router = express.Router();
 

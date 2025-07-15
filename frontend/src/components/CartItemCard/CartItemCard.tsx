@@ -4,9 +4,13 @@ import { Trash2, Plus, Star } from "lucide-react";
 import React from "react";
 
 
-const CartItemCard = ({ item, updateQuantity }: {
+const CartItemCard = ({ item, updateQuantity, price, discount }: {
   item: any,
-  updateQuantity: any
+  updateQuantity: any,
+  price?: number
+  discount?: string,
+  quantity: number,
+  setQuantity: any
 }) => {
 
   return (
@@ -17,14 +21,14 @@ const CartItemCard = ({ item, updateQuantity }: {
           {/* Image */}
           <div className="relative w-40 h-40 mb-3">
             <img
-              src={item.image}
+              src={item.images[0]}
               alt="Product"
               className="w-full h-full object-cover "
             />
 
             {/* Rating Badge top-left on image */}
             <div className="absolute bottom-2 right-2 flex items-center px-1 py-1 bg-white/90 shadow-sm">
-              <span className="text-[10px]  text-black">{item.rating}</span>
+              <span className="text-[10px]  text-black">{item.ratings}</span>
               <div className="h-3 w-px bg-black mx-1" />
               <Star className="w-3 h-3 text-cyan-300 fill-current" />
             </div>
@@ -42,12 +46,14 @@ const CartItemCard = ({ item, updateQuantity }: {
             </Button>
 
             <span className="text-lg font-medium text-gray-800 min-w-[2rem] text-center">
-              {item.quantity}
+              {/* {item.quantity} */}
+              {/* {quantity} */}
+              1
             </span>
 
             <Button
               size="icon"
-              onClick={() => updateQuantity(item.id, 1)}
+              onClick={() => updateQuantity(item.id, +1)}
               className="w-9 h-9 rounded-full bg-indigo-600 text-white hover:bg-indigo-700"
             >
               <Plus className="w-4 h-4" />
@@ -57,8 +63,8 @@ const CartItemCard = ({ item, updateQuantity }: {
 
         {/* Right: Product Info */}
         <div className="flex-1">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            {item.name || "Title of product goes here"}
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">
+            {item.name}
           </h2>
 
           <p className="text-gray-500 text-sm mb-2 leading-tight line-clamp-3">
@@ -69,7 +75,7 @@ const CartItemCard = ({ item, updateQuantity }: {
             variant="link"
             className="text-blue-500 text-sm font-medium p-0 h-auto mb-3"
           >
-            {item.sellerName || "seller name"}
+            {item.seller.name}
           </Button>
 
           {/* Price & discount */}

@@ -31,14 +31,12 @@ const ProductDetail = () => {
         const res = await axios.get(`${API_URL}/api/product/get-by-id/${id}`);
 
         const found = res.data;
-        // console.log("found: ",found);
-        
-        const sellerId = found.sellerId;
+        const userData = res.data.seller;
+        // const sellerId = found.sellerId;
 
-        const userEndpoint = `${API_URL}/api/users/get-by-id/${sellerId}`;
-        const userRes = await axios.get(userEndpoint);
+        // const userEndpoint = `${API_URL}/api/users/get-by-id/${sellerId}`;
+        // const userRes = await axios.get(userEndpoint);
 
-        const userData = userRes.data.user;
 
         setProduct(found);
         setSeller(userData);
@@ -401,12 +399,12 @@ const ProductDetail = () => {
       {/* Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 w-full">
         <div className="relative  w-full bg-black text-white py-5 px-4 shadow-lg flex items-center justify-between primary-bg-dark">
-          <Button className="bg-white text-black px-8 py-4 rounded-full text-base  font-medium  shadow  transition-all">
+          <Button onClick={() => navigate(`/buy-now/${product.id}/${btoa(referralCode)}`)} className="bg-white text-black px-8 py-4 rounded-full text-base  font-medium hover:bg-white/80  shadow  transition-all">
             Buy Now
           </Button>
 
           <Button
-            className="bg-transparent px-10 py-4 rounded-full text-base  font-medium shadow  border-2"
+            className="bg-transparent px-10 py-4 hover:bg-white hover:text-black rounded-full text-base  font-medium shadow  border-2"
             onClick={handleAddToCart}
           >
             Add to Cart

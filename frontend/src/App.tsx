@@ -246,7 +246,7 @@ function App() {
 
 
           <Route
-          path="/buy-now/:id"
+          path="/buy-now/:id/:code?"
           element={
             <ProtectedRoute>
               <BuyNow />

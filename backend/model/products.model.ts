@@ -5,7 +5,9 @@ export const getAllProducts = async () => {
 };
 
 export const getSlug = async (id: string) => {
-  return await db.products.findUnique({ where: { id: id } });
+  return await db.products.findUnique({ where: { id: id }, include: {
+    seller: true
+  } });
 };
 
 export const getSearchResults = async (query: string) => {

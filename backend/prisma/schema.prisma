@@ -190,6 +190,7 @@ model Order {
   address       String
   paymentMode   String   @default("COD")
   referralCode  String?  
+  sellerId      String?
   createdAt     DateTime @default(now())
   product       Products? @relation(fields: [productId], references: [id])
   user          User?     @relation(fields: [userId], references: [id])

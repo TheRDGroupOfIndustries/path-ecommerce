@@ -4,7 +4,7 @@ import "./Product.css"
 import { useContext } from "react"
 import { myContext } from "../../App"
 import EditModal from "./EditModal";
-import { Eye,Pencil,Trash2 } from "lucide-react";
+import { Star,Eye, Pencil, Trash2, ChevronDown } from "lucide-react";
 
 const ViewProduct = () => {
   const context = useContext(myContext);
@@ -16,7 +16,7 @@ const ViewProduct = () => {
   const [filterCategory, setFilterCategory] = useState("all");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
   const [currentPage, setCurrentPage] = useState(1);
-  const PRODUCTS_PER_PAGE = 3;
+  const PRODUCTS_PER_PAGE = 4;
   
    const [editFormData, setEditFormData] = useState({
       name: "",
@@ -75,7 +75,7 @@ const ViewProduct = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [filterRating, filterCategory, products]);
+  }, [filterCategory, products]);
 
   const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
   const paginatedProducts = filteredProducts.slice(
@@ -222,40 +222,35 @@ const ViewProduct = () => {
 
   return (
     <div className="product-container">
-      <div className="product-header">
-        <h1>View Products</h1>
-        <div className="product-stats">Total Products: {products.length}</div>
+      {/* Header Section Styled Like ViewItemM */}
+      <div className="user-header">
+        <div className="user-header-main">
+          <h1>View Products</h1>
+          <div className="custom-select-wrapper" style={{ position: 'relative' }}>
+            <select
+              id="categoryFilter"
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+              className="role-filter"
+            >
+              <option value="all">All Categories</option>
+              <option value="Electronics">Electronics</option>
+              <option value="cloth">Cloth</option>
+              <option value="Books">Books</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Accessories">Accessories</option>
+              <option value="Foot Wear">Foot Wear</option>
+            </select>
+            <span className="custom-arrow" style={{ position: 'absolute', right: 18, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#fff', fontSize: '1.2rem', zIndex: 3, display: 'flex', alignItems: 'center' }}>
+              <ChevronDown size={20} />
+            </span>
+          </div>
+        </div>
+        <div className="user-stats">
+          <span>Total Products: {products.length}</span><br />
+          <span>Current Shown: {filteredProducts.length}</span>
+        </div>
       </div>
-
-    <div className="filter-container">
-      <div className="filter-section">
-        <label>Filter by Rating:</label>
-        <select value={filterRating} onChange={(e) => setFilterRating(e.target.value)} className="rating-filter">
-          <option value="all">All Ratings</option>
-          <option value="5">5 Stars</option>
-          <option value="4">4 Stars</option>
-          <option value="3">3 Stars</option>
-          <option value="2">2 Stars</option>
-          <option value="1">1 Star</option>
-        </select>
-      </div>
- 
-   <div className="filter-section">
-      <label>Filter by Category:</label>
-     <select
-     value={filterCategory}
-     onChange={(e) => setFilterCategory(e.target.value)}
-     className="rating-filter">
-      <option value="all">All Categories</option>
-      <option value="Electronics">Electronics</option>
-      <option value="cloth">Cloth</option>
-      <option value="Books">Books</option>
-      <option value="Furniture">Furniture</option>
-      <option value="Accessories">Accessories</option>
-      <option value="Foot Wear">Foot Wear</option>
-     </select>
-  </div>
- </div>
 
       {filteredProducts.length === 0 ? (
         <div className="no-products">
@@ -263,10 +258,10 @@ const ViewProduct = () => {
         </div>
       ) : (
         isMobile ? (
-          <div className="product-list">
+          <div className="user-list">
             {paginatedProducts.map((product) => (
-              <div className="product-card" key={product.id}>
-                <div className="product-image-cell">
+              <div className="user-card" key={product.id}>
+                <div>
                   {product.images.length > 0 ? (
                     <img src={product.images?.[0] || "/placeholder.svg"} alt={product.name} />
                   ) : (
@@ -274,31 +269,28 @@ const ViewProduct = () => {
                   )}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div className="product-name"><strong>{product.name}</strong></div>
-                  <div className="product-description description-clamp">{product.description}</div>
-                  <span className="price-badge">₹{product.price}</span>
-                  {product.discount > 0 ? (
-                    <span className="discount-badge">{product.discount}%</span>
-                  ) : (
-                    <span className="no-discount">No Discount</span>
-                  )}
-                  <div className="rating-display">
-                    {"★".repeat(product.ratings)}{"☆".repeat(5 - product.ratings)}
-                  </div>
-                  <div className="features-preview">
-                    {product.features.slice(0, 2).map((feature, index) => (
-                      <span key={index} className="feature-tag">{feature}</span>
-                    ))}
-                    {product.features.length > 2 && (
-                      <span className="more-features">+{product.features.length - 2} more</span>
+                  <div className="user-name"><strong>{product.name}</strong></div>
+                  <div className="user-description description-clamp">{product.description}</div>
+                  <div className="user-category"><strong>{product.category}</strong></div>
+                  <div className="user-price"><span className="price-badge">₹{product.price}</span></div>
+                  <div className="user-discount">
+                    {product.discount > 0 ? (
+                      <span className="discount-badge">{product.discount}%</span>
+                    ) : (
+                      <span className="no-discount">No Discount</span>
                     )}
                   </div>
-                  <div><strong>{product.category}</strong></div>
+                  <div className="user-rating rating-display">
+                    <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                      <Star size={16} style={{ color: '#ffc107', verticalAlign: 'middle' }} />
+                      <span className="rating-number" style={{ marginLeft: 4 }}>{product.ratings}</span>
+                    </span>
+                  </div>
                   <div className="actions">
                     <div className="action-buttons">
-                      <button onClick={() => handleViewDetails(product)} className="view-btn">View</button>
-                      <button onClick={() => handleEdit(product)} className="edit-btn">Edit</button>
-                      <button onClick={() => handleDelete(product.id)} className="delete-btn">Delete</button>
+                      <button onClick={() => handleViewDetails(product)} className="view-btn" title="View"><Eye size={18} /></button>
+                      <button onClick={() => handleEdit(product)} className="edit-btn" title="Edit"><Pencil size={18} /></button>
+                      <button onClick={() => handleDelete(product.id)} className="delete-btn" title="Delete"><Trash2 size={18} /></button>
                     </div>
                   </div>
                 </div>
@@ -320,15 +312,16 @@ const ViewProduct = () => {
           </div>
         ) : (
           <div className="table-container">
-            <table className="product-table">
+            <table className="user-table">
               <thead>
                 <tr>
                   <th>Image</th>
                   <th>Name</th>
+                  <th>Description</th>
+                  <th>Category</th>
                   <th>Price</th>
                   <th>Discount</th>
                   <th>Rating</th>
-                  <th>Category</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -336,23 +329,16 @@ const ViewProduct = () => {
                 {paginatedProducts.map((product) => (
                   <tr key={product.id}>
                     <td>
-                      <div className="product-image-cell">
-                        {product.images.length > 0 ? (
-                          <img src={product.images?.[0] || "/placeholder.svg"} alt={product.name} />
-                        ) : (
-                          <div className="no-image">No Image</div>
-                        )}
-                      </div>
+                      {product.images.length > 0 ? (
+                        <img src={product.images?.[0] || "/placeholder.svg"} alt={product.name} width="50" height="50" />
+                      ) : (
+                        "No Image"
+                      )}
                     </td>
-                    <td>
-                      <div className="product-name">
-                        <strong>{product.name}</strong>
-                        <p className="product-description description-clamp">{product.description}</p>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="price-badge">₹{product.price}</span>
-                    </td>
+                    <td>{product.name}</td>
+                    <td><div className="description-clamp">{product.description}</div></td>
+                    <td>{product.category}</td>
+                    <td><span className="price-badge">₹{product.price}</span></td>
                     <td>
                       {product.discount > 0 ? (
                         <span className="discount-badge">{product.discount}%</span>
@@ -361,26 +347,16 @@ const ViewProduct = () => {
                       )}
                     </td>
                     <td>
-                      <div className="rating-display">
-                        {"★".repeat(product.ratings)}
-                        {"☆".repeat(5 - product.ratings)}
+                      <div className="rating-display" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                        <Star size={16} style={{ color: '#ffc107', verticalAlign: 'middle' }} />
+                        <span className="rating-number" style={{ marginLeft: 4 }}>{product.ratings}</span>
                       </div>
                     </td>
-  
                     <td>
-                       <strong>{product.category}</strong>
-                    </td>
-                    <td className="actions">
                       <div className="action-buttons">
-                        <button onClick={() => handleViewDetails(product)} className="view-btn">
-                          <Eye />
-                        </button>
-                        <button onClick={() => handleEdit(product)} className="edit-btn">
-                         <Pencil />
-                        </button>
-                        <button onClick={() => handleDelete(product.id)} className="delete-btn">
-                         <Trash2 />
-                        </button>
+                        <button onClick={() => handleViewDetails(product)} className="view-btn" title="View"><Eye size={18} /></button>
+                        <button onClick={() => handleEdit(product)} className="edit-btn" title="Edit"><Pencil size={18} /></button>
+                        <button onClick={() => handleDelete(product.id)} className="delete-btn" title="Delete"><Trash2 size={18} /></button>
                       </div>
                     </td>
                   </tr>
@@ -404,37 +380,42 @@ const ViewProduct = () => {
         )
       )}
 
-     {/* Edit Modal */}
+      {/* Edit Modal and View Modal remain unchanged */}
+      {/* Edit Modal */}
           {showEditModal && (
-            <EditModal
-              show={showEditModal}
-              onClose={() => setShowEditModal(false)}
-              formData={editFormData}
-              onChange={handleEditChange}
-              onSubmit={handleEditSubmit}
-              tempInputs={tempInputs}
-              handleTempInputChange={handleTempInputChange}
-              addImage={addImage}
-              removeImage={removeImage}
-              addArrayItem={addArrayItem}
-              removeArrayItem={removeArrayItem}
-              rating={ratingValue}
-              setRating={setRatingValue}
-              setFormRating={(val) =>
-              setEditFormData((prev) => ({ ...prev, ratings: val }))
-              }
-            />
+            <div className="modal-overlay" style={{ zIndex: 2001 }}>
+              <div className="modal-content" style={{ zIndex: 2002, position: 'relative' }}>
+                <EditModal
+                  show={showEditModal}
+                  onClose={() => setShowEditModal(false)}
+                  formData={editFormData}
+                  onChange={handleEditChange}
+                  onSubmit={handleEditSubmit}
+                  tempInputs={tempInputs}
+                  handleTempInputChange={handleTempInputChange}
+                  addImage={addImage}
+                  removeImage={removeImage}
+                  addArrayItem={addArrayItem}
+                  removeArrayItem={removeArrayItem}
+                  rating={ratingValue}
+                  setRating={setRatingValue}
+                  setFormRating={(val) =>
+                    setEditFormData((prev) => ({ ...prev, ratings: val }))
+                  }
+                />
+              </div>
+            </div>
           )}
 
 
       {/* View Product Details Modal */}
       {showModal && selectedProduct && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay" style={{ zIndex: 2001 }} onClick={closeModal}>
+          <div className="modal-content" style={{ zIndex: 2002 }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Product Details</h3>
-              <button className="modal-close" onClick={closeModal}>
-                ×
+              <button className="modal-close" onClick={closeModal} title="Close">
+                &times;
               </button>
             </div>
 

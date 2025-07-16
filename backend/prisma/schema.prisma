@@ -173,7 +173,7 @@ model ReferralTransaction {
   percent      Float
   commission   Float
   createdAt    DateTime @default(now())
-
+  sellerId     String? 
   referral     Referral @relation(fields: [referralId], references: [id])
   associate    User     @relation("AssociateUser", fields: [associateId], references: [id])
   user         User?    @relation("ReferredUser", fields: [userId], references: [id])

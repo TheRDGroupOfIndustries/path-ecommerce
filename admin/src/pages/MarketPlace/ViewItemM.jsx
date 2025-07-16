@@ -67,6 +67,8 @@ const ViewitemM = () => {
     setIsModalOpen(true);
   };
 
+  
+
   const handleSaveEdit = async () => {
     const { name, description, imageUrl, category, createdById } = editForm;
     try {
@@ -124,7 +126,81 @@ const ViewitemM = () => {
 
   return (
     <div className="user-container">
-      {isModalOpen && <div className={`global-modal-overlay${document.body.classList.contains('dark') ? ' dark' : ''}`}></div>}
+      {isModalOpen && (
+  <div style={{ zIndex: 2001, position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh' }}>
+    <div
+      style={{
+        position: 'absolute',
+        top: 0, left: 0, width: '100vw', height: '100vh',
+        background: 'rgba(30,32,48,0.55)',
+        zIndex: 2001
+      }}
+      onClick={() => setIsModalOpen(false)}
+    />
+    <div
+      className="modal-edit-content"
+      style={{
+        zIndex: 2002,
+        position: 'fixed',
+        left: '50%',
+        top: '50%',
+        transform: 'translate(-50%, -50%)',
+        background: '#fff',
+        borderRadius: 12,
+        padding: 24,
+        maxWidth: 600,
+        width: '90vw',
+        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+        transition: 'none',
+        animation: 'none'
+      }}
+      onClick={e => e.stopPropagation()}
+    >
+      <h2>Edit Item</h2>
+
+      <label>Name:</label>
+      <input name="name" value={editForm.name || ""} onChange={handleInputChange} />
+
+      <label>Description:</label>
+      <textarea name="description" value={editForm.description || ""} onChange={handleInputChange} />
+
+      <label>Category:</label>
+      <select name="category" value={editForm.category || ""} onChange={handleInputChange}>
+        {(() => {
+          const options = ["CLOTH", "MAKEUP", "SHOES", "FURNITURE", "ELECTRONIC"];
+          const current = (editForm.category || "").toUpperCase();
+          const uniqueOptions = options.includes(current) ? options : [current, ...options];
+          return uniqueOptions.map(opt => (
+            <option key={opt} value={opt}>{opt.charAt(0) + opt.slice(1).toLowerCase()}</option>
+          ));
+        })()}
+      </select>
+
+      <label>Images:</label>
+      <div className="image-edit-grid">
+        {editForm.imageUrl?.map((img, idx) => (
+          <div key={idx} className="item-edit-btn">
+            <img src={img} alt={`img-${idx}`} width="60" height="60" />
+            <button onClick={() => removeImage(idx)}>Remove</button>
+          </div>
+        ))}
+      </div>
+      <input
+        name="newImage"
+        value={editForm.newImage || ""}
+        onChange={handleInputChange}
+        placeholder="Add new image URL"
+      />
+      <div className="add-img-button-editmodel">
+       <button onClick={handleAddImage}>Add Image</button>
+      </div>
+      <div className="modal-actions">
+        <button onClick={handleSaveEdit}>Save</button>
+        <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+      </div>
+    </div>
+  </div>
+)}
       <div className="user-header">
         <div className="user-header-main">
           <h1>View Items</h1>
@@ -167,7 +243,7 @@ const ViewitemM = () => {
                 </div>
                 <div style={{ flex: 1 }}>
                   <div className="user-name"><strong>{user.name}</strong></div>
-                  <div className="user-description description-clamp">{user.description}</div>
+                  <div className="user-description">{user.description}</div>
                   <div className="user-category">{user.category}</div>
                   <div className="actions">
                     <div className="action-buttons">
@@ -249,50 +325,6 @@ const ViewitemM = () => {
           </div>
         )
       )}
-
-     {isModalOpen && (
-  <div className="modal-edit">
-    <div className="modal-edit-content">
-      <h2>Edit Item</h2>
-
-      <label>Name:</label>
-      <input name="name" value={editForm.name || ""} onChange={handleInputChange} />
-
-      <label>Description:</label>
-      <textarea name="description" value={editForm.description || ""} onChange={handleInputChange} />
-
-      <label>Category:</label>
-      <select name="category" value={editForm.category || ""} onChange={handleInputChange}>
-        <option value="CLOTH">Cloth</option>
-        <option value="MAKEUP">Makeup</option>
-        <option value="SHOES">Shoes</option>
-      </select>
-
-      <label>Images:</label>
-      <div className="image-edit-grid">
-        {editForm.imageUrl?.map((img, idx) => (
-          <div key={idx} className="item-edit-btn">
-            <img src={img} alt={`img-${idx}`} width="60" height="60" />
-            <button onClick={() => removeImage(idx)}>Remove</button>
-          </div>
-        ))}
-      </div>
-      <input
-        name="newImage"
-        value={editForm.newImage || ""}
-        onChange={handleInputChange}
-        placeholder="Add new image URL"
-      />
-      <div className="add-img-button-editmodel">
-       <button onClick={handleAddImage}>Add Image</button>
-      </div>
-      <div className="modal-actions">
-        <button onClick={handleSaveEdit}>Save</button>
-        <button onClick={() => setIsModalOpen(false)}>Cancel</button>
-      </div>
-    </div>
-  </div>
-)}
     </div>
   );
 };

@@ -5,6 +5,10 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
+strong{
+  font-weight: 500;
+}
+
 .product-header {
   display: flex;
   justify-content: space-between;
@@ -140,7 +144,7 @@
 }
 
 .add-btn {
-  background: linear-gradient(135deg, #00b894, #00a085);
+  background: linear-gradient(135deg, #0e8ded, #70a4f3);
   color: white;
   border: none;
   padding: 12px 20px;
@@ -158,54 +162,6 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 184, 148, 0.4);
 }
-
-/* Preview Styles */
-/* 
-.preview-container {
-  margin-top: 20px;
-  padding: 15px;
-  background: white;
-  border-radius: 8px;
-  border: 2px dashed #ddd;
-}
-
-.preview-title {
-  color: #333;
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 15px;
-  margin-top: 0;
-}
-
-.preview-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 15px;
-}
-
-.preview-item {
-  position: relative;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.preview-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-}
-
-.image-preview {
-  height: 100%;
-}
-
-.image-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-} */
 
 .image-url {
   padding: 8px;
@@ -312,7 +268,7 @@
 }
 
 .submit-btn {
-  background: linear-gradient(135deg, #74b9ff, #0984e3);
+  background: linear-gradient(135deg, #4f9fef, #309ef2);
   color: white;
   border: none;
   padding: 15px 40px;
@@ -364,17 +320,18 @@
 }
 
 .product-table thead {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: white;
+  color: rgb(153, 152, 152);
+  border-bottom: 1px solid rgb(233, 233, 233);
 }
 
 .product-table th {
   padding: 18px 15px;
   text-align: left;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-family: poppins;
 }
 
 .product-table td {
@@ -398,8 +355,8 @@
 }
 
 .product-image-cell {
-  width: 80px;
-  height: 80px;
+  width: 65px;
+  height: 65px;
 }
 
 .product-image-cell img {
@@ -433,25 +390,26 @@
   font-size: 0.85rem;
   margin: 5px 0 0 0;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
+
 .price-badge {
-  background: linear-gradient(135deg, #00b894, #00a085);
-  color: white;
+  background: linear-gradient(135deg, #c3f6dc, #d3f8da);
+  color: rgb(24, 183, 13);
   padding: 6px 12px;
-  border-radius: 20px;
+  border-radius:7px;
   font-size: 0.9rem;
   font-weight: 600;
 }
 
 .discount-badge {
-  background: linear-gradient(135deg, #fd79a8, #e84393);
-  color: white;
+  background: linear-gradient(135deg, #fabdbd, #fcc3cb);
+  color: rgb(235, 13, 13);
   padding: 6px 12px;
-  border-radius: 20px;
+  border-radius:7px;
   font-size: 0.8rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -466,7 +424,7 @@
 
 .rating-display {
   color: #ffc107;
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
 .rating-number {
@@ -521,8 +479,8 @@
 }
 
 .view-btn {
-  background: linear-gradient(135deg, #17a2b8, #138496);
-  color: white;
+  background: linear-gradient(135deg, #bcf1f9, #d9f2f6);
+  color: rgb(3, 83, 90);
 }
 
 .view-btn:hover {
@@ -531,7 +489,7 @@
 }
 
 .edit-btn {
-  background: linear-gradient(135deg, #8ac0f6, #8cc9f8);
+  background: linear-gradient(135deg, #c9e2fc, #cbe7fd);
   color: rgb(3, 28, 48);
 }
 
@@ -541,7 +499,7 @@
 }
 
 .delete-btn {
-  background: linear-gradient(135deg, #f8858b, #f5a2a4);
+  background: linear-gradient(135deg, #f6c3c5, #fdd0d0);
   color: rgb(243, 13, 13);
 }
 
@@ -1046,16 +1004,16 @@
   padding: 25px 30px;
   width: 100%;
   max-width: 700px;
-  max-height: 90vh; /* Limit height to 90% of the viewport */
-  overflow-y: auto; /* Enable scroll inside modal if content overflows */
+  max-height: 90vh; 
+  overflow-y: auto; 
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   animation: fadeIn 0.3s ease-in-out;
   position: relative;
-  scrollbar-width: thin; /* Firefox */
+  scrollbar-width: thin; 
   scrollbar-color: #ccc transparent;
 }
 
-/* Optional: Custom scrollbar for WebKit browsers */
+
 .modal-content::-webkit-scrollbar {
   width: 6px;
 }
@@ -1240,4 +1198,9 @@ form textarea:focus {
 .badge1.gray {
   background-color: #e2e3e5;
   color: #6c757d;
+}
+
+
+.role-filter {
+  padding: 8px 45px 10px 18px !important;
 }

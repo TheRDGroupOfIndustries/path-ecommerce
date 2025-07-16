@@ -24,6 +24,7 @@ export const buyNow = async (req: Request, res: Response) => {
         price: true,
         discount: true,
         referralPercentage: true,
+        sellerId: true,
       },
     });
 
@@ -60,6 +61,7 @@ export const buyNow = async (req: Request, res: Response) => {
           data: {
             referralId: referral.id,
             associateId: referredByUser.id,
+            sellerId: product.sellerId,
             userId,
             productId,
             productName: product.name,
@@ -242,6 +244,7 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
             discount: true,
             referralPercentage: true,
             referralBy: true,
+            sellerId: true,
           },
         },
       },
@@ -293,6 +296,7 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
               price: priceAfterDiscount,
               percent: product.referralPercentage ?? 0,
               commission: ((product.referralPercentage ?? 0) / 100) * priceAfterDiscount,
+              sellerId: product.sellerId,
             },
           });
 
@@ -317,6 +321,7 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
           paymentMode,
           status: "Pending",
           referralCode,
+          sellerId: product.sellerId, 
         },
       });
 

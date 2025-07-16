@@ -250,8 +250,35 @@ const ViewitemP = () => {
       )}
 
      {isModalOpen && (
-  <div className="modal-edit">
-    <div className="modal-edit-content">
+  <div style={{ zIndex: 2001, position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh' }}>
+    <div
+      style={{
+        position: 'absolute',
+        top: 0, left: 0, width: '100vw', height: '100vh',
+        background: 'rgba(30,32,48,0.55)',
+        zIndex: 2001
+      }}
+      onClick={() => setIsModalOpen(false)}
+    />
+    <div
+      className="modal-edit-content"
+      style={{
+        zIndex: 2002,
+        position: 'fixed',
+        left: '50%',
+        top: '50%',
+        transform: 'translate(-50%, -50%)',
+        background: '#fff',
+        borderRadius: 12,
+        padding: 24,
+        maxWidth: 600,
+        width: '90vw',
+        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+        transition: 'none',
+        animation: 'none'
+      }}
+      onClick={e => e.stopPropagation()}
+    >
       <h2>Edit Item</h2>
 
       <label>Name:</label>
@@ -262,9 +289,14 @@ const ViewitemP = () => {
 
       <label>Category:</label>
       <select name="category" value={editForm.category || ""} onChange={handleInputChange}>
-        <option value="CLOTH">Cloth</option>
-        <option value="MAKEUP">Makeup</option>
-        <option value="SHOES">Shoes</option>
+        {(() => {
+          const options = ["CLOTH", "MAKEUP", "SHOES", "FURNITURE", "ELECTRONIC", "HOUSE", "APARTMENT", "FLAT"];
+          const current = (editForm.category || "").toUpperCase();
+          const uniqueOptions = options.includes(current) ? options : [current, ...options];
+          return uniqueOptions.map(opt => (
+            <option key={opt} value={opt}>{opt.charAt(0) + opt.slice(1).toLowerCase()}</option>
+          ));
+        })()}
       </select>
 
       <label>Images:</label>
@@ -291,7 +323,7 @@ const ViewitemP = () => {
       </div>
     </div>
   </div>
-)}
+    )}
     </div>
   );
 };

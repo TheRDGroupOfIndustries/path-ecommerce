@@ -642,3 +642,13 @@
     margin-bottom: 4px;
   }
 }
+
+.description-clamp{
+  color: #666;
+  font-size: 1rem;
+  margin: 5px 0 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

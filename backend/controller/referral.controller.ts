@@ -125,6 +125,7 @@ export const applyReferralCode = async (req: Request, res: Response) => {
         price: originalPrice,
         percent,
         commission: discountAmount,
+        sellerId: product.sellerId,
       },
     });
 

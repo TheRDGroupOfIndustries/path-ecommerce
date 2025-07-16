@@ -21,7 +21,6 @@ export default function MyCart() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        console.log("Cart: ", res);
 
         const mapped = res.data.map((item) => ({
           id: item.id,

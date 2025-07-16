@@ -4,17 +4,14 @@ import { Trash2, Plus, Star } from "lucide-react";
 import React from "react";
 
 
-const CartItemCard = ({ item, updateQuantity, price, discount,quantity,setQuantity }: {
+const CartItemCard = ({ item, updateQuantity, discount }: {
   item: any,
   updateQuantity: any,
   price?: number
   discount?: string,
-  quantity: number,
-  setQuantity: any
 }) => {
 
   const dis = discount ? discount.split("-")[1] : 0
-
   return (
     <Card className="w-full shadow-none border-none" key={item.id}>
       <CardContent className=" flex gap-6 px-0">
@@ -41,21 +38,21 @@ const CartItemCard = ({ item, updateQuantity, price, discount,quantity,setQuanti
             <Button
               variant="outline"
               size="icon"
-              onClick={() => updateQuantity(item.id, -1)}
+              onClick={() => updateQuantity(item.id, -1, item.quantity)}
               className="w-9 h-9 rounded-full border-2 border-red-300 text-red-500 hover:bg-red-50"
             >
               <Trash2 className="w-4 h-4" />
             </Button>
 
             <span className="text-lg font-medium text-gray-800 min-w-[2rem] text-center">
-               {quantity ?? item.quantity}
+               {item.quantity}
 
               
             </span>
 
             <Button
               size="icon"
-              onClick={() => updateQuantity(item.id, +1)}
+              onClick={() => updateQuantity(item.id, +1, item.quantity)}
               className="w-9 h-9 rounded-full bg-indigo-600 text-white hover:bg-indigo-700"
             >
               <Plus className="w-4 h-4" />

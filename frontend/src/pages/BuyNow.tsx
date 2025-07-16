@@ -78,11 +78,6 @@ function BuyNow() {
   }
   
 
-  // useEffect(() => {
-  //   GetItem();
-  //   GetAddress();
-  // }, []);
-
 useEffect(() => {
   if (fromCart && cartItemsFromCart?.length > 0) {
     // Cart-based checkout
@@ -92,8 +87,8 @@ useEffect(() => {
       0
     );
     setPrice(total);
+
   } else if (id) {
-    
     GetItem();
   }
 
@@ -141,8 +136,8 @@ useEffect(() => {
             },
           }
         );
-
-        if (res.status === 200) {
+        console.log(res);
+        if (res.status === 201) {
           navigate("/thanks");
         }
       } catch (error) {
@@ -176,13 +171,39 @@ useEffect(() => {
       }
     }
   };
+  const updateQuantity = async (id: string, change: number, prevQuat?: number) => {
+    
+      const newQuantity = prevQuat + change;
+      try {
+        await axios.put(
+          `${API_URL}/api/cart/update-quantity`,
+          {
+            cartItemId: id,
+            quantity: newQuantity,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
-  // useEffect(() => {
-  //   if (data.length > 0) {
-  //     const unitPrice = data[0].finalPrice;
-  //     setPrice(unitPrice * quantity);
-  //   }
-  // }, [quantity, data]);
+        if (newQuantity <= 0) {
+          setData((items) => items.filter((item) => item.id !== id));
+          
+        } else {
+          setData((items) =>
+            items.map((item) =>
+              item.id === id ? { ...item, quantity: newQuantity } : item
+            )
+          );
+        }
+      } catch (error) {
+        console.error("Error updating quantity:", error);
+      }
+
+  }
+
 
   useEffect(() => {
   if (fromCart && data.length > 0) {
@@ -195,6 +216,8 @@ useEffect(() => {
     const unitPrice = data[0].finalPrice;
     setPrice(unitPrice * quantity);
   }
+
+
 }, [quantity, data]);
 
 
@@ -296,11 +319,7 @@ useEffect(() => {
             <CartItemCard
               key={index}
               item={item}
-              quantity={fromCart ? item.quantity : quantity}
-              setQuantity={fromCart ? undefined : setQuanity}
-              // updateQuantity={
-              //   updateQuantity  
-              // }
+              updateQuantity={updateQuantity}
               price={item.finalPrice}
               discount={code}
             />

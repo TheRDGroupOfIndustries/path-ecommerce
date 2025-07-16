@@ -230,6 +230,7 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
 
   try {
     const user = await db.user.findUnique({ where: { id: userId } });
+    // console.log(user);
     if (!user) return res.status(404).json({ message: "User not found" });
     if (!user.address) return res.status(400).json({ message: "User address not found" });
 

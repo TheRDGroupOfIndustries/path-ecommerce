@@ -6,7 +6,11 @@ export const getAllProducts = async () => {
 
 export const getSlug = async (id: string) => {
   return await db.products.findUnique({ where: { id: id }, include: {
-    seller: true
+    seller: {
+      include: {
+        cartItems: true
+      }
+    }
   } });
 };
 

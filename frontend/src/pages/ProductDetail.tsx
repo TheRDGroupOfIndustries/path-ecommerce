@@ -16,12 +16,12 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [seller, setSeller] = useState(null);
-
+  const [disable, setDisable] = useState(false)
   const [referralCode, setReferralCode] = useState("");
   const [referralStep, setReferralStep] = useState("check"); // check | apply | applied
   const [referralError, setReferralError] = useState("");
   const [referralDiscount, setReferralDiscount] = useState(0);
-
+  const [isCart, setCart] = useState(false)
   const [userRating, setUserRating] = useState(0);
   const [userReview, setUserReview] = useState("");
 
@@ -32,12 +32,12 @@ const ProductDetail = () => {
 
         const found = res.data;
         const userData = res.data.seller;
-        // const sellerId = found.sellerId;
-
-        // const userEndpoint = `${API_URL}/api/users/get-by-id/${sellerId}`;
-        // const userRes = await axios.get(userEndpoint);
-
-
+        
+        const prod = userData.cartItems.map((items) => items.productId)
+        if (prod.includes(id)) {
+          setCart(true)
+        }
+    
         setProduct(found);
         setSeller(userData);
         setMainImageIndex(0);
@@ -47,7 +47,7 @@ const ProductDetail = () => {
     };
 
     fetchProduct();
-  }, [id]);
+  }, [id, isCart]);
 
   const handleReferralButtonClick = async () => {
     const code = referralCode.trim().toLowerCase();
@@ -146,6 +146,7 @@ const ProductDetail = () => {
     }
 
     try {
+      setDisable(true)
       const res = await axios.post(
         `${API_URL}/api/cart/add`,
         {
@@ -158,9 +159,10 @@ const ProductDetail = () => {
           },
         }
       );
-      
-      console.log("res: ", res);
-
+      if (res.status === 201) {
+        setCart(true)
+        setDisable(false)
+      }
       toast.success("Item added to cart!");
     } catch (error) {
       console.error("Add to cart failed:", error);
@@ -399,15 +401,17 @@ const ProductDetail = () => {
       {/* Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 w-full">
         <div className="relative  w-full bg-black text-white py-5 px-4 shadow-lg flex items-center justify-between primary-bg-dark">
-          <Button onClick={() => navigate(`/buy-now/${product.id}/${btoa(referralCode)}`)} className="bg-white text-black px-8 py-4 rounded-full text-base  font-medium hover:bg-white/80  shadow  transition-all">
+          <Button onClick={() => navigate(`/buy-now/${product.id}/${btoa(referralCode)}`)} className="bg-white text-black px-8 py-4 rounded-full text-base w-2/4  font-medium hover:bg-white/80  shadow  transition-all">
             Buy Now
           </Button>
-
           <Button
-            className="bg-transparent px-10 py-4 hover:bg-white hover:text-black rounded-full text-base  font-medium shadow  border-2"
-            onClick={handleAddToCart}
+          disabled={disable}
+            className={`bg-transparent px-8 py-4 hover:bg-white hover:text-black rounded-full text-base  font-medium shadow  ${isCart ? "border-0" : "border-2"}`}
+            onClick={isCart ? () => navigate("/my-cart") : handleAddToCart}
           >
-            Add to Cart
+            {
+              isCart ? "View in cart" : "Add to Cart"
+            }
           </Button>
         </div>
       </div>

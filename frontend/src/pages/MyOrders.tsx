@@ -24,6 +24,7 @@ const MyOrderItem = ({
   productId,
   canChangeStatus,
   price,
+  useremail
 }) => {
   const [status, setStatus] = useState(progress);
 
@@ -65,9 +66,12 @@ const MyOrderItem = ({
   };
 
   return (
-    <Card className="rounded-lg mb-4 bg-gray-100 min-h-36 p-2 border-none shadow-none">
+    <Card className="rounded-lg mb-4 bg-gray-100 min-h-36 p-2 border-none shadow-none relative">
       <CardContent className="flex flex-row items-center justify-between px-2 py-1 flex-nowrap ">
         <div className="flex flex-col space-y-2">
+          {
+            useremail.length > 0 && <p className="text-xs text-black/60 font-bold w-[91%] absolute text-right top-1.5 font-sans">{useremail}</p>
+          }
           <p className="text-xs text-black/90 font-light">{date}</p>
           <h2 className="text-base text-black ">{productId}</h2>
           <p className="text-sm text-black/90 font-medium">
@@ -184,6 +188,7 @@ export default function MyOrders() {
       });
 
       if (res.status === 200) {
+        // console.log(res.data.orders)
         setSellerOrders(res.data.orders); 
       }
     } catch (error) {
@@ -229,6 +234,7 @@ export default function MyOrders() {
                 price={order.totalAmount}
                 image={product.images[0]}
                 progress={order.status}
+                useremail={order.user.email}
                 progressColor={
                   order.status === "Pending"
                     ? "text-blue-600"
@@ -260,6 +266,7 @@ export default function MyOrders() {
             price={order.totalAmount}
             image={order.product.images[0]}
             progress={order.status}
+            useremail={""}
             progressColor={
               order.status === "Pending"
                 ? "text-blue-600"

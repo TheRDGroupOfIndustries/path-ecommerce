@@ -129,15 +129,17 @@ export const getCartItems = async (req: Request, res: Response): Promise<void> =
     });
 
     const modifiedCartItems = cartItems.map(item => {
-      const originalPrice = parseFloat(item.product.price);
-      const referralApplied = item.discountedPrice < originalPrice;
+    const originalPrice = parseFloat(item.product.price);
+    const discounted = item.discountedPrice ?? originalPrice;
+    const referralApplied = discounted < originalPrice;
 
-      return {
-        ...item,
-        referralApplied,
-        referralCode: referralApplied ? item.product.referralBy : null,
-      };
-    });
+    return {
+    ...item,
+    referralApplied,
+    referralCode: referralApplied ? item.product.referralBy : null,
+   };
+   });
+
 
     res.status(200).json(modifiedCartItems);
   } catch (error) {

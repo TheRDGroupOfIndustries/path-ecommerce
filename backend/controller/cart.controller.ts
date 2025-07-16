@@ -24,12 +24,32 @@ export const addToCart = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Calculate base price
     let discountedPrice = parseFloat(product.price);
 
-    // Apply referral discount
+    //  Prevent multiple referrals in cart
     if (referralCode) {
-      const referral = await db.referral.findUnique({ where: { referral: referralCode } });
+      const existingReferralItem = await db.cartItem.findFirst({
+        where: {
+          userId,
+          discountedPrice: {
+            not: parseFloat(product.price), // referral already applied
+          },
+        },
+        include: {
+          product: true,
+        },
+      });
+
+      if (existingReferralItem) {
+          res.status(400).json({
+          message: `Referral already applied to ${existingReferralItem.product.name}`,
+        });
+      }
+
+      const referral = await db.referral.findUnique({
+        where: { referral: referralCode },
+      });
+
       if (referral && product.referralPercentage) {
         const percent = product.referralPercentage;
         discountedPrice = discountedPrice - (discountedPrice * percent) / 100;
@@ -37,12 +57,8 @@ export const addToCart = async (req: Request, res: Response): Promise<void> => {
       }
     }
 
-    // Check if product already in cart
     const existingItem = await db.cartItem.findFirst({
-      where: {
-        userId,
-        productId,
-      },
+      where: { userId, productId },
     });
 
     if (existingItem) {
@@ -74,7 +90,7 @@ export const addToCart = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-// Get Cart Items
+//  Get Cart Items
 export const getCartItems = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
 
@@ -97,6 +113,8 @@ export const getCartItems = async (req: Request, res: Response): Promise<void> =
             description: true,
             ratings: true,
             features: true,
+            referralBy: true,
+            referralPercentage: true,
             seller: {
               select: {
                 id: true,
@@ -110,25 +128,25 @@ export const getCartItems = async (req: Request, res: Response): Promise<void> =
       },
     });
 
-    const updatedCartItems = cartItems.map((item) => {
-      const basePrice = parseFloat(item.product.price);
+    const modifiedCartItems = cartItems.map(item => {
+      const originalPrice = parseFloat(item.product.price);
+      const referralApplied = item.discountedPrice < originalPrice;
+
       return {
         ...item,
-        product: {
-          ...item.product,
-          finalPrice: item.discountedPrice ?? basePrice,
-        },
+        referralApplied,
+        referralCode: referralApplied ? item.product.referralBy : null,
       };
     });
 
-    res.status(200).json(updatedCartItems);
+    res.status(200).json(modifiedCartItems);
   } catch (error) {
     console.error("Get cart error:", error);
     res.status(500).json({ message: "Failed to fetch cart items" });
   }
 };
 
-// Update quantity
+// Update Quantity
 export const updateCartItemQuantity = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
   const { cartItemId, quantity } = req.body;
@@ -196,9 +214,7 @@ export const deleteCartItem = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    await db.cartItem.delete({
-      where: { id: cartItemId },
-    });
+    await db.cartItem.delete({ where: { id: cartItemId } });
 
     res.status(200).json({ message: "Cart item deleted successfully" });
   } catch (error) {

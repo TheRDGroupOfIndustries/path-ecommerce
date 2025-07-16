@@ -145,7 +145,7 @@ const AddItemM = () => {
     <div className="add-item-container">
       <div className="add-item-header">
         <div className="add-item-title">+ Add new</div>
-        <div className="add-item-subtitle">Fill in the information below to add a new product</div>
+        <div className="add-item-subtitle">Fill the information below to add a new product</div>
       </div>
 
       {submitSuccess && (

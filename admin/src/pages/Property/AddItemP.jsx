@@ -143,7 +143,7 @@ const AddItemP = () => {
     <div className="add-item-container">
       <div className="add-item-header" style={{ background: '#353896', borderRadius: '20px', color: 'white', padding: '20px 0'}}>
         <div style={{ fontSize: 20, fontWeight: 500, marginBottom: 8 }}>+ Add new</div>
-        <div style={{ fontSize: 14, opacity: 0.9 }}>Fill in the information below to add a new product</div>
+        <div style={{ fontSize: 14, opacity: 0.9 }}>Fill the information below to add a new product</div>
       </div>
 
       {submitSuccess && (

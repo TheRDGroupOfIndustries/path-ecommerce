@@ -1,16 +1,15 @@
 import { Request, Response } from "express";
 import db from "../client/connect.js";
 
-//  Add to Cart
+// Add to Cart
 export const addToCart = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
+  const { productId, quantity, referralCode } = req.body;
 
   if (!userId) {
     res.status(401).json({ message: "Unauthorized" });
     return;
   }
-
-  const { productId, quantity } = req.body;
 
   if (!productId) {
     res.status(400).json({ message: "Product ID required" });
@@ -18,6 +17,27 @@ export const addToCart = async (req: Request, res: Response): Promise<void> => {
   }
 
   try {
+    const product = await db.products.findUnique({ where: { id: productId } });
+
+    if (!product) {
+      res.status(404).json({ message: "Product not found" });
+      return;
+    }
+
+    // Calculate base price
+    let discountedPrice = parseFloat(product.price);
+
+    // Apply referral discount
+    if (referralCode) {
+      const referral = await db.referral.findUnique({ where: { referral: referralCode } });
+      if (referral && product.referralPercentage) {
+        const percent = product.referralPercentage;
+        discountedPrice = discountedPrice - (discountedPrice * percent) / 100;
+        discountedPrice = parseFloat(discountedPrice.toFixed(2));
+      }
+    }
+
+    // Check if product already in cart
     const existingItem = await db.cartItem.findFirst({
       where: {
         userId,
@@ -28,22 +48,26 @@ export const addToCart = async (req: Request, res: Response): Promise<void> => {
     if (existingItem) {
       const updatedItem = await db.cartItem.update({
         where: { id: existingItem.id },
-        data: { quantity: existingItem.quantity + (quantity || 1) },
+        data: {
+          quantity: existingItem.quantity + (quantity || 1),
+          discountedPrice,
+        },
       });
 
-      res.status(200).json(updatedItem); 
+      res.status(200).json(updatedItem);
       return;
     }
 
-    const cartItem = await db.cartItem.create({
+    const newItem = await db.cartItem.create({
       data: {
         userId,
         productId,
         quantity: quantity || 1,
+        discountedPrice,
       },
     });
 
-    res.status(201).json(cartItem); 
+    res.status(201).json(newItem);
   } catch (error) {
     console.error("Add to cart error:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -86,14 +110,25 @@ export const getCartItems = async (req: Request, res: Response): Promise<void> =
       },
     });
 
-    res.status(200).json(cartItems);
+    const updatedCartItems = cartItems.map((item) => {
+      const basePrice = parseFloat(item.product.price);
+      return {
+        ...item,
+        product: {
+          ...item.product,
+          finalPrice: item.discountedPrice ?? basePrice,
+        },
+      };
+    });
+
+    res.status(200).json(updatedCartItems);
   } catch (error) {
     console.error("Get cart error:", error);
     res.status(500).json({ message: "Failed to fetch cart items" });
   }
 };
 
-//update quantity
+// Update quantity
 export const updateCartItemQuantity = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
   const { cartItemId, quantity } = req.body;
@@ -110,10 +145,7 @@ export const updateCartItemQuantity = async (req: Request, res: Response): Promi
 
   try {
     const existingItem = await db.cartItem.findFirst({
-      where: {
-        id: cartItemId,
-        userId,
-      },
+      where: { id: cartItemId, userId },
     });
 
     if (!existingItem) {
@@ -121,14 +153,12 @@ export const updateCartItemQuantity = async (req: Request, res: Response): Promi
       return;
     }
 
-    
     if (quantity <= 0) {
       await db.cartItem.delete({ where: { id: cartItemId } });
       res.status(200).json({ message: "Cart item deleted" });
       return;
     }
 
-    
     const updatedItem = await db.cartItem.update({
       where: { id: cartItemId },
       data: { quantity },
@@ -141,8 +171,7 @@ export const updateCartItemQuantity = async (req: Request, res: Response): Promi
   }
 };
 
-
-//delete 
+// Delete Cart Item
 export const deleteCartItem = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
   const { cartItemId } = req.params;
@@ -159,10 +188,7 @@ export const deleteCartItem = async (req: Request, res: Response): Promise<void>
 
   try {
     const existingItem = await db.cartItem.findFirst({
-      where: {
-        id: cartItemId,
-        userId,
-      },
+      where: { id: cartItemId, userId },
     });
 
     if (!existingItem) {

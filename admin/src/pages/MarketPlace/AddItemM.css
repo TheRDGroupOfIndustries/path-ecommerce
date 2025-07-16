@@ -8,17 +8,18 @@
 }
 
 .add-item-header {
-  background: #353896;
-  color: #fff;
+  background:transparent;
+  color: #353896;
   border-radius: 20px;
-  padding: 40px 0 32px 0;
+  padding: 20px 0 20px 0;
   margin-bottom: 40px;
   text-align: center;
   box-shadow: 0 10px 30px rgba(53, 56, 150, 0.08);
+  border:1px solid #353896;
 }
 
 .add-item-header .add-item-title {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 8px;
 }
@@ -144,12 +145,16 @@
   border-radius: 10px;
   border: 1px solid #eee;
   padding: 8px;
+  width:120px;
+  max-width: 130px;
+  height: auto;
   background: #f9f9f9;
   box-shadow: 0 2px 8px rgba(53, 56, 150, 0.04);
 }
 .preview-item img {
-  max-width: 120px;
+  max-width: 130px;
   max-height: 80px;
+  width: 100%;
   border-radius: 8px;
 }
 .delete-preview-btn {

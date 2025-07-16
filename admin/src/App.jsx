@@ -55,7 +55,7 @@ function AppLayout({ darkMode, toggleDarkMode, sidebarOpen, toggleSidebar }) {
           <Route path="/view-kyc" element={<AdminKYCList/>}  />
           <Route path="/admin-anouncment" element={<AdminAnnouncment/>} />
           <Route path="/seller-anouncment" element={<SellerAnnouncment/>} />
-          <Route path="//viewAssociate" element={<ViewAssociate/>} />
+          <Route path="/viewAssociate" element={<ViewAssociate/>} />
         </Routes>
       </div>
     </>
@@ -89,7 +89,7 @@ function App() {
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
-  // Global Alert Box State
+ 
   const [alertBox, setAlertBox] = useState({
     msg: "",
     error: false,

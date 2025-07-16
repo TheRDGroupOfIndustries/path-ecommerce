@@ -34,7 +34,6 @@ route.put("/update-password/:email", async (req: Request, res: Response) => {
   await userController.updatePassword(req, res)})
 
 //  Create a new user
-
 route.post("/create-user", upload.single("image"), async (req: Request, res: Response) => {
     await userController.createUser(req, res);
 });

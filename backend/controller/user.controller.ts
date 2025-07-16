@@ -50,7 +50,7 @@ export const userByEmail = async (req: Request, res: Response) => {
 
 
 export const createUser = async (req: Request, res: Response) => {
-  const { name, email, password, confirmPassword, phone, role } = req.body;
+  const { name, email, password, confirmPassword, phone, role ,address} = req.body;
 
   if (password !== confirmPassword) {
     return res.status(400).json({ error: "Passwords do not match" });
@@ -76,6 +76,7 @@ export const createUser = async (req: Request, res: Response) => {
       phone,
       role: role?.toUpperCase() || "USER",
       imageUrl,
+      address
     });
 
     if (user) {
@@ -105,36 +106,55 @@ export const updatePassword = async (req: Request, res: Response) => {
   }
 };
 
-
 export const updateUser = async (req: Request, res: Response) => {
   let { id } = req.params;
+
+  // Get ID from token if available
   if (req.headers.authorization) {
-    const data = verifyTokenFromHeader(req.headers.authorization as string)
-    // console.log(data?.id)
-    id = data?.id as string
+    const data = verifyTokenFromHeader(req.headers.authorization as string);
+    id = data?.id as string;
   }
-  const body = req.body;
+
+  if (!id) {
+    return res.status(400).json({ error: "No user ID found" });
+  }
+
   try {
+    const body = { ...req.body };
+
+    // Hash password if present
     if (body.password) {
       body.password = await bcrypt.hash(body.password, 10);
     }
 
+    // Handle image upload
     if (req.file) {
-      const imageUrl = await uploadBufferToCloudinary(req.file.buffer, `profile-${id}`, "profiles");
+      const imageUrl = await uploadBufferToCloudinary(
+        req.file.buffer,
+        `profile-${id}`,
+        "profiles"
+      );
       body.imageUrl = imageUrl;
     }
 
-    if (!id) {
-      return res.status(400).json({error: "No id found"})
-    }
-      await userModel.updateUser(id, body);
+    // Check for email conflict
+    if (body.email) {
+      const existingUserWithEmail = await userModel.userByGmail(body.email);
 
+      if (existingUserWithEmail && existingUserWithEmail.id !== id) {
+        return res.status(409).json({ error: "Email already in use by another user" });
+      }
+    }
+
+    await userModel.updateUser(id, body);
     return res.status(200).json({ message: "User updated successfully" });
   } catch (error) {
     console.error("Error updating user:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
 
 export const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;

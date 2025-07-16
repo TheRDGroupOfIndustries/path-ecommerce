@@ -70,7 +70,7 @@ export const updateUser = async (id: string, data: UpdateUserInput) => {
     where: { id },
     data: {
       ...(data.name && { name: data.name }),
-      ...(data.email && { email: data.email }),
+     ...(data.email !== undefined ? { email: data.email } : {}),
       ...(data.phone !== undefined && { phone: data.phone }),
       ...(data.address && { address: data.address }),
       ...(data.imageUrl && { imageUrl: data.imageUrl }),

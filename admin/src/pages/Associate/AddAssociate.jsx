@@ -121,8 +121,8 @@ if (errorMsg?.includes("already exists for this associate")) {
   return (
     <div className="add-item-container">
       <div className="add-item-header">
-        <h1 className="add-item-title">Add Associate</h1>
-        <p className="add-item-subtitle">Fill form to add associate</p>
+        <h1 className="add-item-title">+ Add Associate</h1>
+        <p className="add-item-subtitle">Fill the information below to add associate</p>
       </div>
 
       {submitSuccess && (

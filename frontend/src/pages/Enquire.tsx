@@ -78,6 +78,8 @@ const Enquire = () => {
       }
 
       const res = await axios.get(endpoint);
+      // console.log("res: ",res);
+      
       setReviews(res.data);
     } catch (err) {
       console.error("Failed to fetch reviews", err);
@@ -93,6 +95,8 @@ const Enquire = () => {
       try {
         const endpoint = `${API_URL}/api/${type}/get-by-id/${id}`;
         const res = await axios.get(endpoint);
+        // console.log("end: ",res);
+        
         const list =
           type === "marketplace" ? res.data.marketplace : res.data.properties;
 

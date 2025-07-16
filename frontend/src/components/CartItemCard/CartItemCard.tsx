@@ -4,7 +4,7 @@ import { Trash2, Plus, Star } from "lucide-react";
 import React from "react";
 
 
-const CartItemCard = ({ item, updateQuantity, price, discount }: {
+const CartItemCard = ({ item, updateQuantity, price, discount,quantity,setQuantity }: {
   item: any,
   updateQuantity: any,
   price?: number
@@ -23,14 +23,14 @@ const CartItemCard = ({ item, updateQuantity, price, discount }: {
           {/* Image */}
           <div className="relative w-40 h-40 mb-3">
             <img
-              src={item.images[0]}
+              src={item.image}
               alt="Product"
               className="w-full h-full object-cover "
             />
 
             {/* Rating Badge top-left on image */}
             <div className="absolute bottom-2 right-2 flex items-center px-1 py-1 bg-white/90 shadow-sm">
-              <span className="text-[10px]  text-black">{item.ratings}</span>
+              <span className="text-[10px]  text-black">{item.rating}</span>
               <div className="h-3 w-px bg-black mx-1" />
               <Star className="w-3 h-3 text-cyan-300 fill-current" />
             </div>
@@ -48,9 +48,9 @@ const CartItemCard = ({ item, updateQuantity, price, discount }: {
             </Button>
 
             <span className="text-lg font-medium text-gray-800 min-w-[2rem] text-center">
-              {/* {item.quantity} */}
-              {/* {quantity} */}
-              1
+               {quantity ?? item.quantity}
+
+              
             </span>
 
             <Button
@@ -77,13 +77,13 @@ const CartItemCard = ({ item, updateQuantity, price, discount }: {
             variant="link"
             className="text-blue-500 text-sm font-medium p-0 h-auto mb-3"
           >
-            {item.seller.name}
+            {item.sellerName}
           </Button>
 
           {/* Price & discount */}
           <div className="flex items-center gap-2">
             <span className="text-base font-bold text-gray-900">
-              ₹ {" "} {price}
+              ₹ {" "} {item.finalPrice}
             </span>
             <span className="text-gray-400 text-xs line-through">
               ₹{item.price }

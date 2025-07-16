@@ -10,6 +10,7 @@ import {
   ShoppingCart,
   Users,
   Megaphone,
+  ListTodo,
 } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -32,11 +33,18 @@ const ProfilePage = () => {
         path: "/my-orders",
       },
       {
+        label: "Cart Item",
+        icon: <ListTodo className="text-black font-bold" />,
+        desc: "All cart Items",
+        path: "/my-cart",
+      },
+      {
         label: "Settings",
         icon: <Settings className="text-black font-bold" />,
         desc: "Notifications, password",
         path: "/settings",
       },
+      
     ],
     SELLER:[
       {

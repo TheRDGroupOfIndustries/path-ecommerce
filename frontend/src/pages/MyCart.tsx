@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -22,6 +21,7 @@ export default function MyCart() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+        console.log("Cart: ", res);
 
         const mapped = res.data.map((item) => ({
           id: item.id,
@@ -35,7 +35,7 @@ export default function MyCart() {
           price: item.product.price,
           quantity: item.quantity,
           image: item.product.images?.[0],
-          sellerName: "Put Seller",
+          sellerName: item.product.seller.name,
         }));
 
         setCartItems(mapped);
@@ -81,6 +81,42 @@ export default function MyCart() {
     } catch (error) {
       console.error("Error updating quantity:", error);
     }
+  };
+
+  //   const handleBuyNow = async () => {
+  //   try {
+  //     const res = await axios.post(
+  //       `${API_URL}/api/order/buynow/cart`,
+  //       {
+  //         paymentMode: "COD",
+  //         referralCode: null, // or pass actual referral if used
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //         },
+  //       }
+  //     );
+
+  //     console.log("Order Response:", res.data);
+  //     toast.success("Order placed successfully!");
+
+  //     navigate("/thanks");
+  //   } catch (err) {
+  //   const errorData = err?.response?.data;
+  //   console.error("Order error:", errorData);
+  //   toast.error(errorData?.message || "Order failed");
+  // }
+
+  // };
+
+  const handleBuyNow = () => {
+    navigate("/buy-now", {
+      state: {
+        fromCart: true,
+        cartItems: cartItems,
+      },
+    });
   };
 
   const subtotal = cartItems.reduce(
@@ -145,10 +181,8 @@ export default function MyCart() {
           </div>
           <p className="text-sm text-black">Total Items - {totalItems}</p>
 
-
           {/* CTA Button */}
-          <ShadeBtn action={() => {}} title="Proceed To Buy"/>
-
+          <ShadeBtn action={handleBuyNow} title="Proceed To Buy" />
         </div>
 
         <div className="w-full h-px bg-neutral-400 rounded"></div>

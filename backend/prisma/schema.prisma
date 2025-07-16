@@ -133,6 +133,8 @@ model Products {
   seller      User     @relation(fields: [sellerId], references: [id])
 
   review   Review[]
+  referralPercentage Float?
+  referralBy         String?
   Faq      Faq[]
   orders   Order[]
   transactions ReferralTransaction[] 

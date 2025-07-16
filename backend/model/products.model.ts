@@ -76,6 +76,8 @@ export const createProduct = async (data: any, sellerId: string) => {
         insideBox: data.insideBox,
         category: data.category,
         isTrendy: data.isTrendy,
+        referralBy: data.referralBy,
+        referralPercentage: data.referralPercentage,
       },
     });
     return product;
@@ -105,6 +107,9 @@ export const updateProduct = async (data: any, id: string) => {
         insideBox: data.insideBox || existing.insideBox,
         category: data.category || existing.category,
         isTrendy: data.isTrendy || existing.isTrendy,
+        referralBy: data.referralBy || existing.referralBy,
+        referralPercentage:
+          data.referralPercentage || existing.referralPercentage,
       },
     });
     return update;

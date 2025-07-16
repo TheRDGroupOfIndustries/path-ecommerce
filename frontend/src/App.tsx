@@ -35,7 +35,17 @@ import Thanks from "./pages/Thanks";
 function App() {
   const location = useLocation();
 
-  const hiddenPaths = ["/enquire", "/login", "/signup", "/product-detail", "/thanks", "/forgot-password", "/buy-now", "/my-cart", "/change-address"];
+  const hiddenPaths = [
+    "/enquire",
+    "/login",
+    "/signup",
+    "/product-detail",
+    "/thanks",
+    "/forgot-password",
+    "/buy-now",
+    "/my-cart",
+    "/change-address",
+  ];
   const hideNavbar = hiddenPaths.some((path) =>
     location.pathname.startsWith(path)
   );
@@ -222,47 +232,43 @@ function App() {
             }
           />
 
+          <Route path="/forgot-password" element={<ForgetPass />} />
+          <Route path="/my-cart" element={<MyCart />} />
+
           <Route
-            path="/forgot-password"
+            path="/thanks"
             element={
-                <ForgetPass />
+              <ProtectedRoute>
+                <Thanks />
+              </ProtectedRoute>
             }
           />
           <Route
-            path="/my-cart"
+            path="/buy-now"
             element={
-                <MyCart />
+              <ProtectedRoute>
+                <BuyNow />
+              </ProtectedRoute>
             }
           />
 
-        <Route
-          path="/thanks"
-          element={
-            <ProtectedRoute>
-              <Thanks />
-            </ProtectedRoute>
-          }
-          />
-
-
           <Route
-          path="/buy-now/:id/:code?"
-          element={
-            <ProtectedRoute>
-              <BuyNow />
-            </ProtectedRoute>
-          }
+            path="/buy-now/:id/:code?"
+            element={
+              <ProtectedRoute>
+                <BuyNow />
+              </ProtectedRoute>
+            }
           />
 
           <Route
-          path="/change-address/:address"
-          element={
-            <ProtectedRoute>
-              <ChangeAddress />
-            </ProtectedRoute>
-          }
+            path="/change-address/:address"
+            element={
+              <ProtectedRoute>
+                <ChangeAddress />
+              </ProtectedRoute>
+            }
           />
-
 
           <Route path="*" element={<NotFound />} />
         </Routes>

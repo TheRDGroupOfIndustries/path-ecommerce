@@ -25,7 +25,8 @@ const MyOrderItem = ({
   canChangeStatus,
   price,
 }) => {
-  const [status, setStatus] = useState("Pending");
+  const [status, setStatus] = useState(progress);
+
   const statusOptions = [
     "Pending",
     "Dispatched",
@@ -33,17 +34,36 @@ const MyOrderItem = ({
     "Arrived",
     "Delivered",
   ];
+  
+
   const handleStatusChange = async (e: any) => {
     const newStatus = e.target.value;
     setStatus(newStatus);
-    const upd = await axios.put(`${API_URL}/api/order/update-status/${id}`, { status: newStatus }, {headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`
-    }});
 
-    if (upd.status === 200) {
-      window.location.reload()
+    try {
+      const upd = await axios.put(
+        `${API_URL}/api/order/update-status/${id}`,
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (upd.status === 200) {
+        window.location.reload();
+      } else {
+        console.log("Unexpected status:", upd.status);
+      }
+    } catch (err) {
+      console.error(
+        "Status update failed:",
+        err?.response?.data || err.message
+      );
     }
   };
+
   return (
     <Card className="rounded-lg mb-4 bg-gray-100 min-h-36 p-2 border-none shadow-none">
       <CardContent className="flex flex-row items-center justify-between px-2 py-1 flex-nowrap ">
@@ -74,7 +94,7 @@ const MyOrderItem = ({
                   variant="outline"
                   className="text-xs font-medium text-black border px-4 py-1 rounded bg-white w-fit truncate"
                 >
-                  {progress}
+                  {status}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -125,37 +145,59 @@ const MyOrderItem = ({
   );
 };
 export default function MyOrders() {
-  const { user } = useAuth(); // get the logged-in user
+  const { user } = useAuth(); 
+
   const navigate = useNavigate();
 
-  const [orderData, setOrderData] = useState([]);
+  const [userOrders, setUserOrders] = useState([]);
+  const [sellerOrders, setSellerOrders] = useState([]);
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const getOrders = async () => {
+
+  const getUserOrders = async () => {
     try {
       setLoading(true);
-      const requests = await axios.get(`${API_URL}/api/users/get-orders`, {
+      const res = await axios.get(`${API_URL}/api/users/get-orders`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      if (requests.status === 200) {
-        console.log(requests.data.user[0].orders);
-        setData(requests.data.user[0].orders);
+      if (res.status === 200) {
+        setUserOrders(res.data.user[0].orders);
       }
     } catch (error) {
-      console.log(error);
+      console.log("User order error", error);
     } finally {
       setLoading(false);
     }
   };
 
+  const getSellerOrders = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/seller/seller-orders`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (res.status === 200) {
+        setSellerOrders(res.data.orders); 
+      }
+    } catch (error) {
+      console.log("Seller order error", error);
+    }
+  };
+
   useEffect(() => {
-    getOrders();
-  }, []);
+    if (user?.role === "SELLER" || user?.role === "ADMIN") {
+      getSellerOrders();
+    } else {
+      getUserOrders();
+    }
+  }, [user]);
 
   return (
     <div className="container mx-auto p-4 mb-16">
@@ -173,7 +215,91 @@ export default function MyOrders() {
           <Search className="w-7 h-7 text-black" />
         </div>
       </div>
-      {data.length > 0 ? (
+      
+      {user?.role === "SELLER" || user?.role === "ADMIN" ? (
+        sellerOrders.length > 0 ? (
+          sellerOrders.map((product) =>
+            product.orders.map((order) => (
+              <MyOrderItem
+                key={order.id}
+                id={order.id}
+                productId={product.name}
+                date={order.createdAt.split("T")[0]}
+                rating={product.ratings ?? 4}
+                price={order.totalAmount}
+                image={product.images[0]}
+                progress={order.status}
+                progressColor={
+                  order.status === "Pending"
+                    ? "text-blue-600"
+                    : order.status === "Dispatched"
+                    ? "text-yellow-600"
+                    : order.status === "Shipped"
+                    ? "text-purple-600"
+                    : order.status === "Arrived"
+                    ? "text-orange-600"
+                    : order.status === "Delivered"
+                    ? "text-green-600"
+                    : "text-gray-500"
+                }
+                canChangeStatus={true}
+              />
+            ))
+          )
+        ) : (
+          <Loader />
+        )
+      ) : userOrders.length > 0 ? (
+        userOrders.map((order) => (
+          <MyOrderItem
+            key={order.id}
+            id={order.id}
+            productId={order.product.name}
+            date={order.createdAt.split("T")[0]}
+            rating={order.product.ratings}
+            price={order.totalAmount}
+            image={order.product.images[0]}
+            progress={order.status}
+            progressColor={
+              order.status === "Pending"
+                ? "text-blue-600"
+                : order.status === "Dispatched"
+                ? "text-yellow-600"
+                : order.status === "Shipped"
+                ? "text-purple-600"
+                : order.status === "Arrived"
+                ? "text-orange-600"
+                : order.status === "Delivered"
+                ? "text-green-600"
+                : "text-gray-500"
+            }
+            canChangeStatus={false}
+          />
+        ))
+      ) : (
+        <Loader />
+      )}
+    </div>
+  );
+}
+
+
+
+//   const handleStatusChange = async (e: any) => {
+  //     const newStatus = e.target.value;
+  //     setStatus(newStatus);
+  //     const upd = await axios.put(`${API_URL}/api/order/update-status/${id}`, { status: newStatus }, {headers: {
+  //       Authorization: `Bearer ${localStorage.getItem("token")}`
+  //     }});
+  // console.log("update: ",upd);
+
+  //     if (upd.status === 200) {
+  //       window.location.reload()
+  //     }
+  //   };
+
+
+  {/* {data.length > 0 ? (
         data.map((order) => (
           <MyOrderItem
             key={order.id}
@@ -202,7 +328,34 @@ export default function MyOrders() {
         ))
       ) : (
         <Loader />
-      )}
-    </div>
-  );
-}
+      )} */}
+
+
+        // const getData= async () => {
+  //   const requests = await axios.get(`${API_URL}/api/seller/seller-orders`, {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //       },
+  //     });
+  //     console.log("sellerData: ",requests.data);
+  // }
+  // const getOrders = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const requests = await axios.get(`${API_URL}/api/users/get-orders`, {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //       },
+  //     });
+  //     // console.log("resquest: ",requests);
+
+  //     if (requests.status === 200) {
+  //       console.log(requests.data.user[0].orders);
+  //       setData(requests.data.user[0].orders);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };

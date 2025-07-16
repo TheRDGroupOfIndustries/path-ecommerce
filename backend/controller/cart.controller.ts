@@ -42,7 +42,7 @@ export const addToCart = async (req: Request, res: Response): Promise<void> => {
 
       if (existingReferralItem) {
           res.status(400).json({
-          message: `Referral already applied to ${existingReferralItem.product.name}`,
+          message: "Referral already applied ",
         });
       }
 

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import db from "../client/connect.js";
 import * as userModel from "../model/user.model.js";
 
-//buynow for single product by productcard
+// Buy now from single product
 export const buyNow = async (req: Request, res: Response) => {
   const userId = req.user?.id;
   const { productId, quantity, paymentMode = "COD", referralCode } = req.body;
@@ -38,54 +38,50 @@ export const buyNow = async (req: Request, res: Response) => {
     let priceAfterReferralDiscount = priceAfterProductDiscount;
     let referralDetails = null;
 
-   if (referralCode) {
-  const referral = await db.referral.findUnique({
-    where: { referral: referralCode },
-    include: { createdFor: true },
-  });
-
-  if (!referral) {
-    return res.status(400).json({ message: "Invalid referral code" });
-  }
-
-  referralDetails = referral;
-  const referredByUser = referral.createdFor;
-
-  const percentStr = referralCode.split("-")[1];
-  const extractedPercent = percentStr ? parseFloat(percentStr) : NaN;
-
-  if (!isNaN(extractedPercent) && extractedPercent > 0 && extractedPercent <= 100) {
-    referralDiscountPercent = extractedPercent;
-    referralDiscountAmount = (priceAfterProductDiscount * referralDiscountPercent) / 100;
-    priceAfterReferralDiscount = priceAfterProductDiscount - referralDiscountAmount;
-
-    const commission = referralDiscountAmount;
-
-    await db.referralTransaction.create({
-      data: {
-        referralId: referral.id,
-        associateId: referredByUser.id,
-        userId,
-        productId,
-        productName: product.name,
-        price: priceAfterReferralDiscount,
-        percent: referralDiscountPercent,
-        commission,
-      },
-    });
-
-    if (!referral.usedBy.includes(userId)) {
-      await db.referral.update({
-        where: { id: referral.id },
-        data: {
-          usedBy: [...referral.usedBy, userId],
-        },
+    if (referralCode) {
+      const referral = await db.referral.findUnique({
+        where: { referral: referralCode },
+        include: { createdFor: true },
       });
+
+      if (!referral) return res.status(400).json({ message: "Invalid referral code" });
+
+      referralDetails = referral;
+      const referredByUser = referral.createdFor;
+      const percentStr = referralCode.split("-")[1];
+      const extractedPercent = percentStr ? parseFloat(percentStr) : NaN;
+
+      if (!isNaN(extractedPercent) && extractedPercent > 0 && extractedPercent <= 100) {
+        referralDiscountPercent = extractedPercent;
+        referralDiscountAmount = (priceAfterProductDiscount * referralDiscountPercent) / 100;
+        priceAfterReferralDiscount = priceAfterProductDiscount - referralDiscountAmount;
+
+        await db.referralTransaction.create({
+          data: {
+            referralId: referral.id,
+            associateId: referredByUser.id,
+            userId,
+            productId,
+            productName: product.name,
+            price: priceAfterReferralDiscount,
+            percent: referralDiscountPercent,
+            commission: referralDiscountAmount,
+          },
+        });
+
+        if (!referral.usedBy.includes(userId)) {
+          await db.referral.update({
+            where: { id: referral.id },
+            data: {
+              usedBy: [...referral.usedBy, userId],
+            },
+          });
+        }
+      } else {
+        return res.status(400).json({ message: "Invalid referral code format" });
+      }
     }
-  } else {
-    return res.status(400).json({ message: "Invalid referral code format" });
-  }
-}
+
     const totalAmount = quantity * priceAfterReferralDiscount;
 
     const order = await db.order.create({
@@ -128,7 +124,8 @@ export const buyNow = async (req: Request, res: Response) => {
 };
 
 
-//getOrder details
+// Get order by ID
+
 export const getOrderById = async (req: Request, res: Response) => {
   const userId = req.user?.id;
   const { orderId } = req.params;
@@ -155,8 +152,14 @@ export const getOrderById = async (req: Request, res: Response) => {
     }
 
     const product = order.product;
-    const originalPrice = parseFloat(product?.price || "0");
-    const productDiscount = product?.discount || 0;
+
+    //  Null check for product 
+    if (!product) {
+      return res.status(404).json({ message: "Product associated with this order not found" });
+    }
+
+    const originalPrice = parseFloat(product.price);
+    const productDiscount = product.discount || 0;
     const priceAfterProductDiscount = originalPrice - (originalPrice * productDiscount / 100);
 
     let referralDiscountPercent = 0;
@@ -171,14 +174,14 @@ export const getOrderById = async (req: Request, res: Response) => {
             referral: order.referralCode,
           },
           userId,
-          productId: product?.id,
+          productId: product.id,
         },
         include: {
           referral: true,
         },
       });
 
-      if (referralTransaction) {
+      if (referralTransaction && referralTransaction.referral) {
         referralDiscountPercent = referralTransaction.percent;
         referralDiscountAmount = (priceAfterProductDiscount * referralDiscountPercent) / 100;
         priceAfterReferralDiscount = priceAfterProductDiscount - referralDiscountAmount;
@@ -193,7 +196,7 @@ export const getOrderById = async (req: Request, res: Response) => {
 
     const totalAmount = order.quantity * priceAfterReferralDiscount;
 
-    res.status(200).json({
+    return res.status(200).json({
       order,
       priceDetails: {
         originalPrice,
@@ -212,7 +215,9 @@ export const getOrderById = async (req: Request, res: Response) => {
   }
 };
 
-// Buy Now from Cart (All Products)
+
+// Buy Now from Cart
+
 export const buyNowFromCart = async (req: Request, res: Response) => {
   const userId = req.user?.id;
   const { paymentMode = "COD" } = req.body;
@@ -228,7 +233,18 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
 
     const cartItems = await db.cartItem.findMany({
       where: { userId },
-      include: { product: true },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            discount: true,
+            referralPercentage: true,
+            referralBy: true,
+          },
+        },
+      },
     });
 
     if (cartItems.length === 0) {
@@ -238,64 +254,55 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
     const orderResults = [];
     let totalItems = 0;
     let grandTotal = 0;
-
     const referralUsage: any[] = [];
 
     for (const item of cartItems) {
       const product = item.product;
-      const originalPrice = parseFloat(product.price);
       const quantity = item.quantity || 1;
+      const originalPrice = parseFloat(product.price);
+      const productDiscount = product.discount || 0;
+      const priceAfterDiscount = originalPrice - (originalPrice * productDiscount) / 100;
+      const totalAmount = quantity * priceAfterDiscount;
 
-      const priceToUse = item.discountedPrice ?? originalPrice;
-      const totalAmount = quantity * priceToUse;
+      let referralCode = product.referralBy || null;
 
-      // Detect if referral was applied
-      let referralUsed = false;
-      let referralCode = null;
+      if (referralCode) {
+        const referral = await db.referral.findUnique({
+          where: { referral: referralCode },
+          include: { createdFor: true },
+        });
 
-      if (item.discountedPrice && item.discountedPrice < originalPrice) {
-        referralUsed = true;
-        referralCode = product.referralBy || null;
-
-        if (referralCode) {
-          const referral = await db.referral.findUnique({
-            where: { referral: referralCode },
-            include: { createdFor: true },
+        if (referral) {
+          referralUsage.push({
+            referralCode: referral.referral,
+            createdBy: referral.createdForId,
+            usedBy: userId,
+            productId: product.id,
+            productName: product.name,
+            price: priceAfterDiscount,
+            commissionPercent: product.referralPercentage ?? 0,
           });
 
-          if (referral) {
-            referralUsage.push({
-              referralCode: referral.referral,
-              createdBy: referral.createdForId,
-              usedBy: userId,
+          await db.referralTransaction.create({
+            data: {
+              referralId: referral.id,
+              associateId: referral.createdFor.id,
+              userId,
               productId: product.id,
               productName: product.name,
-              price: priceToUse,
-              commissionPercent: product.referralPercentage ?? 0,
-            });
+              price: priceAfterDiscount,
+              percent: product.referralPercentage ?? 0,
+              commission: ((product.referralPercentage ?? 0) / 100) * priceAfterDiscount,
+            },
+          });
 
-            await db.referralTransaction.create({
+          if (!referral.usedBy.includes(userId)) {
+            await db.referral.update({
+              where: { id: referral.id },
               data: {
-                referralId: referral.id,
-                associateId: referral.createdFor.id,
-                userId,
-                productId: product.id,
-                productName: product.name,
-                price: priceToUse,
-                percent: product.referralPercentage ?? 0,
-                commission:
-                  ((product.referralPercentage ?? 0) / 100) * priceToUse,
+                usedBy: [...referral.usedBy, userId],
               },
             });
-
-            if (!referral.usedBy.includes(userId)) {
-              await db.referral.update({
-                where: { id: referral.id },
-                data: {
-                  usedBy: [...referral.usedBy, userId],
-                },
-              });
-            }
           }
         }
       }
@@ -309,7 +316,7 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
           address: user.address,
           paymentMode,
           status: "Pending",
-          referralCode: referralCode,
+          referralCode,
         },
       });
 
@@ -317,7 +324,7 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
         order,
         priceDetails: {
           originalPrice,
-          discountedPrice: priceToUse,
+          discountedPrice: priceAfterDiscount,
           totalAmount,
         },
       });
@@ -326,7 +333,6 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
       grandTotal += totalAmount;
     }
 
-    // Clear cart
     await db.cartItem.deleteMany({ where: { userId } });
 
     return res.status(201).json({
@@ -343,20 +349,22 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
 };
 
 
+
+// Update order status
+
 export const updateStatus = async function (req: Request, res: Response) {
-  const {id} = req.params;
-  const {status} = req.body
+  const { id } = req.params;
+  const { status } = req.body;
+
   try {
     await db.order.update({
-      where: {id},
-      data: {
-        status: status
-      }
-    })
-    res.status(200).json({ message: "Done"})
-  } 
-  catch (error) {
-    console.error(error);
-    
+      where: { id },
+      data: { status },
+    });
+
+    res.status(200).json({ message: "Done" });
+  } catch (error) {
+    console.error("Status Update Error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-}
+};

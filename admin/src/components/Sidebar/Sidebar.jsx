@@ -15,6 +15,7 @@ import {
   CircleUser,
   X,
 } from "lucide-react"
+
 import "./Sidebar.css"
 
 const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {

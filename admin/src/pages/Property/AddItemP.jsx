@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { postData } from "../../utils/api"
 import "../MarketPlace/AddItemM.css"
+import {SquareCheckBig} from "lucide-react"
 
 const AddItemP = () => {
   const [formData, setFormData] = useState({
@@ -141,14 +142,14 @@ const AddItemP = () => {
 
   return (
     <div className="add-item-container">
-      <div className="add-item-header" style={{ background: '#353896', borderRadius: '20px', color: 'white', padding: '20px 0'}}>
-        <div style={{ fontSize: 20, fontWeight: 500, marginBottom: 8 }}>+ Add new</div>
-        <div style={{ fontSize: 14, opacity: 0.9 }}>Fill the information below to add a new product</div>
+      <div className="add-item-header">
+        <div className="add-item-title">+ Add new</div>
+        <div className="add-item-subtitle">Fill the information below to add a new product</div>
       </div>
 
       {submitSuccess && (
         <div className="success-message">
-          <span className="success-icon">✅</span>
+          <span className="success-icon"><SquareCheckBig /></span>
           Item added successfully!
         </div>
       )}

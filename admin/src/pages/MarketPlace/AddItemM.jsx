@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { postData } from "../../utils/api"
 import "./AddItemM.css"
+import {SquareCheckBig} from "lucide-react"
 
 const AddItemM = () => {
   const [formData, setFormData] = useState({
@@ -150,7 +151,7 @@ const AddItemM = () => {
 
       {submitSuccess && (
         <div className="success-message">
-          <span className="success-icon">✅</span>
+          <span className="success-icon"><SquareCheckBig /></span>
           Item added successfully!
         </div>
       )}

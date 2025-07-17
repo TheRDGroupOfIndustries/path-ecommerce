@@ -148,7 +148,10 @@ const Login = () => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-
+    if (formData.email === "" && formData.password === "") {
+      setError("Please provide all credentials")
+      return
+    }
     try {
       await login(formData.email, formData.password);
       navigate("/"); // or any protected route
@@ -238,7 +241,7 @@ const Login = () => {
                 e.preventDefault(); // 🛑 prevent form submission
                 window.location.href = `${API_URL}/api/users/auth/google`;
               }}
-              className="bg-white text-black rounded-full border-2 p-5 flex items-center justify-center hover:bg-gray-900"
+              className="bg-white text-black rounded-full border-2 p-5 flex items-center justify-center hover:bg-gray-900 hover:text-white"
             >
               <FaGoogle size={36} />
             </Button>

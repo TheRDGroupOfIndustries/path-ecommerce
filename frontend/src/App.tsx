@@ -236,7 +236,14 @@ function App() {
           />
 
           <Route path="/forgot-password" element={<ForgetPass />} />
-          <Route path="/my-cart" element={<MyCart />} />
+          <Route
+            path="/my-cart"
+            element={
+              <ProtectedRoute>
+                <MyCart />
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/thanks"

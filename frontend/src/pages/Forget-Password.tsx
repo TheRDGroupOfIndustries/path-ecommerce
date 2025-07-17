@@ -41,7 +41,7 @@ function ForgetPass() {
         const sendOtp = await axios.post(
           `${API_URL}/api/verification/send-otp`,
           {
-            value: value,
+            email: value,
             otp: Number(number),
           }
         );

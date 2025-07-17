@@ -8,6 +8,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
 import { FaGoogle } from "react-icons/fa";
 import { API_URL } from "@/lib/api.env";
+import axios from "axios";
 
 interface FormData {
   name: string;
@@ -70,6 +71,48 @@ const SignUp = () => {
     return true;
   };
 
+  // OTP VERIFICATION.
+  const [otp, setOtp] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(0);
+  const [otpValue, setOtpValue] = useState("");
+
+  async function genOtp() {
+    let minm = 10000;
+    let maxm = 99999;
+    let number = Math.floor(Math.random() * (maxm - minm + 1)) + minm;
+    setOtp(number);
+    try {
+      setLoading(true);
+      setError("");
+
+      const sendOtp = await axios.post(`${API_URL}/api/verification/send-otp`, {
+        email: formData.email,
+        otp: Number(number),
+      });
+      if (sendOtp.status === 400) {
+        setError("");
+        return;
+      }
+      if (sendOtp.status === 200) {
+        setStep(1);
+        setLoading(false);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function VerifyOTP() {
+    const inp = Number(otpValue);
+    if (inp === otp) {
+      setStep(2);
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -117,7 +160,12 @@ const SignUp = () => {
             <p className="text-red-600 text-sm text-center mb-2">{error}</p>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form
+            onSubmit={
+              step === 0 ? genOtp : step === 1 ? VerifyOTP : handleSubmit
+            }
+            className="space-y-4"
+          >
             <Input
               placeholder="Name"
               name="name"
@@ -135,44 +183,63 @@ const SignUp = () => {
               required
               className="py-6"
             />
-            <div className="relative">
-              <Input
-                placeholder="Password (min 6 characters)"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                type={showPassword ? "text" : "password"}
-                className="pr-10 py-6"
-                required
-                minLength={6}
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-3.5 cursor-pointer text-black"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            <div className="relative">
-              <Input
-                placeholder="Confirm Password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                type={showCPassword ? "text" : "password"}
-                className="pr-10 py-6"
-                required
-                minLength={6}
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-3.5 cursor-pointer text-black"
-                onClick={() => setShowCPassword(!showCPassword)}
-              >
-                {showCPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
+            {step === 0 ? (
+              <></>
+            ) : step === 1 ? (
+              <div className="relative">
+                <Input
+                  placeholder="Enter OTP"
+                  name="OTP"
+                  value={otpValue}
+                  onChange={(e) => setOtpValue(e.target.value)}
+                  type="number"
+                  className="pr-10 py-6"
+                  required
+                  minLength={5}
+                />
+              </div>
+            ) : (
+              <>
+                <div className="relative">
+                  <Input
+                    placeholder="Password (min 6 characters)"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    type={showPassword ? "text" : "password"}
+                    className="pr-10 py-6"
+                    required
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-3.5 cursor-pointer text-black"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                <div className="relative">
+                  <Input
+                    placeholder="Confirm Password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    type={showCPassword ? "text" : "password"}
+                    className="pr-10 py-6"
+                    required
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-3.5 cursor-pointer text-black"
+                    onClick={() => setShowCPassword(!showCPassword)}
+                  >
+                    {showCPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </>
+            )}
 
             <Button
               type="submit"
@@ -180,7 +247,14 @@ const SignUp = () => {
 "
               disabled={isLoading}
             >
-              {isLoading ? "Creating account..." : "Sign up"}
+              {step === 0
+                ? "Send OTP"
+                : step === 1
+                ? "Verify"
+                : isLoading
+                ? "..."
+                : "Sign up"}
+              {/* {isLoading ? "Creating account..." : "Sign up"} */}
             </Button>
           </form>
 

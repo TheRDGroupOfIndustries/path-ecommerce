@@ -31,6 +31,7 @@ import MyCart from "./pages/MyCart";
 import ChangeAddress from "./pages/ChangeAddress";
 import BuyNow from "./pages/BuyNow";
 import Thanks from "./pages/Thanks";
+import GoogleSuccess from "./pages/GoogleSuccess";
 
 function App() {
   const location = useLocation();
@@ -68,6 +69,8 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/google-success" element={<GoogleSuccess />} />
+
           <Route
             path="/"
             element={

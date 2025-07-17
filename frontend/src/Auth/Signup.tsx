@@ -7,6 +7,7 @@ import SPC from "@/assets/SPC.jpg";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
 import { FaGoogle } from "react-icons/fa";
+import { API_URL } from "@/lib/api.env";
 
 interface FormData {
   name: string;
@@ -18,7 +19,7 @@ interface FormData {
 const SignUp = () => {
   const { register } = useAuth();
   // console.log("register: ",register);
-  
+
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -82,7 +83,7 @@ const SignUp = () => {
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        confirmPassword:formData.confirmPassword
+        confirmPassword: formData.confirmPassword,
       });
       navigate("/login");
     } catch (err: any) {
@@ -186,6 +187,10 @@ const SignUp = () => {
           <div className="flex flex-col items-center mt-8">
             <Button
               type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = `${API_URL}/api/users/auth/google`;
+              }}
               className="bg-white text-black rounded-full border-2 p-5 flex items-center justify-center hover:bg-gray-900"
             >
               <FaGoogle size={36} />

@@ -20,12 +20,16 @@ import verify from "./routes/sendotp.route.js"
 import cartRoute from "./routes/cart.route.js"
 import orderRoute from "./routes/order.route.js"
 
+//chetan added
+import session from "express-session";
+import passport from "./utils/passport.js";
 
 const app = express();
 const PORT = 8000;
 
 // Configure CORS for development
 const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173','http://localhost:5174', 'https://path-ecommerce.onrender.com', 'https://path-ecommerce.vercel.app', 'https://path-ecommerce-pwtg.vercel.app'];
+
 
 app.use(
   cors({
@@ -43,11 +47,22 @@ app.use(
   })
 );
 
+app.use(
+  session({
+    secret: process.env.JWT_SECRET!,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
 
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+//chetan added
+app.use(passport.initialize());
+app.use(passport.session());
 // Test route
 app.get('/', (_req, res) => {
   res.status(200).json({ message: 'API is running 🚀' });

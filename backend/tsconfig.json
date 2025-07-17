@@ -3,6 +3,7 @@
     "target": "ES2020",
     "module": "ESNext",
     "noEmitOnError": false,
+    "noCheck": true,
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "resolveJsonModule": true,

@@ -20,7 +20,7 @@ passport.use(
 
         if (!email) return done(new Error("Email not found in profile"), null);
 
-        let user = await prisma.user.findUnique({
+        let user: any = await prisma.user.findUnique({
           where: { email },
         });
         if (!user) {

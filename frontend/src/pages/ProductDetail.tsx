@@ -32,10 +32,13 @@ const ProductDetail = () => {
 
         const found = res.data;
         const userData = res.data.seller;
-        
-        const prod = userData.cartItems.map((items) => items.productId)
-        if (prod.includes(id)) {
-          setCart(true)
+        if (userData.cartItems.length > 0) {
+          const prod = userData.cartItems.map((items) => items.productId)
+          console.log(prod);
+          
+          if (prod.includes(id)) {
+            setCart(true)
+          }
         }
     
         setProduct(found);

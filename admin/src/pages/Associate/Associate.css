@@ -3,10 +3,12 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-h2 {
+.associate-container h2 {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin: 1.5rem;
   color: #2e3a59;
+  font-weight: 600;
+  font-size: 1.2rem;
 }
 
 .table-wrapper {
@@ -29,7 +31,7 @@ h2 {
 .associate-table th {
   background-color: #f4f7ff;
   font-weight: 600;
-  color: #2e3a59;
+  color: #5f5f61;
 }
 
 .associate-table tbody tr:nth-child(even) {

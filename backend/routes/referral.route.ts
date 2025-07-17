@@ -18,12 +18,13 @@ router.post("/check", async (req, res) => {
 router.get("/all", async (req, res) => {
   try {
     const referrals = await db.referral.findMany({
-      select: {
-        id:true,
-        referral: true,
-        createdForId: true,
-        usedBy: true,
-        createdAt: true
+      include: {
+        transactions: {
+          select: {
+            percent: true,
+            commission: true
+          }
+        }
       }
     });
     res.status(200).json(referrals);
@@ -32,6 +33,7 @@ router.get("/all", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 
 router.post("/apply",isAuthenticated, async (req,res) => {

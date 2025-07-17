@@ -1,349 +1,305 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f5f5;
-  }
-  
-  .login-container {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f8fafc;
-    max-width:100%;
-    margin: auto;
-  }
-  
-  .login-card {
-    display: flex;
-    flex-direction: row;
-    background: #fff;
-    border-radius: 1.5rem;
-    box-shadow: 0 8px 32px rgba(60, 60, 120, 0.12);
-    overflow: hidden;
-  }
-  
-  .login-card-centered {
-    max-width: 1000px;
-    width: 100%;
-    margin: 2rem auto;
-  }
-  
-  .login-image-section {
-    flex: 1 1 50%;
-    background: #e6d3fc;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-width: 250px;
+.signup-container {
+  min-height: 80vh;
+  background: #f6f7ff;
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 2rem;
+  overflow: visible;
+}
+
+.signup-card {
+  position: relative;
+  background: white;
+  border-radius: 2.5rem;
+  box-shadow: none;
+  min-width: 1000px;
+  max-width: 1200px;
+  width: 70%;
+  margin: auto;
+  min-height: 520px;
+  overflow: hidden;
+  display: flex;
+  z-index: 1;
+  padding:2rem;
+}
+
+.card-shadow {
+  position: absolute;
+  width:65%;
+  height: 500px;
+  background: #2e2f91;
+  border-radius: 2.5rem;
+  z-index: 0;
+  right:80px;
+  bottom: -150px;
+  opacity: 1;
+  pointer-events: none;
+}
+
+
+.logo-section {
+  flex: 0 0 30% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spc-logo-img {
+  width: 240px;
+  height: 240px;
+  object-fit: contain;
+}
+
+
+.form-section3 {
+  flex: 1 1 40%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 0 0 3rem;
+  min-width: 400px;
+  margin-bottom: 0;
+}
+
+
+.form-header {
+  margin-bottom: 2.2rem;
+  text-align: left;
+  width: 100%;
+}
+
+.signup-title {
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: #1e1e1e;
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.signup-title h3{
+  padding:0px 0px !important;
+}
+
+.signup-subtitle {
+  font-size: 1rem;
+  color: #a0a0a0;
+  font-weight: 400;
+  text-align: left;
+}
+
+.signup-form {
+  width: 100%;
+}
+
+.form-grid3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 2rem;
+  margin-bottom: 0;
+}
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-label {
+  font-size: 1rem;
+  color: #0d3b89;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1.2rem;
+  width: 1.3rem;
+  height: 1.3rem;
+  color: #b0b7c3;
+  z-index: 2;
+  stroke-width: 2;
+}
+
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 1.2rem 1.2rem 1.2rem 3.2rem;
+  border: none;
+  border-radius: 1.2rem;
+  background: #e5e5e5;
+  font-size: 1rem;
+  color: #2d3748;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.input-group input::placeholder {
+  color: #b0b7c3;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  background: #ededed;
+  box-shadow: 0 0 0 3px rgba(76, 79, 183, 0.1);
+}
+
+
+.input-group select {
+  appearance: none;
+  cursor: pointer;
+  padding-right: 3rem;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.2rem;
+  height: 1.2rem;
+  color: #b0b7c3;
+  pointer-events: none;
+  stroke-width: 2;
+}
+
+
+.password-toggle {
+  position: absolute;
+  right: 1.2rem;
+  background: none;
+  border: none;
+  color: #b0b7c3;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.password-toggle:hover {
+  color: #4a5568;
+}
+
+
+.signup-btn {
+  width: 100%;
+  background: #e6e8ff;
+  color: #23246b;
+  border: none;
+  border-radius: 1.2rem;
+  padding: 1.2rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  grid-column: 1 / span 2;
+}
+
+.signup-btn:hover {
+  background: #d1d5fa;
+  color: #353896;
+}
+
+
+.signin-link {
+  position: absolute;
+  left: 4rem;
+  bottom: 2.5rem;
+  margin: 0;
+  font-size: 1rem;
+  color: #353896;
+  text-align: left;
+}
+
+.signin-link a {
+  color: #353896;
+  text-decoration: underline;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.signin-link a:hover {
+  color: #23246b;
+}
+
+@media (max-width: 1100px) {
+  .signup-card {
+    min-width: 90vw;
+    max-width: 98vw;
     padding: 2rem 1rem 1rem 1rem;
-    position: relative;
-  }
-  
-  .login-illustration {
-    width: 100%;
-    max-width: 100%;
-    height:80%;
-    margin-bottom: 2rem;
-    border-radius:9px;
-  }
-  
-  .create-account-link {
-    color: #374151;
-    text-decoration: underline;
-    font-size: 1rem;
-    margin-top: 1.5rem;
-    transition: color 0.2s;
-    text-align: center;
-    display: block;
-  }
-  
-  .create-account-link:hover {
-    color: #7c3aed;
-  }
-  
-  .login-form-section {
-    flex: 1 1 50%;
-    padding: 2.5rem 2.5rem 2rem 2.5rem;
-    display: flex;
     flex-direction: column;
+  }
+
+  .logo-section {
+    min-width: 100%;
     justify-content: center;
-    align-items: center;
-    background: #fff;
+    padding-bottom: 2rem;
   }
- 
-  .login-logo {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-    margin-bottom: 1.5rem;
+
+  .form-section3 {
+    min-width: 100%;
+    padding-left: 0;
   }
-  
-  .login-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #22223b;
-    margin-bottom: 2rem;
-    text-align: left;
+
+  .spc-logo-img {
+    width: 180px;
+    height: 180px;
   }
-  
-  .login-form {
-    width: 100%;
-    max-width: 340px;
-    display: flex;
-    flex-direction: column;
-    gap: 1.1rem;
+
+  .card-shadow {
+    width: 500px;
+    height: 300px;
+    right: -50px;
+    bottom: -50px;
+    filter: blur(20px);
   }
-  
-  .input-group {
-    display: flex;
-    align-items: center;
-    position: relative;
+}
+
+@media (max-width: 700px) {
+  .form-grid3 {
+    grid-template-columns: 1fr;
   }
-  
-  .input-icon {
-    position: absolute;
-    left: 1rem;
-    font-size: 1.1rem;
-    color: #7c3aed;
-    z-index: 1;
+
+  .signup-btn {
+    grid-column: 1;
   }
-  
+
+  .signin-link {
+    position: static;
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .signup-card {
+    padding: 1rem;
+    border-radius: 1rem;
+  }
+
+  .signup-title {
+    font-size: 1.6rem;
+  }
+
   .input-group input,
   .input-group select {
-    width: 100%;
-    padding: 0.75rem 1rem 0.75rem 2.5rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    outline: none;
-    transition: border 0.2s;
-    background: #fff;
-    color: #374151;
+    padding: 0.9rem 1rem 0.9rem 2.8rem;
+    font-size: 0.9rem;
   }
-  
-  .input-group input:focus,
-  .input-group select:focus {
-    border-color: #7c3aed;
+
+  .signin-link {
+    font-size: 0.9rem;
   }
-  
-  .checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0.5rem 0 0.5rem 0;
-  }
-  
-  .checkbox-group input[type="checkbox"] {
-    accent-color: #7c3aed;
-    width: 1rem;
-    height: 1rem;
-  }
-  
-  .checkbox-group label {
-    font-size: 0.95rem;
-    color: #6b7280;
-  }
-  
-  .login-btn {
-    background: linear-gradient(90deg, #7c3aed 0%, #a78bfa 100%);
-    color: #fff;
-    border: none;
-    border-radius: 0.5rem;
-    padding: 0.75rem 1rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 0.5rem;
-    transition: background 0.2s;
-  }
-  
-  .login-btn:hover {
-    background: linear-gradient(90deg, #a78bfa 0%, #7c3aed 100%);
-  }
-  
-
-  
-  @media (max-width: 900px) {
-    .login-card-centered {
-      max-width: 98vw;
-      margin: 1rem auto;
-    }
-    .login-form-section {
-      padding: 2rem 1rem 1.5rem 1rem;
-    }
-  }
-  
-  @media (max-width: 700px) {
-    .login-card {
-      flex-direction: column;
-      width: 98vw;
-      max-width: 98vw;
-      min-width: unset;
-      border-radius: 1.5rem;
-    }
-    .login-image-section {
-      border-radius: 1.5rem 1.5rem 0 0;
-      min-width: 0;
-      padding: 2rem 1rem 1rem 1rem;
-    }
-    .login-illustration {
-      border-radius: 1.5rem 1.5rem 0 0;
-      max-height: 180px;
-    }
-    .login-form-section {
-      padding: 2rem 1rem 1.5rem 1rem;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .login-title {
-      font-size: 1.2rem;
-    }
-    .login-form-section {
-      padding: 1rem 0.5rem;
-    }
-  }
-  
-  /* Enhanced mobile responsiveness */
-  @media (max-width: 320px) {
-    .company-logo {
-      width: 50px;
-      height: 50px;
-    }
-  
-    .login-title {
-      font-size: 1.3rem;
-      margin-bottom: 1.5rem;
-    }
-  
-    .social-btn {
-      width: 40px;
-      height: 40px;
-      font-size: 1rem;
-    }
-  }
-  
-  .login-card.full-page {
-    width: 100vw;
-    height: 100vh;
-    max-width: 100vw;
-    max-height: 100vh;
-    border-radius: 0;
-  }
-  
-  .login-form select {
-    padding: 0.75rem 2.2rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    outline: none;
-    transition: border 0.2s;
-    background: #fff;
-    color: #374151;
-  }
-  
-  .login-form select:focus {
-    border-color: #7c3aed;
-  }
-  
-  @media (max-width: 700px) {
-    .login-card.full-page {
-      width: 100vw;
-      height: 100vh;
-      max-width: 100vw;
-      max-height: 100vh;
-      border-radius: 0;
-    }
-  }
-  
-  /* 🌙 Dark Mode Support */
-.dark body {
-  background-color: #0f172a;
-  color: #f1f5f9;
-}
-
-.dark .login-container {
-  background: #0f172a;
-}
-
-.dark .login-card {
-  background: #1e293b;
-  box-shadow: 0 8px 32px rgba(255, 255, 255, 0.06);
-}
-
-.dark .login-image-section {
-  background: #334155;
-}
-
-.dark .create-account-link {
-  color: #cbd5e1;
-}
-
-.dark .create-account-link:hover {
-  color: #a855f7;
-}
-
-.dark .login-form-section {
-  background: #1e293b;
-}
-
-.dark .login-logo {
-  filter: brightness(1.2);
-}
-
-.dark .login-title {
-  color: #a855f7;
-}
-
-.dark .input-group input,
-.dark .input-group select,
-.dark .form-input {
-  background: #334155;
-  color: #f1f5f9;
-  border: 1px solid #475569;
-}
-
-.dark .input-group input::placeholder,
-.dark .form-input::placeholder {
-  color: #94a3b8;
-}
-
-.dark .input-group input:focus,
-.dark .input-group select:focus {
-  border-color: #a855f7;
-  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
-}
-
-.dark .login-btn {
-  background: linear-gradient(90deg, #a855f7 0%, #7c3aed 100%);
-  color: #fff;
-}
-
-.dark .login-btn:hover {
-  background: linear-gradient(90deg, #7c3aed 0%, #a855f7 100%);
-}
-
-.dark .preview-title {
-  color: #f1f5f9;
-}
-
-.dark .image-preview {
-  background-color: #1e293b;
-  border: 1px solid #475569;
-}
-
-.dark .delete-preview-btn {
-  background-color: #ef4444;
-  color: white;
-}
-
-.dark .delete-preview-btn:hover {
-  background-color: #dc2626;
 }

@@ -2,8 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import "./User.css";
 import { fetchDataFromApi, editData, deleteData } from "../../utils/api";
 import { myContext } from "../../App";
-import { ChevronDown,Pencil,Trash2 } from "lucide-react";
-
+import { ChevronDown, Pencil, Trash2 } from "lucide-react";
 
 const ViewUser = () => {
   const context = useContext(myContext);
@@ -13,6 +12,8 @@ const ViewUser = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const USERS_PER_PAGE = 5;
@@ -62,47 +63,62 @@ const ViewUser = () => {
 
   const handleRoleFilter = (e) => setSelectedRole(e.target.value);
 
-  const handleEdit = (user) => {
-    setEditingUser(user.id);
-    const { id, _id, ...dataWithoutId } = user;
-    setEditForm({ ...dataWithoutId, role: user.role || "USER" });
-  };
+ const handleEdit = (user) => {
+  setEditingUser(user.id);
+  const { id, _id, ...dataWithoutId } = user;
+  setEditForm({ ...dataWithoutId, originalEmail: user.email, role: user.role || "USER" });
+  setImagePreview(user.imageUrl || null);
+  setIsModalOpen(true);
+};
 
-  const handleSaveEdit = async () => {
-    try {
-      const { name, email, phone, password, role, createdById, imageFile } = editForm;
 
-      let payload;
-      let isFormData = false;
+ const handleSaveEdit = async () => {
+  try {
+    const { name, email, phone, password, role, createdById, imageFile, originalEmail } = editForm;
+    let payload;
+    let isFormData = false;
+    const emailChanged = email.trim().toLowerCase() !== originalEmail?.trim().toLowerCase();
 
-      if (imageFile) {
-        payload = new FormData();
-        payload.append("name", name);
-        payload.append("email", email);
-        payload.append("phone", phone);
-        if (password) payload.append("password", password);
-        if (createdById) payload.append("createdById", createdById);
-        payload.append("role", role.toUpperCase());
-        payload.append("image", imageFile);
-        isFormData = true;
-      } else {
-        payload = { name, email, phone, password, createdById, role: role.toUpperCase() };
-      }
-
-      await editData(`/users/update-user/${editingUser}`, payload, isFormData);
-      context.setAlertBox({ open: true, msg: "User updated Successfully!", error: false });
-      await fetchUsers();
-      setEditingUser(null);
-      setEditForm({});
-    } catch (error) {
-      console.error("Error updating user:", error);
-      context.setAlertBox({ open: true, msg: "Failed to update user!", error: true });
+    if (imageFile) {
+      payload = new FormData();
+      payload.append("name", name);
+      payload.append("phone", phone);
+      if (emailChanged) payload.append("email", email.trim());
+      if (password) payload.append("password", password);
+      if (createdById) payload.append("createdById", createdById);
+      payload.append("role", role.toUpperCase());
+      payload.append("image", imageFile);
+      isFormData = true;
+    } else {
+      payload = {
+        name,
+        phone,
+        ...(emailChanged && { email: email.trim() }),
+        ...(password && { password }),
+        ...(createdById && { createdById }),
+        role: role.toUpperCase(),
+      };
     }
-  };
+
+    await editData(`/users/update-user/${editingUser}`, payload, isFormData);
+    context.setAlertBox({ open: true, msg: "User updated Successfully!", error: false });
+    await fetchUsers();
+    setEditingUser(null);
+    setEditForm({});
+    setIsModalOpen(false);
+    setImagePreview(null);
+  } catch (error) {
+    console.error("Error updating user:", error);
+    context.setAlertBox({ open: true, msg: "Failed to update user!", error: true });
+  }
+};
+
 
   const handleCancelEdit = () => {
     setEditingUser(null);
     setEditForm({});
+    setIsModalOpen(false);
+    setImagePreview(null);
   };
 
   const handleDelete = async (userId) => {
@@ -156,40 +172,19 @@ const ViewUser = () => {
             <div className="user-card" key={user.id}>
               <img src={user.imageUrl || "/placeholder.svg"} alt="User" className="user-photo" />
               <div style={{ flex: 1 }}>
-                {editingUser === user.id ? (
-                  <>
-                    <input type="text" name="name" value={editForm.name || ""} onChange={handleInputChange} className="edit-input" placeholder="Name" />
-                    <input type="email" name="email" value={editForm.email || ""} onChange={handleInputChange} className="edit-input" placeholder="Email" />
-                    <input type="tel" name="phone" value={editForm.phone || ""} onChange={handleInputChange} className="edit-input" placeholder="Mobile" />
-                    <select name="role" value={editForm.role} onChange={handleInputChange} className="edit-select">
-                      <option value="ADMIN">Admin</option>
-                      <option value="SELLER">Seller</option>
-                      <option value="USER">User</option>
-                      <option value="ASSOCIATE">Associate</option>
-                    </select>
-                    <div className="edit-actions">
-                      <button onClick={handleSaveEdit} className="save-btn" title="Save">✓</button>
-                      <button onClick={handleCancelEdit} className="cancel-btn" title="Cancel">✕</button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="user-name"><strong>{user.name}</strong></div>
-                    <div className="user-description">{user.email}</div>
-                    <div className="user-description">{user.phone}</div>
-                    <span className={`role-badge role-${user.role?.toLowerCase()}`}>{user.role}</span>
-                    <div className="actions">
-                      <div className="action-buttons">
-                        <button className="edit-btn" onClick={() => handleEdit(user)}><Pencil /></button>
-                        <button className="delete-btn" onClick={() => handleDelete(user.id)}><Trash2 /></button>
-                      </div>
-                    </div>
-                  </>
-                )}
+                <div className="user-name"><strong>{user.name}</strong></div>
+                <div className="user-description">{user.email}</div>
+                <div className="user-description">{user.phone}</div>
+                <span className={`role-badge role-${user.role?.toLowerCase()}`}>{user.role}</span>
+                <div className="actions">
+                  <div className="action-buttons">
+                    <button className="edit-btn" onClick={() => handleEdit(user)}><Pencil /></button>
+                    <button className="delete-btn" onClick={() => handleDelete(user.id)}><Trash2 /></button>
+                  </div>
+                </div>
               </div>
             </div>
           ))}
-          
           {/* Pagination Controls */}
           <div className="pagination-controls">
             <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>&lt; Prev</button>
@@ -228,37 +223,22 @@ const ViewUser = () => {
                       className="user-photo"
                     />
                   </td>
-                  <td>{editingUser === user.id ? <input type="text" name="name" value={editForm.name || ""} onChange={handleInputChange} className="edit-input" /> : user.name}</td>
-                  <td>{editingUser === user.id ? <input type="tel" name="phone" value={editForm.phone || ""} onChange={handleInputChange} className="edit-input" /> : user.phone}</td>
-                  <td>{editingUser === user.id ? <input type="email" name="email" value={editForm.email || ""} onChange={handleInputChange} className="edit-input" /> : user.email}</td>
-                  <td>{editingUser === user.id ? (
-                    <select name="role" value={editForm.role} onChange={handleInputChange} className="edit-select">
-                      <option value="ADMIN">Admin</option>
-                      <option value="SELLER">Seller</option>
-                      <option value="USER">User</option>
-                      <option value="ASSOCIATE">Associate</option>
-                    </select>
-                  ) : (
+                  <td>{user.name}</td>
+                  <td>{user.phone}</td>
+                  <td>{user.email}</td>
+                  <td>
                     <span className={`role-badge role-${user.role?.toLowerCase()}`}>{user.role}</span>
-                  )}</td>
+                  </td>
                   <td className="actions">
-                    {editingUser === user.id ? (
-                      <div className="edit-actions">
-                        <button onClick={handleSaveEdit} className="save-btn" title="Save">✓</button>
-                        <button onClick={handleCancelEdit} className="cancel-btn" title="Cancel">✕</button>
-                      </div>
-                    ) : (
-                      <div className="action-buttons">
-                        <button onClick={() => handleEdit(user)} className="edit-btn" title="Edit"><Pencil /></button>
-                        <button onClick={() => handleDelete(user.id)} className="delete-btn" title="Delete"><Trash2 /></button>
-                      </div>
-                    )}
+                    <div className="action-buttons">
+                      <button onClick={() => handleEdit(user)} className="edit-btn" title="Edit"><Pencil /></button>
+                      <button onClick={() => handleDelete(user.id)} className="delete-btn" title="Delete"><Trash2 /></button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-
           {/* Pagination Controls */}
           <div className="pagination-controls">
             <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>&lt; Prev</button>
@@ -272,6 +252,55 @@ const ViewUser = () => {
               </button>
             ))}
             <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next &gt;</button>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {isModalOpen && (
+        <div className="modal-edit" onClick={handleCancelEdit}>
+          <div
+            className="modal-edit-content"
+            onClick={e => e.stopPropagation()}
+          >
+            <h2>Edit User</h2>
+            <label>Name:</label>
+            <input type="text" name="name" value={editForm.name || ""} onChange={handleInputChange} className="edit-input" />
+
+            <label>Email:</label>
+            <input type="email" name="email" value={editForm.email || ""} onChange={handleInputChange} className="edit-input" />
+
+            <label>Mobile:</label>
+            <input type="tel" name="phone" value={editForm.phone || ""} onChange={handleInputChange} className="edit-input" />
+
+            <label>Role:</label>
+            <select name="role" value={editForm.role} onChange={handleInputChange} className="edit-select">
+              <option value="ADMIN">Admin</option>
+              <option value="SELLER">Seller</option>
+              <option value="USER">User</option>
+              <option value="ASSOCIATE">Associate</option>
+            </select>
+
+            <label>Image:</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={e => {
+                const file = e.target.files[0];
+                setEditForm(prev => ({ ...prev, imageFile: file }));
+                setImagePreview(file ? URL.createObjectURL(file) : null);
+              }}
+            />
+            {imagePreview && (
+              <div style={{ margin: "10px 0" }}>
+                <img src={imagePreview} alt="Preview" style={{ width: 80, height: 80, borderRadius: 8, objectFit: "cover" }} />
+              </div>
+            )}
+
+            <div className="modal-actions" style={{ marginTop: 20, display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button onClick={handleSaveEdit} className="save-btn">Save</button>
+              <button onClick={handleCancelEdit} className="cancel-btn">Cancel</button>
+            </div>
           </div>
         </div>
       )}

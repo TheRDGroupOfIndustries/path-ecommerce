@@ -9,7 +9,8 @@ import {
   CartesianGrid,
 } from "recharts";
 import "./Dashboard.css";
-import { fetchDataFromApi } from "../../utils/api"
+import { fetchDataFromApi } from "../../utils/api";
+import { Link } from "react-router-dom";
 
 const chartData = [
   { day: "Mon", value: 220 },
@@ -35,6 +36,7 @@ const Dashboard = ({ darkMode }) => {
       value: users.length,
       change: "+3 increase in this month",
       positive: true,
+      link: "/users",
     },
     {
       key: "itemM",
@@ -42,6 +44,7 @@ const Dashboard = ({ darkMode }) => {
       value: itemM.length,
       change: "+3 increase in this month",
       positive: true,
+      link: "/viewitemM",
     },
     {
       key: "itemP",
@@ -49,6 +52,7 @@ const Dashboard = ({ darkMode }) => {
       value: itemP.length,
       change: "+3 increase in this month",
       positive: true,
+      link: "/viewitemP",
     },
     {
       key: "enquiry",
@@ -56,6 +60,7 @@ const Dashboard = ({ darkMode }) => {
       value: enquiry.length,
       change: "-103% increase in this month",
       positive: false,
+      link: "/enquiry",
     },
   ];
 
@@ -107,27 +112,24 @@ const Dashboard = ({ darkMode }) => {
     }
   };
 
-  const enquiries = [
-    {
-      date: "7 July 2025",
-      text: "Lorem ipsum dolor sit amet consectetur.odio amet odio. Vivamus senectus sollicitudin nunc id tortor molestae et tincidunt turpis. Augue porttitor lorem neque orci...",
-      author: "Adarsh Pandit",
-    },
-    {
-      date: "6 July 2025",
-      text: "Another enquiry text here. This is a sample enquiry that would appear when navigating through the carousel. The content changes based on the selected enquiry item.",
-      author: "John Doe",
-    },
-  ];
-
   const nextEnquiry = () => {
-    setCurrentEnquiry((prev) => (prev + 1) % enquiries.length);
+    setCurrentEnquiry((prev) => (prev + 1) % 2); // only 2 items
   };
 
   const prevEnquiry = () => {
-    setCurrentEnquiry((prev) => (prev - 1 + enquiries.length) % enquiries.length);
+    setCurrentEnquiry((prev) => (prev - 1 + 2) % 2); // only 2 items
   };
 
+  const formatDate = (dateStr) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateStr).toLocaleDateString("en-US", options);
+  };
+
+  
+  const latestEnquiries = [...enquiry]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 2);
+    
   return (
     <div className={`dashboard-page ${darkMode ? "dark" : ""}`}>
       <div className="dashboard-container">
@@ -135,15 +137,19 @@ const Dashboard = ({ darkMode }) => {
           <h2>Basic Statistics</h2>
           <div className="stats-grid">
             {statsData.map((stat, index) => (
-              <div key={index} className={`stat-card${darkMode ? ' dark' : ''}`}>
+              <div key={index} className={`stat-card${darkMode ? " dark" : ""}`}>
                 <div className="stat-header">
                   <span className="stat-title">{stat.title}</span>
-                  <div className="stat-icon-wrapper">
-                    <ArrowUpRight className="stat-icon" />
-                  </div>
+                  <Link to={stat.link}>
+                    <div className="stat-icon-wrapper">
+                      <ArrowUpRight className="stat-icon" />
+                    </div>
+                  </Link>
                 </div>
                 <div className="stat-value">{stat.value}</div>
-                <div className={`stat-change ${stat.positive ? "positive" : "negative"}`}>
+                <div
+                  className={`stat-change ${stat.positive ? "positive" : "negative"}`}
+                >
                   {stat.change}
                 </div>
               </div>
@@ -156,14 +162,17 @@ const Dashboard = ({ darkMode }) => {
         </div>
 
         <div className="analytics-section">
-          <div className={`analytics-chart${darkMode ? ' dark' : ''}`}>
+          <div className={`analytics-chart${darkMode ? " dark" : ""}`}>
             <div className="chart-container">
               <div className="chart-header">
                 <span className="chart-title">Revenue This Week</span>
               </div>
               <div className="chart-area">
                 <ResponsiveContainer width="100%" height={160}>
-                  <AreaChart data={chartData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+                  <AreaChart
+                    data={chartData}
+                    margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
+                  >
                     <defs>
                       <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#8B5CF6" stopOpacity={0.6} />
@@ -174,10 +183,17 @@ const Dashboard = ({ darkMode }) => {
                       dataKey="day"
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: darkMode ? "#b0b7d1" : "#b0b7d1", fontSize: 14 }}
+                      tick={{
+                        fill: darkMode ? "#b0b7d1" : "#b0b7d1",
+                        fontSize: 14,
+                      }}
                     />
                     <YAxis hide domain={[0, 260]} />
-                    <CartesianGrid strokeDasharray="6 6" stroke="#d1d5db" vertical={false} />
+                    <CartesianGrid
+                      strokeDasharray="6 6"
+                      stroke="#d1d5db"
+                      vertical={false}
+                    />
                     <Area
                       type="monotone"
                       dataKey="value"
@@ -192,13 +208,12 @@ const Dashboard = ({ darkMode }) => {
             </div>
           </div>
 
-          <div className="recent-enqueries-stack" >
-            <div className="recent-enqueries-bg"></div>
-            {/* <div className="recent-enqueries-bg second"></div> */}
-            <div className={`recent-enqueries${darkMode ? ' dark' : ''}`}>
+          <div className="recent-enqueries-stack">
+            <div className={`recent-enqueries-bg${darkMode ? " dark" : ""}`}></div>
+            <div className={`recent-enqueries${darkMode ? " dark" : ""}`}>
               <div className="enqueries-header">
                 <div className="indicator-dots">
-                  {enquiries.map((_, idx) => (
+                  {latestEnquiries.map((_, idx) => (
                     <div
                       key={idx}
                       className={`dot${idx === currentEnquiry ? " active" : ""}`}
@@ -207,19 +222,33 @@ const Dashboard = ({ darkMode }) => {
                 </div>
                 <h3>Recent Enquiries</h3>
               </div>
-              <div className="enqueries-content">
-                <div className="enquery-date">{enquiries[currentEnquiry]?.date}</div>
-                <div className={`enquery-text${darkMode ? ' dark' : ''}`}>{enquiries[currentEnquiry]?.text}</div>
-                <div className="enquery-author">
-                  ~ <span className="author-bold">{enquiries[currentEnquiry]?.author}</span>
+              {latestEnquiries.length > 0 && (
+                <div className="enqueries-content">
+                  <div className="enquery-date">
+                    {formatDate(latestEnquiries[currentEnquiry].createdAt)}
+                  </div>
+                  <div className={`enquery-text${darkMode ? " dark" : ""}`}>
+                    {latestEnquiries[currentEnquiry].message}
+                  </div>
+                  <div className="enquery-author">
+                    ~{" "}
+                    <span className="author-bold">
+                      {latestEnquiries[currentEnquiry].name}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="enqueries-navigation">
-                <button className={`nav-btn${currentEnquiry === 0 ? "" : " light"}`} onClick={prevEnquiry}>
+                <button
+                  className={`nav-btn${currentEnquiry === 0 ? "" : " light"}`}
+                  onClick={prevEnquiry}
+                >
                   <ChevronLeft size={18} />
                 </button>
                 <button
-                  className={`nav-btn${currentEnquiry === enquiries.length - 1 ? " active" : " dark"}`}
+                  className={`nav-btn${
+                    currentEnquiry === enquiry.length - 1 ? " active" : " dark"
+                  }`}
                   onClick={nextEnquiry}
                 >
                   <ChevronRight size={18} />
@@ -234,9 +263,3 @@ const Dashboard = ({ darkMode }) => {
 };
 
 export default Dashboard;
-
-
-
-
-
-

@@ -18,7 +18,7 @@ model User {
   id            String        @id @default(cuid())
   email         String        @unique
   name          String
-  password      String
+  password      String?
   phone         String?
   address       String?
   imageUrl      String?
@@ -26,7 +26,7 @@ model User {
   updatedAt     DateTime      @updatedAt
   role          Role          @default(USER)
 
-  reviews       Review[]
+  reviews       Review[]      
   marketplaces  Marketplace[]
   properties    Property[]
   productSeller Products[]
@@ -48,7 +48,7 @@ model Marketplace {
   description String
   imageUrl    String[]
   category    String?   @default("General")
-  createdBy   User      @relation(fields: [createdById], references: [id])
+  createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
   createdById String
   reviews     Review[]
   enquires    Enquire[]
@@ -62,7 +62,7 @@ model Property {
   description String
   imageUrl    String[]
   category    String?   @default("Houses")
-  createdBy   User      @relation(fields: [createdById], references: [id])
+  createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
   createdById String
   reviews     Review[]
   enquires    Enquire[]
@@ -81,10 +81,10 @@ model Review {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
-  product       Products?    @relation(fields: [productId], references: [id])
-  user          User         @relation(fields: [userId], references: [id])
-  marketplace   Marketplace? @relation(fields: [marketplaceId], references: [id])
-  property      Property?    @relation(fields: [propertyId], references: [id])
+  product       Products?    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  marketplace   Marketplace? @relation(fields: [marketplaceId], references: [id], onDelete: Cascade)
+  property      Property?    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 }
 
 model Enquire {
@@ -99,8 +99,8 @@ model Enquire {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now()) @updatedAt
 
-  marketplace   Marketplace? @relation(fields: [marketplaceId], references: [id])
-  property      Property?    @relation(fields: [propertyId], references: [id])
+  marketplace   Marketplace? @relation(fields: [marketplaceId], references: [id],  onDelete: Cascade)
+  property      Property?    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 }
 
 model Faq {
@@ -109,7 +109,7 @@ model Faq {
   answer    String?
   productId String
 
-  product   Products @relation(fields: [productId], references: [id])
+  product   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Products {
@@ -130,7 +130,7 @@ model Products {
   createdAt   DateTime @default(now())
   updatedAt   DateTime? @updatedAt
 
-  seller      User     @relation(fields: [sellerId], references: [id])
+  seller      User     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
 
   review   Review[]
   referralPercentage Float?
@@ -158,7 +158,7 @@ model Referral {
   usedBy       String[] @default([])
   createdAt    DateTime @default(now())
 
-  createdFor   User     @relation("CreatedReferrals", fields: [createdForId], references: [id])
+  createdFor   User     @relation("CreatedReferrals", fields: [createdForId], references: [id], onDelete: Cascade)
   transactions ReferralTransaction[]
 }
 
@@ -174,10 +174,10 @@ model ReferralTransaction {
   commission   Float
   createdAt    DateTime @default(now())
   sellerId     String? 
-  referral     Referral @relation(fields: [referralId], references: [id])
-  associate    User     @relation("AssociateUser", fields: [associateId], references: [id])
-  user         User?    @relation("ReferredUser", fields: [userId], references: [id])
-  product     Products? @relation(fields: [productId], references: [id]) 
+  referral     Referral @relation(fields: [referralId], references: [id], onDelete: Cascade)
+  associate    User     @relation("AssociateUser", fields: [associateId], references: [id], onDelete: Cascade)
+  user         User?    @relation("ReferredUser", fields: [userId], references: [id], onDelete: Cascade)
+  product     Products? @relation(fields: [productId], references: [id], onDelete: Cascade) 
 }
 
 model Order {
@@ -232,7 +232,7 @@ model Kyc {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  seller          User     @relation(fields: [sellerId], references: [id])
+  seller          User     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
 }
 
 model Announcement {

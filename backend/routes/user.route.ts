@@ -111,7 +111,7 @@ route.get(
 
     // Redirect with token to frontend (or set cookie)
     res.redirect(
-      `http://localhost:5173/google-success?token=${token.accessToken}`
+      `${process.env.REDIRECT_URL}/google-success?token=${token.accessToken}`
     );
   }
 );

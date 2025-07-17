@@ -25,6 +25,14 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (formData.email === "" && formData.password === "") {
+      context.setAlertBox({
+        open: true,
+        msg: "All fields are required!",
+        error: true,
+      });
+        return 
+      }
       const response = await postData("/users/login", formData);
       const token = response.token?.accessToken || "";
       const user = response.user || {};

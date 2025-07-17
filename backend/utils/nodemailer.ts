@@ -13,7 +13,7 @@ export async function sendOtpMail(email: string, otp: number) {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: "SPC - Reset Password OTP",
+      subject: "SPC - OTP Verification.",
       html: `
 <!DOCTYPE html>
 <html lang="en">

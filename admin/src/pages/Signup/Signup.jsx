@@ -13,7 +13,7 @@ const Signup = () => {
     phone: "",
     password: "",
     confirmPassword: "",
-    role: "",
+    role: "SELLER",
     imageFile: null,
   });
 
@@ -31,6 +31,22 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
+
+    if (
+      formData.email === "" &&
+      formData.name === "" &&
+      formData.phone === "" &&
+      formData.password === "" &&
+      formData.confirmPassword === ""
+    ) {
+      context.setAlertBox({
+        open: true,
+        msg: "Please provide all credentials!",
+        error: true,
+      });
+      return 
+    }
+
     data.append("name", formData.name);
     data.append("email", formData.email);
     data.append("phone", formData.phone);
@@ -131,7 +147,7 @@ const Signup = () => {
                   />
                 </div>
               </div>
-
+{/* 
               <div className="input-wrapper">
                 <label className="input-label">Role</label>
                 <div className="input-group">
@@ -147,7 +163,7 @@ const Signup = () => {
                     <option value="SELLER">Seller</option>
                   </select>
                 </div>
-              </div>
+              </div> */}
 
               <div className="input-wrapper">
                 <label className="input-label">Password</label>

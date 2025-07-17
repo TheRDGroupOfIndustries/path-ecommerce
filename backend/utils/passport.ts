@@ -10,9 +10,9 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: "http://localhost:8000/api/users/auth/google/callback",
+      callbackURL: `${process.env.API_URL}/api/users/auth/google/callback`,
     },
-    async (_accessToken, _refreshToken, profile, done) => {
+    async (_accessToken: any, _refreshToken: any, profile: any, done: any) => {
       try {
         const email = profile.emails?.[0]?.value;
         const name = profile.displayName;
@@ -27,7 +27,6 @@ passport.use(
           user = await userModel.createUser({
             name,
             email,
-            password: "set password", 
             imageUrl,
           });
         }
@@ -40,11 +39,11 @@ passport.use(
   )
 );
 
-passport.serializeUser((user: any, done) => {
+passport.serializeUser((user: any, done: any) => {
   done(null, user.id);
 });
 
-passport.deserializeUser(async (id: string, done) => {
+passport.deserializeUser(async (id: string, done: any) => {
   try {
     const user = await prisma.user.findUnique({ where: { id } });
     done(null, user);

@@ -106,28 +106,30 @@ export const updatePassword = async (req: Request, res: Response) => {
   }
 };
 
+//update user
 export const updateUser = async (req: Request, res: Response) => {
-  let { id } = req.params;
 
-  // Get ID from token if available
-  if (req.headers.authorization) {
-    const data = verifyTokenFromHeader(req.headers.authorization as string);
-    id = data?.id as string;
-  }
+let id: string | undefined = req.params.id;
+// Only override if updating the authenticated user
+if (!id && req.headers.authorization) {
+  const data = verifyTokenFromHeader(req.headers.authorization as string);
+  id = data?.id;
+}
+
+if (!id) {
+  return res.status(400).json({ error: "No user ID found" });
+}
 
   if (!id) {
     return res.status(400).json({ error: "No user ID found" });
   }
-
   try {
     const body = { ...req.body };
 
-    // Hash password if present
     if (body.password) {
       body.password = await bcrypt.hash(body.password, 10);
     }
 
-    // Handle image upload
     if (req.file) {
       const imageUrl = await uploadBufferToCloudinary(
         req.file.buffer,
@@ -137,10 +139,8 @@ export const updateUser = async (req: Request, res: Response) => {
       body.imageUrl = imageUrl;
     }
 
-    // Check for email conflict
     if (body.email) {
       const existingUserWithEmail = await userModel.userByGmail(body.email);
-
       if (existingUserWithEmail && existingUserWithEmail.id !== id) {
         return res.status(409).json({ error: "Email already in use by another user" });
       }
@@ -153,8 +153,6 @@ export const updateUser = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
-
-
 
 export const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;

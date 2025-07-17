@@ -1,14 +1,14 @@
-import { useState } from "react";
-import "./Login.css";
-import { FaLock } from "react-icons/fa";
-import { MdEmail } from "react-icons/md";
+import { useState, useContext } from "react";
+import {Mails,KeyRound} from "lucide-react"
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { fetchDataFromApi, postData } from "../../utils/api";
 import { jwtDecode } from "jwt-decode";
-import { useContext } from "react"
-import { myContext } from "../../App"
+import { myContext } from "../../App";
+import "./Login.css";
 
 const Login = () => {
-  const context = useContext(myContext)
+  const context = useContext(myContext);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -21,118 +21,122 @@ const Login = () => {
       [name]: value,
     }));
   };
+
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await postData("/users/login", formData);
+    e.preventDefault();
+    try {
+      const response = await postData("/users/login", formData);
+      const token = response.token?.accessToken || "";
+      const user = response.user || {};
 
-    // Get token and user
-    const token = response.token?.accessToken || "";
-    const user = response.user || {};
+      console.log("JWT Token:", token);
+      console.log("User Info:", user);
 
-    console.log("JWT Token:", token);
-    console.log("User Info:", user);
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
-    //  Save to localStorage
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
+      const decoded = jwtDecode(token);
+      console.log("Decoded Token Payload:", decoded);
+      console.log("User ID:", decoded.id);
+      console.log("User Email:", decoded.email);
+      console.log("User Role:", decoded.role);
 
-    //  Decode and print token payload
-    const decoded = jwtDecode(token);
-    console.log("Decoded Token Payload:", decoded);
-    console.log("User ID:", decoded.id);
-    console.log("User Email:", decoded.email);
-    console.log("User Role:", decoded.role);
+      context.setAlertBox({
+        open: true,
+        msg: "Login successful!",
+        error: false,
+      });
 
-    context.setAlertBox({
-      open: true,
-      msg: "Login successful!",
-      error: false,
-    });
+      if (user.role === "SELLER") {
+        try {
+          const kyc = await fetchDataFromApi("/kyc/my-kyc");
+          console.log("KYC Response:", kyc);
 
-    if (user.role === "SELLER") {
-      try {
-        const kyc = await fetchDataFromApi("/kyc/my-kyc");
-        console.log("KYC Response:", kyc);
+          if (!kyc || !kyc.status) {
+            window.location.href = "/kycc";
+          } else if (kyc.status === "PENDING") {
+            window.location.href = "/kyc-status";
+          } else if (kyc.status === "APPROVED") {
+            window.location.href = "/dashboard";
+          } else {
+            window.location.href = "/kyc-status?rejected=true";
+          }
+        } catch (kycError) {
+          console.error("Error fetching KYC:", kycError);
 
-        if (!kyc || !kyc.status) {
-          window.location.href = "/kycc";
-        } else if (kyc.status === "PENDING") {
-          window.location.href = "/kyc-status";
-        } else if (kyc.status === "APPROVED") {
-          window.location.href = "/dashboard";
-        } else {
-          window.location.href = "/kyc-status?rejected=true";
+          if (
+            kycError?.response?.status === 404 &&
+            kycError?.response?.data?.msg === "No KYC found."
+          ) {
+            window.location.href = "/kycc";
+          } else {
+            context.setAlertBox({
+              open: true,
+              msg: "Error fetching KYC",
+              error: true,
+            });
+          }
         }
-      } catch (kycError) {
-        console.error("Error fetching KYC:", kycError);
-
-        if (
-          kycError?.response?.status === 404 &&
-          kycError?.response?.data?.msg === "No KYC found."
-        ) {
-          window.location.href = "/kycc";
-        } else {
-          context.setAlertBox({
-            open: true,
-            msg: "Error fetching KYC",
-            error: true,
-          });
-        }
+      } else {
+        window.location.href = "/dashboard";
       }
-    } else {
-      window.location.href = "/dashboard";
+    } catch (error) {
+      console.error("Login failed:", error);
+      context.setAlertBox({
+        open: true,
+        msg: "Login Failed!",
+        error: true,
+      });
     }
-  } catch (error) {
-    console.error("Login failed:", error);
-    context.setAlertBox({
-      open: true,
-      msg: "Login Failed!",
-      error: true,
-    });
-  }
-};
+  };
 
   return (
-    <div className="login-container">
-      <div className="login-card login-card-centered">
-        <div className="login-image-section">
-          <img
-            src="https://miro.medium.com/v2/resize:fit:1400/1*H0blMkNrtDWvZdrohrivKQ.jpeg"
-            alt="Login Illustration"
-            className="login-illustration"
-          />
-          <a href="/signup" className="create-account-link">Don't have an account? Sign Up</a>
+    <div className="login-bg">
+      <div className="background-block"></div>
+      <div className="login-card">
+        <div className="left-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <div className="spc-logo-large">
+            <img src="/SPC.png" alt="SPC Logo" />
+          </div>
+          <div className="login-bottom-link" style={{ marginTop: '2.5rem', textAlign: 'left', width: '100%' }}>
+            <span>Don’t have account? <a href="/signup">Sign up</a></span>
+          </div>
         </div>
-        <div className="login-form-section">
-          <img src="/SPC.png" alt="SPC Logo" className="login-logo" />
+
+        <div className="login-form-section" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
           <h2 className="login-title">Sign In</h2>
-          <form className="login-form" onSubmit={handleSubmit}>
+          <p className="login-subtitle">Please Provide credentials to login</p>
+          <form className="login-form" style={{ width: '100%', maxWidth: 400, margin: '0 auto' }} onSubmit={handleSubmit}>
             <div className="input-group">
-              <span className="input-icon"><MdEmail /></span>
+              <span className="input-icon"><Mails /></span>
               <input
                 type="email"
                 name="email"
-                placeholder="Email"
+                placeholder="i.e, adarshpanditdev@gmail.com"
                 value={formData.email}
                 onChange={handleChange}
                 required
               />
             </div>
-
             <div className="input-group">
-              <span className="input-icon"><FaLock /></span>
+              <span className="input-icon"><KeyRound /></span>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
-                placeholder="Password"
+                placeholder="********"
                 value={formData.password}
                 onChange={handleChange}
                 required
               />
+              <span
+                className="toggle-password-icon"
+                onClick={() => setShowPassword((prev) => !prev)}
+                title={showPassword ? "Hide Password" : "Show Password"}
+              >
+                {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+              </span>
             </div>
-
-            <button type="submit" className="login-btn">Sign In</button>
+            <button type="submit" className="login-btn">Login →</button>
           </form>
         </div>
       </div>

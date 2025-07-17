@@ -1,14 +1,12 @@
-import { useState } from "react";
-import "./Signup.css";
-import { FaUser, FaLock, FaPhoneAlt } from "react-icons/fa";
-import { MdEmail } from "react-icons/md";
-import { FaCircleUser } from "react-icons/fa6";
+import { useState, useContext } from "react";
+import {  FaEye, FaEyeSlash } from "react-icons/fa6";
 import { postData } from "../../utils/api";
-import { useContext } from "react"
-import { myContext } from "../../App"
+import { myContext } from "../../App";
+import "./Signup.css";
+import {UsersRound,Mails,PhoneCall,BookUser,KeyRound} from "lucide-react"
 
 const Signup = () => {
-  const context = useContext(myContext)
+  const context = useContext(myContext);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,8 +14,11 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
     role: "",
-    imageFile: null, 
+    imageFile: null,
   });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,135 +28,173 @@ const Signup = () => {
     }));
   };
 
-
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    const data = new FormData();
+    data.append("name", formData.name);
+    data.append("email", formData.email);
+    data.append("phone", formData.phone);
+    data.append("password", formData.password);
+    data.append("confirmPassword", formData.confirmPassword);
+    data.append("role", formData.role);
+    data.append("image", formData.imageFile);
 
-  const data = new FormData();
-  data.append("name", formData.name);
-  data.append("email", formData.email);
-  data.append("phone", formData.phone);
-  data.append("password", formData.password);
-  data.append("confirmPassword", formData.confirmPassword);
-  data.append("role", formData.role);
-  data.append("image", formData.imageFile);  
+    try {
+      const result = await postData("/users/create-user", data, true);
 
-  try {
-    const result = await postData("/users/create-user", data, true); // already parsed
+      if (result?.token) {
+        localStorage.setItem("token", result.token?.accessToken || "");
+        localStorage.setItem("user", JSON.stringify(result.user || {}));
 
-    if (result?.token) {
-      localStorage.setItem("token", result.token?.accessToken || "");  
-      localStorage.setItem("user", JSON.stringify(result.user || {}));
+        context.setAlertBox({
+          open: true,
+          msg: "SignUp successfully!",
+          error: false,
+        });
 
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
+      } else {
+        throw new Error(result.error || "Signup failed");
+      }
+    } catch (error) {
+      console.error("Signup failed:", error);
       context.setAlertBox({
         open: true,
-        msg: "SignUp successfully!",
-        error: false,
+        msg: "SignUp Failed!",
+        error: true,
       });
-
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
-    } else {
-      throw new Error(result.error || "Signup failed");
     }
-
-  } catch (error) {
-    console.error("Signup failed:", error);
-    context.setAlertBox({
-      open: true,
-      msg: "SignUp Failed!",
-      error: true,
-    });
-  }
-};
+  };
 
   return (
-    <div className="login-container">
-      <div className="login-card login-card-centered">
-        <div className="login-image-section">
-          <img
-            src="https://miro.medium.com/v2/resize:fit:1400/1*H0blMkNrtDWvZdrohrivKQ.jpeg"
-            alt="Login Illustration"
-            className="login-illustration"
-          />
-          <a href="/login" className="create-account-link">Already have an account?</a>
+    <div className="signup-container">
+      <div className="card-shadow"></div>
+      <div className="signup-card">
+        <div className="logo-section">
+          <img src="/SPC.png" alt="SPC Logo" className="spc-logo-img" />
+          <div className="signin-link">
+            Already have an account? <a href="/login">Sign in</a>
+          </div>
         </div>
-        <div className="login-form-section">
-          <img src="/SPC.png" alt="SPC Logo" className="login-logo" />
-          <h2 className="login-title">Sign Up</h2>
-          <form className="login-form" onSubmit={handleSubmit}>
-            <div className="input-group">
-              <span className="input-icon"><FaUser /></span>
-              <input
-                type="text"
-                name="name"
-                placeholder=" Name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="input-group">
-              <span className="input-icon"><MdEmail /></span>
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="input-group">
-              <span className="input-icon"><FaPhoneAlt /></span>
-              <input
-                type="tel"
-                name="phone"
-                placeholder="Phone"
-                value={formData.phone}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="input-group">
-              <span className="input-icon"><FaCircleUser /></span>
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select Role</option>
-                <option value="ADMIN">Admin</option>
-                <option value="SELLER">Seller</option>
-              </select>
-            </div>
-            <div className="input-group">
-              <span className="input-icon"><FaLock /></span>
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="input-group">
-              <span className="input-icon"><FaLock /></span>
-              <input
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirm Password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
-            </div>
+        <div className="form-section3">
+          <div className="form-header">
+            <h3 className="signup-title">Sign Up</h3>
+            <p className="signup-subtitle">
+              Please Provide credentials to create your account
+            </p>
+          </div>
+          <form className="signup-form" onSubmit={handleSubmit}>
+            <div className="form-grid3">
+              <div className="input-wrapper">
+                <label className="input-label">Name</label>
+                <div className="input-group">
+                <UsersRound className="input-icon"/>    
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
 
-              <div className="form-sectionn">
-              <div className="input-group">
+              <div className="input-wrapper">
+                <label className="input-label">Email</label>
+                <div className="input-group">
+                <Mails className="input-icon"/>  
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="input-wrapper">
+                <label className="input-label">Phone</label>
+                <div className="input-group">
+                 <PhoneCall className="input-icon"/>   
+                  <input
+                    type="tel"
+                    name="phone"
+                    placeholder="Phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="input-wrapper">
+                <label className="input-label">Role</label>
+                <div className="input-group">
+                 <BookUser className="input-icon"/> 
+                  <select
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Role</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="SELLER">Seller</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="input-wrapper">
+                <label className="input-label">Password</label>
+                <div className="input-group">
+               <KeyRound className="input-icon"/>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="input-wrapper">
+                <label className="input-label">Confirm Password</label>
+                <div className="input-group">
+                   <KeyRound className="input-icon"/>
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  >
+                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="input-wrapper" style={{ gridColumn: "1 / span 2" }}>
+                <label className="input-label">Upload Image</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -166,12 +205,14 @@ const Signup = () => {
                     }))
                   }
                   required
-                  className="form-input"
                 />
               </div>
 
               {formData.imageFile && (
-                <div className="preview-container">
+                <div
+                  className="preview-container"
+                  style={{ gridColumn: "1 / span 2" }}
+                >
                   <h4 className="preview-title">Image Preview</h4>
                   <div className="preview-item image-preview">
                     <button
@@ -183,7 +224,6 @@ const Signup = () => {
                           imageFile: null,
                         }))
                       }
-                      title="Remove image"
                     >
                       ×
                     </button>
@@ -194,10 +234,11 @@ const Signup = () => {
                   </div>
                 </div>
               )}
+
+              <button type="submit" className="signup-btn">
+                Sign Up →
+              </button>
             </div>
-
-
-            <button type="submit" className="login-btn">Sign Up</button>
           </form>
         </div>
       </div>
@@ -206,3 +247,4 @@ const Signup = () => {
 };
 
 export default Signup;
+

@@ -68,14 +68,14 @@ export const createUser = async (data: CreateUserInput) => {
 export const updateUser = async (id: string, data: UpdateUserInput) => {
   return await db.user.update({
     where: { id },
-    data: {
-      ...(data.name && { name: data.name }),
-     ...(data.email !== undefined ? { email: data.email } : {}),
-      ...(data.phone !== undefined && { phone: data.phone }),
-      ...(data.address && { address: data.address }),
-      ...(data.imageUrl && { imageUrl: data.imageUrl }),
-      ...(data.role && { role: data.role }),
-      ...(data.createdById && { createdById: data.createdById }),
+     data: {
+      ...(data.name !== undefined ? { name: data.name } : {}),
+      ...(data.email !== undefined ? { email: data.email } : {}),
+      ...(data.phone !== undefined ? { phone: data.phone } : {}),
+      ...(data.address !== undefined ? { address: data.address } : {}),
+      ...(data.imageUrl !== undefined ? { imageUrl: data.imageUrl } : {}),
+      ...(data.role !== undefined ? { role: data.role } : {}),
+      ...(data.createdById !== undefined ? { createdById: data.createdById } : {}),
     },
   });
 };

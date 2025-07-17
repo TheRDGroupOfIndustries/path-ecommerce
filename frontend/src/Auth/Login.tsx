@@ -117,7 +117,6 @@
 
 // export default Login;
 
-
 import React, { useState } from "react";
 import SPC from "@/assets/SPC.jpg";
 import { Eye, EyeOff } from "lucide-react";
@@ -127,7 +126,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/authContext";
 import { useNavigate } from "react-router-dom";
-
+import { API_URL } from "@/lib/api.env";
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -212,7 +211,10 @@ const Login = () => {
             </div>
 
             <div className="text-right mt-1">
-              <a href="/forgot-password" className="text-sm text-black underline">
+              <a
+                href="/forgot-password"
+                className="text-sm text-black underline"
+              >
                 Forgot Password?
               </a>
             </div>
@@ -232,11 +234,18 @@ const Login = () => {
           <div className="flex flex-col items-center mt-8">
             <Button
               type="button"
+              onClick={(e) => {
+                e.preventDefault(); // 🛑 prevent form submission
+                window.location.href = `${API_URL}/api/users/auth/google`;
+              }}
               className="bg-white text-black rounded-full border-2 p-5 flex items-center justify-center hover:bg-gray-900"
             >
               <FaGoogle size={36} />
             </Button>
-            <span className="text-sm text-black mt-2 font-semibold">Google</span>
+
+            <span className="text-sm text-black mt-2 font-semibold">
+              Google
+            </span>
           </div>
 
           <div className="flex items-center my-4">

@@ -195,7 +195,7 @@
 
 
 .signup-btn {
-  width: 100%;
+  width: 50%;
   background: #e6e8ff;
   color: #23246b;
   border: none;
@@ -206,6 +206,8 @@
   cursor: pointer;
   transition: all 0.2s ease;
   grid-column: 1 / span 2;
+  position: relative;
+  margin-left: 50%;
 }
 
 .signup-btn:hover {

@@ -209,7 +209,7 @@ const Signup = () => {
                 </div>
               </div>
 
-              <div className="input-wrapper" style={{ gridColumn: "1 / span 2" }}>
+              <div className="input-wrapper" >
                 <label className="input-label">Upload Image</label>
                 <input
                   type="file"

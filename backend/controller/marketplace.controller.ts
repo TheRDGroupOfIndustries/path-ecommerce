@@ -95,3 +95,30 @@ export const marketplaceByUser = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
+// Role-based marketplace fetch
+export const marketDataByUserRole = async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  const userRole = req.user?.role;
+
+  try {
+    if (!userId || !userRole) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    if (userRole === "ADMIN") {
+      const data = await marketPlaceModel.allMarketplaces();
+      return res.status(200).json({ data });
+    }
+
+    if (userRole === "SELLER") {
+      const data = await marketPlaceModel.marketplacesBySeller(userId);
+      return res.status(200).json({ data });
+    }
+
+    return res.status(403).json({ message: "Access denied" });
+  } catch (error) {
+    console.error("Error fetching marketplace data:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};

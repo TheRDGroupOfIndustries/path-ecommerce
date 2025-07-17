@@ -469,3 +469,12 @@
     max-width: 100%;
   }
 }
+.no-enquiry {
+  text-align: center;
+  padding: 20px 0px;
+  font-style: italic;
+  color: #888;
+}
+.no-enquiry.dark {
+  color: #aaa;
+}

@@ -85,4 +85,17 @@ router.get("/get-trendy", async (req, res) => {
   }
 });
 
+
+//by seller role 
+
+router.get("/by-role", isAuthenticated, async (req, res) => {
+  try {
+    await productController.getProductsByRole(req, res);
+  } catch (error) {
+    console.error("Error in getProductsByRole:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
 export default router;

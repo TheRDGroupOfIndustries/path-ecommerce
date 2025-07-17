@@ -28,8 +28,9 @@ const Dashboard = ({ darkMode }) => {
   const [itemM, setItemM] = useState([]);
   const [itemP, setItemP] = useState([]);
   const [enquiry, setEnquiry] = useState([]);
+  const [product,setProduct] = useState([]);
 
-  const statsData = [
+  const allStatsData = [
     {
       key: "users",
       title: "Total users",
@@ -44,7 +45,7 @@ const Dashboard = ({ darkMode }) => {
       value: itemM.length,
       change: "+3 increase in this month",
       positive: true,
-      link: "/viewitemM",
+      link: "/viewitemP",
     },
     {
       key: "itemP",
@@ -52,8 +53,18 @@ const Dashboard = ({ darkMode }) => {
       value: itemP.length,
       change: "+3 increase in this month",
       positive: true,
-      link: "/viewitemP",
+      link: "/viewitemM",
     },
+
+    {
+      key: "product",
+      title: "Total Products",
+      value: product.length,
+      change: "+3 increase in this month",
+      positive: true,
+      link: "/viewproduct",
+    },
+
     {
       key: "enquiry",
       title: "Total Enquiries",
@@ -62,7 +73,17 @@ const Dashboard = ({ darkMode }) => {
       positive: false,
       link: "/enquiry",
     },
+    
   ];
+
+const user = JSON.parse(localStorage.getItem("user"));
+const userRole = user?.role || "SELLER";
+
+ const statsData = allStatsData.filter((stat) => {
+  if (userRole === "ADMIN" && stat.key === "product") return false;
+  if (userRole === "SELLER" && stat.key === "users") return false;
+  return true;
+});
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -70,6 +91,7 @@ const Dashboard = ({ darkMode }) => {
     fetchItems();
     fetchItemMs();
     fetchEnquiry();
+    fetchingProduct();
   }, []);
 
   const fetchUsers = async () => {
@@ -83,9 +105,9 @@ const Dashboard = ({ darkMode }) => {
   };
 
   const fetchItems = async () => {
-    const res = await fetchDataFromApi("/property/get-all");
-    if (res && Array.isArray(res.properties)) {
-      setItemM(res.properties);
+    const res = await fetchDataFromApi("/property/by-role");
+    if (res && Array.isArray(res.data)) {
+      setItemM(res.data);
     } else {
       console.error("Unexpected API response:", res);
       setItemM([]);
@@ -93,9 +115,9 @@ const Dashboard = ({ darkMode }) => {
   };
 
   const fetchItemMs = async () => {
-    const res = await fetchDataFromApi("/marketplace/get-all");
-    if (res && Array.isArray(res.marketplaces)) {
-      setItemP(res.marketplaces);
+    const res = await fetchDataFromApi("/marketplace/by-role");
+    if (res && Array.isArray(res.data)) {
+      setItemP(res.data);
     } else {
       console.error("Unexpected API response:", res);
       setItemP([]);
@@ -103,7 +125,7 @@ const Dashboard = ({ darkMode }) => {
   };
 
   const fetchEnquiry = async () => {
-    const res = await fetchDataFromApi("/enquiry/get-all");
+    const res = await fetchDataFromApi("/enquiry/by-role");
     if (res && Array.isArray(res)) {
       setEnquiry(res);
     } else {
@@ -111,6 +133,15 @@ const Dashboard = ({ darkMode }) => {
       setEnquiry([]);
     }
   };
+
+  const fetchingProduct = () => {
+      fetchDataFromApi("/product/by-role")
+        .then((res) => {
+          console.log("Fetched products:", res);
+          setProduct(res.products);
+        })
+        .catch((error) => console.error("Error fetching Products:", error));
+    };
 
   const nextEnquiry = () => {
     setCurrentEnquiry((prev) => (prev + 1) % 2); // only 2 items
@@ -222,22 +253,26 @@ const Dashboard = ({ darkMode }) => {
                 </div>
                 <h3>Recent Enquiries</h3>
               </div>
-              {latestEnquiries.length > 0 && (
-                <div className="enqueries-content">
-                  <div className="enquery-date">
-                    {formatDate(latestEnquiries[currentEnquiry].createdAt)}
-                  </div>
-                  <div className={`enquery-text${darkMode ? " dark" : ""}`}>
-                    {latestEnquiries[currentEnquiry].message}
-                  </div>
-                  <div className="enquery-author">
-                    ~{" "}
-                    <span className="author-bold">
-                      {latestEnquiries[currentEnquiry].name}
-                    </span>
-                  </div>
-                </div>
-              )}
+             {latestEnquiries.length > 0 ? (
+            <div className="enqueries-content">
+              <div className="enquery-date">
+                {formatDate(latestEnquiries[currentEnquiry].createdAt)}
+              </div>
+              <div className={`enquery-text${darkMode ? " dark" : ""}`}>
+                {latestEnquiries[currentEnquiry].message}
+              </div>
+              <div className="enquery-author">
+                ~{" "}
+                <span className="author-bold">
+                  {latestEnquiries[currentEnquiry].name}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className={`enqueries-content no-enquiry${darkMode ? " dark" : ""}`}>
+              No enquiry yet.
+            </div>
+          )}
               <div className="enqueries-navigation">
                 <button
                   className={`nav-btn${currentEnquiry === 0 ? "" : " light"}`}

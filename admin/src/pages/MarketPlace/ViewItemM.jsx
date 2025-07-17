@@ -28,13 +28,13 @@ const ViewitemM = () => {
   }, []);
 
   const fetchItems = async () => {
-    const res = await fetchDataFromApi("/marketplace/get-all");
-    if (res && Array.isArray(res.marketplaces)) {
-      setUsers(res.marketplaces);
+    const res = await fetchDataFromApi("/marketplace/by-role");
+    if (res && Array.isArray(res.data)) {
+    setUsers(res.data);
     } else {
-      console.error("Unexpected API response:", res);
-      setUsers([]);
-    }
+   console.error("Unexpected API response:", res);
+   setUsers([]);
+}
   };
 
   useEffect(() => {

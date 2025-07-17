@@ -1,5 +1,6 @@
 import * as marketPlaceController from "../controller/marketplace.controller.js";
 import { Router } from "express";
+import { isAuthenticated } from "../middlewares/auth.js";
 
 const route = Router();
 
@@ -39,5 +40,15 @@ route.put("/update/:id", async (req, res) => {
 route.delete("/delete/:id", async (req, res) => {
   await marketPlaceController.deleteMarketplace(req, res);
 });
+
+route.get("/by-role", isAuthenticated, async (req, res) => {
+  try {
+    await marketPlaceController.marketDataByUserRole(req, res);
+  } catch (error) {
+    console.error("Error in get-role-based:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 
 export default route;

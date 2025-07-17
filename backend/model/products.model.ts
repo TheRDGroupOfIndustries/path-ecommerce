@@ -14,6 +14,19 @@ export const getSlug = async (id: string) => {
   } });
 };
 
+
+export const getProductsBySellerId = async (sellerId: string) => {
+  return await db.products.findMany({
+    where: {
+      sellerId: sellerId,
+    },
+    include: {
+      seller: true,
+    },
+  });
+};
+
+
 export const getSearchResults = async (query: string) => {
   return await db.products.findMany({
     where: {

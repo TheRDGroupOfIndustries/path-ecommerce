@@ -45,6 +45,62 @@ export const getAllEnquiries = async (req: Request, res: Response): Promise<void
   }
 };
 
+
+export const getAllEnquiriesByRole = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      res.status(401).json({ message: "Unauthorized" });
+      return; 
+    }
+
+    let enquiries;
+
+    if (user.role === "ADMIN"|| user.role === "USER") {
+      // Admin: get all enquiries
+      enquiries = await db.enquire.findMany({
+        orderBy: { createdAt: "desc" },
+      });
+    } else if (user.role === "SELLER") {
+      // Seller: fetch enquiries related to seller's properties or marketplaces
+      enquiries = await db.enquire.findMany({
+        where: {
+          OR: [
+            {
+              marketplace: {
+                createdById: user.id,
+              },
+            },
+            {
+              property: {
+                createdById: user.id,
+              },
+            },
+          ],
+        },
+        orderBy: { createdAt: "desc" },
+        include: {
+          marketplace: true,
+          property: true,
+        },
+      });
+    } else {
+      res.status(403).json({ message: "Forbidden" });
+      return; 
+    }
+
+    res.status(200).json(enquiries);
+  } catch (error: any) {
+    console.error("Error fetching enquiries:", error);
+    res.status(500).json({
+      error: "Failed to fetch enquiries",
+      details: error?.message || error,
+    });
+  }
+};
+
+
 export const deleteEnquiry = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 

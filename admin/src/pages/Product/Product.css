@@ -867,9 +867,8 @@ strong{
   border: 1px solid #334155;
 }
 
-.dark .form-section {
+.dark Select {
   background: #334155;
-  border-left: 4px solid #a855f7;
 }
 
 .dark .section-title,

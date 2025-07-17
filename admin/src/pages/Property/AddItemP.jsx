@@ -154,7 +154,7 @@ const AddItemP = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="add-item-form" style={{ borderRadius: 20, boxShadow: '0 10px 30px rgba(53, 56, 150, 0.08)', padding: 40, background: 'white' }}>
+      <form onSubmit={handleSubmit} className="add-item-form">
         <div className="form-grid">
           {/* Name Field */}
           <div className="input-group1">
@@ -229,7 +229,7 @@ const AddItemP = () => {
                       >
                         ×
                       </button>
-                      <img src={image || "/placeholder.svg"} alt={`Product ${index + 1}`} style={{ maxWidth: 120, maxHeight: 80, borderRadius: 8 }} />
+                      <img src={image || "/placeholder.svg"} alt={`Product ${index + 1}`} style={{ maxWidth:150, maxHeight: 80, borderRadius: 8 }} />
                     </div>
                   ))}
                 </div>
@@ -277,8 +277,8 @@ const AddItemP = () => {
             )}
           </button>
         </div>
-      </form>
-    </div>
+      </form>   
+      </div>
   )
 }
 

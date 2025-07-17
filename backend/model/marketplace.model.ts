@@ -3,6 +3,15 @@ import { CreateMarketplaceInput, UpdateMarketplaceInput } from "../client/types/
 
 export const allMarketplaces = async () => db.marketplace.findMany({});
 
+// Get marketplaces created by a specific seller
+export const marketplacesBySeller = async (sellerId: string) => {
+  return await db.marketplace.findMany({
+    where: {
+      createdById: sellerId,
+    },
+  });
+};
+
 export const marketplaceByCat = async (category: string) =>
   db.marketplace.findMany({ where: { category } });
 

@@ -85,4 +85,29 @@ export const getTrendyProducts = async (req: Request, res: Response) => {
 };
 
 
+//only product for specific seller 
+
+export const getProductsByRole = async (req: Request, res: Response) => {
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    if (user.role === "ADMIN") {
+      const products = await productModel.getAllProducts();
+      return res.status(200).json({ products });
+    } else if (user.role === "SELLER") {
+      const products = await productModel.getProductsBySellerId(user.id);
+      return res.status(200).json({ products });
+    } else {
+      return res.status(403).json({ message: "Access denied" });
+    }
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
+
 

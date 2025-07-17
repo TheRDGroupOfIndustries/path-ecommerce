@@ -27,13 +27,13 @@ const ViewitemP = () => {
   }, []);
 
   const fetchItems = async () => {
-    const res = await fetchDataFromApi("/property/get-all");
-    if (res && Array.isArray(res.properties)) {
-      setUsers(res.properties);
-    } else {
-      console.error("Unexpected API response:", res);
-      setUsers([]);
-    }
+    const res = await fetchDataFromApi("/property/by-role");
+    if (res && Array.isArray(res.data)) {
+    setUsers(res.data);
+  } else {
+   console.error("Unexpected API response:", res);
+   setUsers([]);
+}
   };
 
   useEffect(() => {

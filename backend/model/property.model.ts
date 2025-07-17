@@ -3,6 +3,15 @@ import { CreatePropertyInput, PropertyCategory, UpdatePropertyInput } from "../c
 
 export const allProperty = async () => db.property.findMany({});
 
+// Get marketplaces created by a specific seller
+export const propertyBySeller = async (sellerId: string) => {
+  return await db.property.findMany({
+    where: {
+      createdById: sellerId,
+    },
+  });
+};
+
 export const propertyByCat = async (category: PropertyCategory) =>
   db.property.findMany({ where: { category } });
 

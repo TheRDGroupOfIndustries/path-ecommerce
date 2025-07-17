@@ -19,7 +19,7 @@ const Enquiry = () => {
   }, []);
 
   const fetchEnquiry = async () => {
-    const res = await fetchDataFromApi("/enquiry/get-all");
+    const res = await fetchDataFromApi("/enquiry/by-role");
     if (res && Array.isArray(res)) {
       setUsers(res);
     } else {

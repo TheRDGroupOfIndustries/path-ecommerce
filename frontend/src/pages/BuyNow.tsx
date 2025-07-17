@@ -97,27 +97,6 @@ useEffect(() => {
 
   const [quantity, setQuanity] = useState(1);
 
-  // const placeOrder = async () => {
-  //   const res = await axios.post(
-  //     `${API_URL}/api/order/buynow`,
-  //     {
-  //       productId: id,
-  //       paymentMode: "COD",
-  //       referralCode: code || "",
-  //       quantity: quantity,
-  //     },
-  //     {
-  //       headers: {
-  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //       },
-  //     }
-  //   );
-
-  //   if (res.status === 201) {
-  //     navigate("/thanks");
-  //   }
-  // };
-
 
   
   const placeOrder = async () => {
@@ -174,9 +153,11 @@ useEffect(() => {
   const updateQuantity = async (id: string, change: number, prevQuat?: number) => {
     
       const newQuantity = prevQuat + change;
+      setQuanity(newQuantity)
       try {
-        await axios.put(
-          `${API_URL}/api/cart/update-quantity`,
+        if (fromCart) {
+          await axios.put(
+            `${API_URL}/api/cart/update-quantity`,
           {
             cartItemId: id,
             quantity: newQuantity,
@@ -187,7 +168,7 @@ useEffect(() => {
             },
           }
         );
-
+      }
         if (newQuantity <= 0) {
           setData((items) => items.filter((item) => item.id !== id));
           

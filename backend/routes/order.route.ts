@@ -1,5 +1,5 @@
 import express from "express";
-import { buyNow ,getOrderById , buyNowFromCart, updateStatus} from "../controller/order.controller.js";
+import { buyNow ,getOrderById , buyNowFromCart, updateStatus, updateItems} from "../controller/order.controller.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 
 const router = express.Router();
@@ -18,6 +18,10 @@ router.post("/buynow/cart", isAuthenticated, async (req, res) => {
 
 router.put("/update-status/:id", isAuthenticated, async (req, res) => {
     await updateStatus(req, res)
+})
+
+router.put("/update-quantity/:id", isAuthenticated, async (req, res) => {
+    await updateItems(req, res)
 })
 
 export default router;

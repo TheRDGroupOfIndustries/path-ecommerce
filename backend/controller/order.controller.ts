@@ -374,3 +374,20 @@ export const updateStatus = async function (req: Request, res: Response) {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const updateItems = async function (req: Request, res: Response) {
+  const { id } = req.params;
+  const { quantity } = req.body;
+
+  try {
+    await db.order.update({
+      where: { id },
+      data: { quantity },
+    });
+
+    res.status(200).json({ message: "Done" });
+  } catch (error) {
+    console.error("Status Update Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

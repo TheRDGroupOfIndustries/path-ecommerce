@@ -258,6 +258,8 @@ const SignUp = () => {
             </Button>
           </form>
 
+{
+  /*
           <div className="flex flex-col items-center mt-8">
             <Button
               type="button"
@@ -273,7 +275,8 @@ const SignUp = () => {
               Google
             </span>
           </div>
-
+  */
+}
           <div className="flex items-center my-4">
             <div className="flex-grow border-t-2" />
           </div>

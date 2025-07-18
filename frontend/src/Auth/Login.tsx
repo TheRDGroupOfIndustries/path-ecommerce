@@ -234,22 +234,6 @@ const Login = () => {
             </Button>
           </form>
 
-          <div className="flex flex-col items-center mt-8">
-            <Button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault(); // 🛑 prevent form submission
-                window.location.href = `${API_URL}/api/users/auth/google`;
-              }}
-              className="bg-white text-black rounded-full border-2 p-5 flex items-center justify-center hover:bg-gray-900 hover:text-white"
-            >
-              <FaGoogle size={36} />
-            </Button>
-
-            <span className="text-sm text-black mt-2 font-semibold">
-              Google
-            </span>
-          </div>
 
           <div className="flex items-center my-4">
             <div className="flex-grow border-t-2" />

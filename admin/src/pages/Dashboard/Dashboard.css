@@ -265,7 +265,7 @@
   margin-top: 1.5rem;
 }
 .nav-btn {
-  background: #e3e9f0;
+  background: #c2ddfb;
   border: none;
   border-radius: 50%;
   width: 36px;
@@ -293,10 +293,7 @@
 }
 
 /* Dark Mode Styles */
-.recent-enqueries.dark {
-  background: #23294a;
-  color: #fff;
-}
+
 .recent-enqueries-bg.dark {
   background: #23294a;
 }
@@ -365,15 +362,15 @@
   border-bottom: 2px solid #4a5568;
 }
 .stat-card.dark {
-  background: #181c2f !important;
+  background:#2d3748 !important;
   color: #fff !important;
 }
 .analytics-chart.dark {
-  background: #181c2f !important;
+  background:#2d3748 !important;
   color: #fff !important;
 }
 .recent-enqueries.dark {
-  background: #181c2f !important;
+  background:#2d3748 !important;
   color: #fff !important;
 }
 .stat-title.dark,
@@ -401,7 +398,7 @@
   background: #23294a;
 }
 .dashboard-page.dark, .dashboard-page.dark  {
-  background:#2d3748 !important;
+  background:transparent;
   color: #fff !important;
 }
 .basic-statistics h2.dark {
@@ -430,6 +427,10 @@
   .recent-enqueries-stack {
     min-width: 0;
     max-width: 100%;
+    width: 100%;
+  }
+  .analytics-chart{
+    width: 100%;
   }
 }
 @media (max-width: 900px) {
@@ -443,10 +444,14 @@
   .analytics-section {
     flex-direction: column;
     gap: 1rem;
+    width: 100%;
   }
   .recent-enqueries-stack {
     min-width: 0;
     max-width: 100%;
+  }
+  .analytics-chart{
+    width: 100%;
   }
 }
 @media (max-width: 768px) {
@@ -463,10 +468,14 @@
   .analytics-section {
     flex-direction: column;
     gap: 1rem;
+    width: 100%;
   }
   .recent-enqueries-stack {
     min-width: 0;
     max-width: 100%;
+  }
+  .analytics-chart{
+    width: 100%;
   }
 }
 .no-enquiry {
@@ -477,4 +486,16 @@
 }
 .no-enquiry.dark {
   color: #aaa;
+}
+
+.nav-btn.disabled {
+  background-color: #dde0e1;
+  color: #4a4949;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.nav-btn.disabled.dark {
+  background-color: #cde2f9;
+  color: #948bfb;
 }

@@ -158,11 +158,14 @@ body {
 }
 
 .primary-bg {
-  background-color: #2E3192;
+  /* background-color: #2E3192; */
+  background-color: #4C87EF;
 }
 
 .primary-bg-dark {
+  /* #466AD8 */
   background-color: #00035C;
+  /* background-color: #536DDC; */
 }
 
 

@@ -11,29 +11,39 @@ import {
   Users,
   Megaphone,
   ListTodo,
+  LogOut,
 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PROIFLE_IMAGE from "@/assets/user_img.png";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const ProfilePage = () => {
-  const { user } = useAuth();  
+  const { user ,logout} = useAuth();  
   const navigate = useNavigate();
   const handleGoBack = () => {
     window.history.back();
   };
 
+  
+  
+    const [open, setOpen] = useState(false);
+    const handleConfirmLogout = () => {
+      logout();
+      navigate("/login");
+    };
   // Define tab configs for each role
   const roleTabs = {
     USER: [
       {
         label: "Orders",
         icon: <ShoppingCart className="text-black font-bold" />,
-        desc: "already have 10 orders",
+        desc: "Check Your Orders",
         path: "/my-orders",
       },
       {
-        label: "Cart Item",
+        label: "My Cart",
         icon: <ListTodo className="text-black font-bold" />,
         desc: "All cart Items",
         path: "/my-cart",
@@ -56,7 +66,7 @@ const ProfilePage = () => {
       {
         label: "Orders",
         icon: <ShoppingCart className="text-black font-bold" />,
-        desc: "already have 10 orders",
+        desc: "Check Your Orders",
         path: "/my-orders",
       },
       {
@@ -68,7 +78,7 @@ const ProfilePage = () => {
       {
         label: "My Reviews",
         icon: <MessageSquareText className="text-black font-bold" />,
-        desc: "Reviews for 4 items",
+        desc: "Reviews for all items",
         path: "/my-reviews",
       },
       {
@@ -100,7 +110,7 @@ const ProfilePage = () => {
       {
         label: "My Reviews",
         icon: <MessageSquareText className="text-black font-bold" />,
-        desc: "Reviews for 4 items",
+        desc: "Reviews for all items",
         path: "/my-reviews",
       },
       {
@@ -176,7 +186,46 @@ const ProfilePage = () => {
             </span>
           </div>
         ))}
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <div
+              className="bg-gray-100 py-6 px-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200"
+              onClick={() => setOpen(true)}
+            >
+              <div className="flex items-center space-x-5 text-red-800">
+                <LogOut />
+                <h3 className="text-lg">Log Out</h3>
+              </div>
+            </div>
+          </DialogTrigger>
+
+          <DialogContent className="sm:max-w-md ">
+            <DialogHeader>
+              <DialogTitle>Are you sure you want to log out?</DialogTitle>
+              <DialogDescription>
+                This action will end your current session.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="flex flex-row justify-center space-x-7 ">
+              <Button
+                variant="default"
+                onClick={() => setOpen(false)}
+                className="px-8"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                className="px-8"
+                onClick={handleConfirmLogout}
+              >
+                Log Out
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
+      
     </div>
   );
 };

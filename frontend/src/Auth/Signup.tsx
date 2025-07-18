@@ -77,21 +77,22 @@ const SignUp = () => {
   const [step, setStep] = useState(0);
   const [otpValue, setOtpValue] = useState("");
 
-  async function genOtp() {
+  async function genOtp(e: React.FormEvent) {
+    e.preventDefault();
     let minm = 10000;
     let maxm = 99999;
     let number = Math.floor(Math.random() * (maxm - minm + 1)) + minm;
     setOtp(number);
+    setLoading(true);
     try {
-      setLoading(true);
       setError("");
-
       const sendOtp = await axios.post(`${API_URL}/api/verification/send-otp`, {
         email: formData.email,
         otp: Number(number),
       });
       if (sendOtp.status === 400) {
-        setError("");
+        setError("Invalid Email..");
+        setLoading(false);
         return;
       }
       if (sendOtp.status === 200) {
@@ -106,7 +107,8 @@ const SignUp = () => {
     }
   }
 
-  function VerifyOTP() {
+  function VerifyOTP(e: React.FormEvent) {
+    e.preventDefault();
     const inp = Number(otpValue);
     if (inp === otp) {
       setStep(2);
@@ -243,16 +245,15 @@ const SignUp = () => {
 
             <Button
               type="submit"
-              className="w-full bg-black text-white hover:bg-gray-900 py-7 text-xl primary-bg
-"
+              className="w-full bg-black text-white hover:bg-gray-900 py-7 text-xl primary-bg cursor-pointer"
               disabled={isLoading}
             >
-              {step === 0
+              {isLoading
+                ? "...": 
+                step === 0
                 ? "Send OTP"
                 : step === 1
                 ? "Verify"
-                : isLoading
-                ? "..."
                 : "Sign up"}
               {/* {isLoading ? "Creating account..." : "Sign up"} */}
             </Button>

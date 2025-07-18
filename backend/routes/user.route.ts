@@ -107,7 +107,7 @@ route.get(
     console.log("Google callback query:", req.query);
     const user = req.user;
     const token = generateTokens(user);
-    console.log("JWT Token:", token.accessToken);
+    // console.log("JWT Token:", token.accessToken);
 
     // Redirect with token to frontend (or set cookie)
     res.redirect(

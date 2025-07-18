@@ -55,7 +55,7 @@ const MyOrderItem = ({
       if (upd.status === 200) {
         window.location.reload();
       } else {
-        console.log("Unexpected status:", upd.status);
+        // console.log("Unexpected status:", upd.status);
       }
     } catch (err) {
       console.error(
@@ -173,7 +173,7 @@ export default function MyOrders() {
         setUserOrders(res.data.user[0].orders);
       }
     } catch (error) {
-      console.log("User order error", error);
+      // console.log("User order error", error);
     } finally {
       setLoading(false);
     }
@@ -290,79 +290,3 @@ export default function MyOrders() {
   );
 }
 
-
-
-//   const handleStatusChange = async (e: any) => {
-  //     const newStatus = e.target.value;
-  //     setStatus(newStatus);
-  //     const upd = await axios.put(`${API_URL}/api/order/update-status/${id}`, { status: newStatus }, {headers: {
-  //       Authorization: `Bearer ${localStorage.getItem("token")}`
-  //     }});
-  // console.log("update: ",upd);
-
-  //     if (upd.status === 200) {
-  //       window.location.reload()
-  //     }
-  //   };
-
-
-  {/* {data.length > 0 ? (
-        data.map((order) => (
-          <MyOrderItem
-            key={order.id}
-            id={order.id}
-            productId={order.product.name}
-            date={order.createdAt.split("T")[0]}
-            rating={order.product.ratings}
-            price={order.totalAmount}
-            image={order.product.images[0]}
-            progress={order.status}
-            progressColor={
-              order.status === "Pending"
-                ? "text-blue-600"
-                : order.status === "Dispatched"
-                ? "text-yellow-600"
-                : order.status === "Shipped"
-                ? "text-purple-600"
-                : order.status === "Arrived"
-                ? "text-orange-600"
-                : order.status === "Delivered"
-                ? "text-green-600"
-                : "text-gray-500"
-            }
-            canChangeStatus={user?.role === "ADMIN" || user?.role === "SELLER"}
-          />
-        ))
-      ) : (
-        <Loader />
-      )} */}
-
-
-        // const getData= async () => {
-  //   const requests = await axios.get(`${API_URL}/api/seller/seller-orders`, {
-  //       headers: {
-  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //       },
-  //     });
-  //     console.log("sellerData: ",requests.data);
-  // }
-  // const getOrders = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const requests = await axios.get(`${API_URL}/api/users/get-orders`, {
-  //       headers: {
-  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //       },
-  //     });
-  //     // console.log("resquest: ",requests);
-
-  //     if (requests.status === 200) {
-  //       console.log(requests.data.user[0].orders);
-  //       setData(requests.data.user[0].orders);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };

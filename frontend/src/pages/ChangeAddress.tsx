@@ -83,7 +83,7 @@ function ChangeAddress() {
 const setAddressFromString = (input: string) => {
     const parts = input.split(',').map(part => part.trim());
 
-    console.log(parts)
+    // console.log(parts)
 
     setUserData({
         name: parts[0] || "",

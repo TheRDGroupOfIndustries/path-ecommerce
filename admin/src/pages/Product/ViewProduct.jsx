@@ -89,7 +89,7 @@ const ViewProduct = () => {
     const fetchingProduct = () => {
       fetchDataFromApi("/product/by-role")
         .then((res) => {
-          console.log("Fetched products:", res);
+          // console.log("Fetched products:", res);
           setProducts(res.products);
         })
         .catch((error) => console.error("Error fetching Products:", error));

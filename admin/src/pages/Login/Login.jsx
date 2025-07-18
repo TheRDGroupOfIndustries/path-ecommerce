@@ -37,17 +37,17 @@ const Login = () => {
       const token = response.token?.accessToken || "";
       const user = response.user || {};
 
-      console.log("JWT Token:", token);
-      console.log("User Info:", user);
+      // console.log("JWT Token:", token);
+      // console.log("User Info:", user);
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
       const decoded = jwtDecode(token);
-      console.log("Decoded Token Payload:", decoded);
-      console.log("User ID:", decoded.id);
-      console.log("User Email:", decoded.email);
-      console.log("User Role:", decoded.role);
+      // console.log("Decoded Token Payload:", decoded);
+      // console.log("User ID:", decoded.id);
+      // console.log("User Email:", decoded.email);
+      // console.log("User Role:", decoded.role);
 
       context.setAlertBox({
         open: true,
@@ -58,7 +58,7 @@ const Login = () => {
       if (user.role === "SELLER") {
         try {
           const kyc = await fetchDataFromApi("/kyc/my-kyc");
-          console.log("KYC Response:", kyc);
+          // console.log("KYC Response:", kyc);
 
           if (!kyc || !kyc.status) {
             window.location.href = "/kycc";

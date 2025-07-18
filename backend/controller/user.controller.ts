@@ -35,7 +35,7 @@ export const userById = async (req: Request, res: Response) => {
 
 export const userByEmail = async (req: Request, res: Response) => {
   const { email } = req.params;
-  console.log(email)
+  // console.log(email)
   try {
     const user = await userModel.userByGmail(email);
     if (!user) {

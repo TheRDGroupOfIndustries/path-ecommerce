@@ -100,13 +100,13 @@ const AdminKYCList = () => {
                           className="approve-btn"
                           onClick={() => handleApproval(kyc.id, "APPROVED")}
                         >
-                          ✅ Approve
+                           Approve
                         </button>
                         <button
                           className="reject-btn"
                           onClick={() => handleApproval(kyc.id, "REJECTED")}
                         >
-                          ❌ Reject
+                           Reject
                         </button>
                       </div>
                     ) : (
@@ -147,13 +147,13 @@ const AdminKYCList = () => {
                       className="approve-btn"
                       onClick={() => handleApproval(kyc.id, "APPROVED")}
                     >
-                      ✅ Approve
+                       Approve
                     </button>
                     <button
                       className="reject-btn"
                       onClick={() => handleApproval(kyc.id, "REJECTED")}
                     >
-                      ❌ Reject
+                       Reject
                     </button>
                   </div>
                 ) : (

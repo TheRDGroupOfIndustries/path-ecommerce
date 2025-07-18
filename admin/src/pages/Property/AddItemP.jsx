@@ -108,7 +108,7 @@ const AddItemP = () => {
 
       const response = await postData("/property/create", payload)
 
-      console.log("Item created:", response)
+      // console.log("Item created:", response)
       setSubmitSuccess(true)
 
       setFormData({

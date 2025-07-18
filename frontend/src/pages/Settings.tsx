@@ -1,35 +1,13 @@
 import { useAuth } from "@/context/authContext";
-import {
-  ChevronRight,
-  Pencil,
-  Mail,
-  Lock,
-  LogOut,
-  ChevronLeft,
-} from "lucide-react";
-import React, { useState } from "react";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { ChevronRight, Pencil, Mail, Lock, ChevronLeft } from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
 import PROIFLE_IMAGE from "@/assets/user_img.png";
-import { Button } from "@/components/ui/button";
 const Settings = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
-  const [open, setOpen] = useState(false);
+  const { user } = useAuth();
   const handleGoBack = () => {
     window.history.back();
-  };
-  const handleConfirmLogout = () => {
-    logout();
-    navigate("/login");
   };
 
   return (
@@ -92,54 +70,6 @@ const Settings = () => {
             <ChevronRight />
           </span>
         </div>
-
-        {/* <div
-          className="bg-gray-100 py-6 px-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200"
-          onClick={handleLogout}
-        >
-          <div className="flex items-center space-x-5 text-red-800">
-            <LogOut className="font-bold" />
-            <h3 className="text-lg  ">Log Out</h3>
-          </div>
-        </div> */}
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <div
-              className="bg-gray-100 py-6 px-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200"
-              onClick={() => setOpen(true)}
-            >
-              <div className="flex items-center space-x-5 text-red-800">
-                <LogOut />
-                <h3 className="text-lg">Log Out</h3>
-              </div>
-            </div>
-          </DialogTrigger>
-
-          <DialogContent className="sm:max-w-md ">
-            <DialogHeader>
-              <DialogTitle>Are you sure you want to log out?</DialogTitle>
-              <DialogDescription>
-                This action will end your current session.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter className="flex flex-row justify-center space-x-7 ">
-              <Button
-                variant="default"
-                onClick={() => setOpen(false)}
-                className="px-8"
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="destructive"
-                className="px-8"
-                onClick={handleConfirmLogout}
-              >
-                Log Out
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );

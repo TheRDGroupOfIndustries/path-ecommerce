@@ -54,9 +54,9 @@ function SearchPage() {
 
   useEffect(() => {
     setTimeout(() => {
-      handleChange()
+      handleChange();
     }, 3000);
-  }, [input])
+  }, [input]);
 
   if (loading) {
     return <SearchLoader />;
@@ -79,46 +79,46 @@ function SearchPage() {
         </button>
       </div>
 
-      {data.length > 0
-        ? data.map((items, i) =>
+      {data.length > 0 ? (
+        <div className="grid grid-cols-2 gap-4">
+          {data.map((items, i) =>
             serveCard ? (
-              <div className="grid grid-cols-2 gap-4">
-                <CardComponent
-                  key={i}
-                  service={{
-                    id: items.id,
-                    title: items.name,
-                    image: items.imageUrl?.[0],
-                    category: items.category,
-                    description: items.description,
-                  }}
-                  btnText={"View"}
-                  type={"marketplace"}
-                />
-              </div>
+              <CardComponent
+                key={i}
+                service={{
+                  id: items.id,
+                  title: items.name,
+                  image: items.imageUrl?.[0],
+                  category: items.category,
+                  description: items.description,
+                }}
+                btnText={"View"}
+                type={"marketplace"}
+              />
             ) : (
-              <div className="grid grid-cols-2 gap-4">
-                <ProductCard
-                  key={items.id}
-                  id={items.id}
-                  ratings={items.ratings}
-                  title={items.name}
-                  description={items.description}
-                  price={items.price}
-                  discount={items.discount}
-                  images={items.images}
-                />
-              </div>
+              <ProductCard
+                key={items.id}
+                id={items.id}
+                ratings={items.ratings}
+                title={items.name}
+                description={items.description}
+                price={items.price}
+                discount={items.discount}
+                images={items.images}
+              />
             )
-          )
-        : isSearched && (
-            <div className="h-96 grid place-items-center">
-              <p className="text-center text-sm">
-                OOPS! <br />
-                Nothing found, Please Try with different keywords...
-              </p>
-            </div>
           )}
+        </div>
+      ) : (
+        isSearched && (
+          <div className="h-96 grid place-items-center">
+            <p className="text-center text-sm">
+              OOPS! <br />
+              Nothing found, Please Try with different keywords...
+            </p>
+          </div>
+        )
+      )}
     </div>
   );
 }

@@ -143,13 +143,14 @@ const userRole = user?.role || "SELLER";
         .catch((error) => console.error("Error fetching Products:", error));
     };
 
-  const nextEnquiry = () => {
-    setCurrentEnquiry((prev) => (prev + 1) % 2); // only 2 items
-  };
+const nextEnquiry = () => {
+  setCurrentEnquiry((prev) => Math.min(prev + 1, latestEnquiries.length - 1));
+};
 
-  const prevEnquiry = () => {
-    setCurrentEnquiry((prev) => (prev - 1 + 2) % 2); // only 2 items
-  };
+const prevEnquiry = () => {
+  setCurrentEnquiry((prev) => Math.max(prev - 1, 0));
+};
+
 
   const formatDate = (dateStr) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -274,21 +275,27 @@ const userRole = user?.role || "SELLER";
             </div>
           )}
               <div className="enqueries-navigation">
-                <button
-                  className={`nav-btn${currentEnquiry === 0 ? "" : " light"}`}
-                  onClick={prevEnquiry}
-                >
-                  <ChevronLeft size={18} />
-                </button>
-                <button
-                  className={`nav-btn${
-                    currentEnquiry === enquiry.length - 1 ? " active" : " dark"
-                  }`}
-                  onClick={nextEnquiry}
-                >
-                  <ChevronRight size={18} />
-                </button>
+                 <button
+              className={`nav-btn ${currentEnquiry <= 0 || latestEnquiries.length <= 1 ? "disabled" : ""}`}
+              onClick={() => {
+                if (currentEnquiry > 0) prevEnquiry();
+              }}
+              disabled={currentEnquiry <= 0 || latestEnquiries.length <= 1}
+            >
+              <ChevronLeft size={18} />
+            </button>
+
+            <button
+              className={`nav-btn ${currentEnquiry >= latestEnquiries.length - 1 || latestEnquiries.length <= 1 ? "disabled" : ""}`}
+              onClick={() => {
+                if (currentEnquiry < latestEnquiries.length - 1) nextEnquiry();
+              }}
+              disabled={currentEnquiry >= latestEnquiries.length - 1 || latestEnquiries.length <= 1}
+            >
+              <ChevronRight size={18} />
+            </button>
               </div>
+
             </div>
           </div>
         </div>

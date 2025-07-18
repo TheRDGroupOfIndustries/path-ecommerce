@@ -22,81 +22,87 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (formData.email === "" && formData.password === "") {
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await postData("/users/login", formData);
+    const token = response.token?.accessToken || "";
+    const user = response.user || {};
+
+    console.log("JWT Token:", token);
+    console.log("User Info:", user);
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+
+    const decoded = jwtDecode(token);
+    console.log("Decoded Token Payload:", decoded);
+    console.log("User ID:", decoded.id);
+    console.log("User Email:", decoded.email);
+    console.log("User Role:", decoded.role);
+
+    // Only allow SELLER or ADMIN to log in
+    if (user.role !== "SELLER" && user.role !== "ADMIN") {
       context.setAlertBox({
         open: true,
-        msg: "All fields are required!",
+        msg: "Access denied! Only Sellers and Admins can log in.",
         error: true,
       });
-        return 
-      }
-      const response = await postData("/users/login", formData);
-      const token = response.token?.accessToken || "";
-      const user = response.user || {};
-
-      // console.log("JWT Token:", token);
-      // console.log("User Info:", user);
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-
-      const decoded = jwtDecode(token);
-      // console.log("Decoded Token Payload:", decoded);
-      // console.log("User ID:", decoded.id);
-      // console.log("User Email:", decoded.email);
-      // console.log("User Role:", decoded.role);
-
-      context.setAlertBox({
-        open: true,
-        msg: "Login successful!",
-        error: false,
-      });
-
-      if (user.role === "SELLER") {
-        try {
-          const kyc = await fetchDataFromApi("/kyc/my-kyc");
-          // console.log("KYC Response:", kyc);
-
-          if (!kyc || !kyc.status) {
-            window.location.href = "/kycc";
-          } else if (kyc.status === "PENDING") {
-            window.location.href = "/kyc-status";
-          } else if (kyc.status === "APPROVED") {
-            window.location.href = "/dashboard";
-          } else {
-            window.location.href = "/kyc-status?rejected=true";
-          }
-        } catch (kycError) {
-          console.error("Error fetching KYC:", kycError);
-
-          if (
-            kycError?.response?.status === 404 &&
-            kycError?.response?.data?.msg === "No KYC found."
-          ) {
-            window.location.href = "/kycc";
-          } else {
-            context.setAlertBox({
-              open: true,
-              msg: "Error fetching KYC",
-              error: true,
-            });
-          }
-        }
-      } else {
-        window.location.href = "/dashboard";
-      }
-    } catch (error) {
-      console.error("Login failed:", error);
-      context.setAlertBox({
-        open: true,
-        msg: "Login Failed!",
-        error: true,
-      });
+      return;
     }
-  };
+
+    context.setAlertBox({
+      open: true,
+      msg: "Login successful!",
+      error: false,
+    });
+
+    // If SELLER, check KYC flow
+    if (user.role === "SELLER") {
+      try {
+        const kyc = await fetchDataFromApi("/kyc/my-kyc");
+        console.log("KYC Response:", kyc);
+
+        if (!kyc || !kyc.status) {
+          window.location.href = "/kycc";
+        } else if (kyc.status === "PENDING") {
+          window.location.href = "/kyc-status";
+        } else if (kyc.status === "APPROVED") {
+          window.location.href = "/dashboard";
+        } else {
+          window.location.href = "/kyc-status?rejected=true";
+        }
+      } catch (kycError) {
+        console.error("Error fetching KYC:", kycError);
+
+        if (
+          kycError?.response?.status === 404 &&
+          kycError?.response?.data?.msg === "No KYC found."
+        ) {
+          window.location.href = "/kycc";
+        } else {
+          context.setAlertBox({
+            open: true,
+            msg: "Error fetching KYC",
+            error: true,
+          });
+        }
+      }
+    } else if (user.role === "ADMIN") {
+      // Direct access to dashboard for admins
+      window.location.href = "/dashboard";
+    }
+
+  } catch (error) {
+    console.error("Login failed:", error);
+    context.setAlertBox({
+      open: true,
+      msg: "Login Failed!",
+      error: true,
+    });
+  }
+};
 
   return (
     <div className="login-bg">

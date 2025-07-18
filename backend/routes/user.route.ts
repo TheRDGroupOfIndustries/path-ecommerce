@@ -111,7 +111,8 @@ route.get(
 
     // Redirect with token to frontend (or set cookie)
     res.redirect(
-      `${process.env.REDIRECT_URL}/google-success?token=${token.accessToken}`
+      `spc://auth-callback?token=${token.accessToken}`
+      // `${process.env.REDIRECT_URL}/google-success?token=${token.accessToken}`
     );
   }
 );

@@ -32,7 +32,7 @@ export default function ChangePassword() {
           password: form.password,
         }
       );
-      console.log("res: ", res);
+      // console.log("res: ", res);
       toast.success("Password updated successfully");
       setForm({password:"",confirmPassword:""})
       navigate(-1);

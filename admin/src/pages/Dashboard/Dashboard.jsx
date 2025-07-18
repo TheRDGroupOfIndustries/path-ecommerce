@@ -137,7 +137,7 @@ const userRole = user?.role || "SELLER";
   const fetchingProduct = () => {
       fetchDataFromApi("/product/by-role")
         .then((res) => {
-          console.log("Fetched products:", res);
+          // console.log("Fetched products:", res);
           setProduct(res.products);
         })
         .catch((error) => console.error("Error fetching Products:", error));

@@ -14,11 +14,11 @@ const GoogleSuccess = () => {
       localStorage.setItem("token", token);
 
       // Redirect to home
-      console.log("redirecting......");
+    //   console.log("redirecting......");
       
       navigate("/", { replace: true });
     } else {
-        console.log("redirect failed redirect to login-----");
+        // console.log("redirect failed redirect to login-----");
       navigate("/login");
     }
   }, [navigate, searchParams]);

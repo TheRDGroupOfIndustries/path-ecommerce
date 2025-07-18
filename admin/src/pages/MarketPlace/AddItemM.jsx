@@ -110,7 +110,7 @@ const AddItemM = () => {
 
       const response = await postData("/marketplace/create", payload)
 
-      console.log("Item created:", response)
+      // console.log("Item created:", response)
       setSubmitSuccess(true)
 
       setFormData({

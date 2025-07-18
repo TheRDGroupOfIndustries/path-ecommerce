@@ -100,14 +100,14 @@ const AddProduct = () => {
     sellerId: user.id,
     createdById: user.id, 
   };
-console.log(user.id);
+// console.log(user.id);
   postData("/product/create-product", productData).then((res) => {
     context.setAlertBox({
       open: true,
       msg: "Product added successfully!",
       error: false,
     });
- console.log("user.id =>", user.id);
+//  console.log("user.id =>", user.id);
     setFormData({
       id: "",
       name: "",

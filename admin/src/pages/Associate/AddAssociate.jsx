@@ -82,7 +82,7 @@ const handleSubmit = async (e) => {
       percent: parseInt(formData.percent),
     });
 
-    console.log("Referral response:", referralRes);
+    // console.log("Referral response:", referralRes);
 
     // Reset form
     setSubmitSuccess(true);

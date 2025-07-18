@@ -16,7 +16,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [seller, setSeller] = useState(null);
-   const [disable, setDisable] = useState(false);
+  const [disable, setDisable] = useState(false);
   const [referralCode, setReferralCode] = useState("");
   const [referralStep, setReferralStep] = useState("check"); // check | apply | applied
   const [referralError, setReferralError] = useState("");
@@ -34,12 +34,11 @@ const ProductDetail = () => {
         const userData = res.data.seller;
 
         if (userData.cartItems.length > 0) {
-          const prod = userData.cartItems.map((items) => items.productId)
+          const prod = userData.cartItems.map((items) => items.productId);
           console.log(prod);
-          
-          if (prod.includes(id)) {
-            setCart(true)
 
+          if (prod.includes(id)) {
+            setCart(true);
           }
         }
 
@@ -54,16 +53,15 @@ const ProductDetail = () => {
     fetchProduct();
   }, [id, isCart]);
 
-  // Helper function to check if referral code would make price negative
+  
   const checkPriceValidity = (additionalDiscount) => {
     if (!product) return false;
-    
+
     const totalDiscount = product.discount + additionalDiscount;
     const finalPrice = product.price - (product.price * totalDiscount) / 100;
-    
+
     return finalPrice >= 0;
   };
-  
 
   const handleReferralButtonClick = async () => {
     const code = referralCode.trim().toLowerCase();
@@ -84,10 +82,15 @@ const ProductDetail = () => {
           setReferralError("Referral code not found or expired.");
           return;
         }
-        
+
         const discount = parseInt(code.split("-")[1]);
-        
-        // Only check if code exists and is valid, don't validate price here
+        if (!checkPriceValidity(discount)) {
+          setReferralError("This coupon is not applicable for this product.");
+          setReferralStep("check");
+          setReferralCode("");
+          setReferralDiscount(0);
+          return;
+        }
         setReferralDiscount(discount);
         setReferralStep("apply");
         setReferralError("");
@@ -107,16 +110,6 @@ const ProductDetail = () => {
         }
       }
     } else if (referralStep === "apply") {
-     
-      const discount = parseInt(code.split("-")[1]);
-      if (!checkPriceValidity(discount)) {
-        setReferralError("This coupon is not applicable for this product.");
-        setReferralStep("check");
-        setReferralCode("");
-        setReferralDiscount(0);
-        return;
-      }
-
       try {
         const res = await axios.post(
           `${API_URL}/api/referral/apply`,
@@ -202,14 +195,14 @@ const ProductDetail = () => {
     }
   };
 
-  
   const calculateFinalPrice = () => {
     if (!product) return 0;
-    
-    const totalDiscount = product.discount + (referralStep === "applied" ? referralDiscount : 0);
+
+    const totalDiscount =
+      product.discount + (referralStep === "applied" ? referralDiscount : 0);
     const finalPrice = product.price - (product.price * totalDiscount) / 100;
-    
-    return Math.max(0, finalPrice); 
+
+    return Math.max(0, finalPrice);
   };
 
   if (!product) return <Loader />;

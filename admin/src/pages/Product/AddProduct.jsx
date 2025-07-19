@@ -188,7 +188,7 @@ const AddProduct = () => {
           <label>Product Images (URL or Upload)</label>
           <div className="input-with-add">
             <input type="url" name="image" value={tempInputs.image} onChange={handleTempInputChange} placeholder="Enter image URL" />
-            <button type="button" onClick={() => addArrayItem("images", "image")}>+ Add</button>
+            <button type="button" onClick={() => addArrayItem("images", "image")} className="add-btn"> Add</button>
           </div>
           <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "images")} />
 
@@ -226,7 +226,7 @@ const AddProduct = () => {
           <label>Highlights (URL or Upload)</label>
           <div className="input-with-add">
             <input type="url" name="highlight" value={tempInputs.highlight} onChange={handleTempInputChange} />
-            <button type="button" onClick={() => addArrayItem("highlights", "highlight")}>+ Add</button>
+            <button type="button" onClick={() => addArrayItem("highlights", "highlight")} className="add-btn">Add</button>
           </div>
           <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "highlights")} />
           <div className="preview-grid">
@@ -238,6 +238,7 @@ const AddProduct = () => {
             ))}
           </div>
         </div>
+       
 
           {/* Inside Box */}
           <div className="form-section">

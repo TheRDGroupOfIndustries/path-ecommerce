@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { API_URL } from "@/lib/api.env";
 import Loader from "@/components/Loader/Loader";
+import EmptyCart from "@/components/EmptyCart/EmptyCart";
 
 const MyOrderItem = ({
   id,
@@ -24,7 +25,7 @@ const MyOrderItem = ({
   productId,
   canChangeStatus,
   price,
-  useremail
+  useremail,
 }) => {
   const [status, setStatus] = useState(progress);
 
@@ -35,7 +36,6 @@ const MyOrderItem = ({
     "Arrived",
     "Delivered",
   ];
-  
 
   const handleStatusChange = async (e: any) => {
     const newStatus = e.target.value;
@@ -69,9 +69,11 @@ const MyOrderItem = ({
     <Card className="rounded-lg mb-4 bg-gray-100 min-h-36 p-2 border-none shadow-none relative">
       <CardContent className="flex flex-row items-center justify-between px-2 py-1 flex-nowrap ">
         <div className="flex flex-col space-y-2">
-          {
-            useremail.length > 0 && <p className="text-xs text-black/60 font-bold w-[91%] absolute text-right top-1.5 font-sans">{useremail}</p>
-          }
+          {useremail.length > 0 && (
+            <p className="text-xs text-black/60 font-bold w-[91%] absolute text-right top-1.5 font-sans">
+              {useremail}
+            </p>
+          )}
           <p className="text-xs text-black/90 font-light">{date}</p>
           <h2 className="text-base text-black ">{productId}</h2>
           <p className="text-sm text-black/90 font-medium">
@@ -149,7 +151,7 @@ const MyOrderItem = ({
   );
 };
 export default function MyOrders() {
-  const { user } = useAuth(); 
+  const { user } = useAuth();
 
   const navigate = useNavigate();
 
@@ -158,7 +160,6 @@ export default function MyOrders() {
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-
 
   const getUserOrders = async () => {
     try {
@@ -181,6 +182,7 @@ export default function MyOrders() {
 
   const getSellerOrders = async () => {
     try {
+      setLoading(true);
       const res = await axios.get(`${API_URL}/api/seller/seller-orders`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -189,10 +191,12 @@ export default function MyOrders() {
 
       if (res.status === 200) {
         // console.log(res.data.orders)
-        setSellerOrders(res.data.orders); 
+        setSellerOrders(res.data.orders);
       }
     } catch (error) {
       console.log("Seller order error", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -203,6 +207,9 @@ export default function MyOrders() {
       getUserOrders();
     }
   }, [user]);
+   if (loading) return <Loader />;
+  if(userOrders.length<=0 ||sellerOrders.length<=0) return <EmptyCart/>
+    
 
   return (
     <div className="container mx-auto p-4 mb-16">
@@ -220,7 +227,7 @@ export default function MyOrders() {
           <Search className="w-7 h-7 text-black" />
         </div>
       </div>
-      
+
       {user?.role === "SELLER" || user?.role === "ADMIN" ? (
         sellerOrders.length > 0 ? (
           sellerOrders.map((product) =>
@@ -289,4 +296,3 @@ export default function MyOrders() {
     </div>
   );
 }
-

@@ -1,9 +1,9 @@
-import { ChevronLeft, Heart, Star } from "lucide-react";
+import { ChevronLeft, Star } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import SendEnquire from "./SendEnquire";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-
+import Loader from "@/components/Loader/Loader";
 import { MdStar, MdStarBorder } from "react-icons/md";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -124,19 +124,14 @@ const Enquire = () => {
         <MdStarBorder key={i} className="w-4 h-4 text-yellow-400" />
       )
     );
+  
+if (!property || !seller) return <Loader />;
 
   return (
     <div className="w-full mx-auto bg-white min-h-screen relative pb-24">
       <div className="flex items-center justify-between p-4 bg-white">
         <ChevronLeft
           className="w-6 h-6 text-gray-600 cursor-pointer"
-          // onClick={() => {
-          //   if (type === "marketplace") {
-          //     navigate("/all-service");
-          //   } else {
-          //     navigate("/houses-plots");
-          //   }
-          // }}
           onClick={() => navigate(-1)}
         />
 

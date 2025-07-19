@@ -8,22 +8,16 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function AllEnqueries() {
-    const { user } = useAuth();
-//   console.log("user: ", user.id);
-
+  const { user } = useAuth();
   const [enquiries, setEnquiries] = useState();
   const navigate = useNavigate();
-  //   const handleGoBack = () => {
-  //     window.history.back();
-  //   };
+
   useEffect(() => {
     const fetchEnquiries = async () => {
       try {
         const res = await axios.get(
           `${API_URL}/api/seller/seller-enquiry/${user.id}`
         );
-        // console.log("AllEnquiry : ", res);
-
         const { marketplaceEnquiries, propertyEnquiries } = res.data;
 
         const mapped = [
@@ -53,8 +47,7 @@ export default function AllEnqueries() {
               subject: e.subject,
               message: e.message,
               image:
-                Array.isArray(property.imageUrl) &&
-                property.imageUrl.length > 0
+                Array.isArray(property.imageUrl) && property.imageUrl.length > 0
                   ? property.imageUrl[0]
                   : "https://via.placeholder.com/150",
             }))
@@ -69,8 +62,13 @@ export default function AllEnqueries() {
 
     if (user?.id) fetchEnquiries();
   }, [user?.id]);
-   if (!enquiries) return <Loader/>
-
+  if (enquiries === undefined) return <Loader />;
+if (enquiries.length === 0)
+  return (
+    <div className="flex items-center justify-center h-screen text-center">
+      <h2 className="text-3xl font-semibold text-gray-800">No enquiries available</h2>
+    </div>
+  );
   return (
     <div className="container mx-auto p-4 mb-18">
       {/* Header */}

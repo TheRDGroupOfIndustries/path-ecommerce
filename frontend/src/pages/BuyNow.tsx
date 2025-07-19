@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import ShadeBtn from "@/components/ui/ShadeBtn";
 import CartItemCard from "@/components/CartItemCard/CartItemCard";
 import { useLocation } from "react-router-dom";
+import EmptyCart from "@/components/EmptyCart/EmptyCart";
 
 function BuyNow() {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ function BuyNow() {
       setName(req.data.user.name);
       setAddress(req.data.user.address);
     }
+   
   }
 
   async function GetItem() {
@@ -76,30 +78,30 @@ function BuyNow() {
       setLoading(false);
     }
   }
-  
 
-useEffect(() => {
-  if (fromCart && cartItemsFromCart?.length > 0) {
-    // Cart-based checkout
-    setData(cartItemsFromCart);
-    const total = cartItemsFromCart.reduce(
-      (sum, item) => sum + item.finalPrice * item.quantity,
-      0
-    );
-    setPrice(total);
+  useEffect(() => {
+    if (fromCart && cartItemsFromCart?.length > 0) {
+      // Cart-based checkout
+      setData(cartItemsFromCart);
+      const total = cartItemsFromCart.reduce(
+        (sum, item) => sum + item.finalPrice * item.quantity,
+        0
+      );
+      setPrice(total);
+    } else if (id) {
+      GetItem();
+    }
 
-  } else if (id) {
-    GetItem();
-  }
-
-  GetAddress();
-}, []);
+    GetAddress();
+  }, []);
 
   const [quantity, setQuanity] = useState(1);
 
-
-  
   const placeOrder = async () => {
+    if(!address){
+      toast.error("Kindly include the address first.")
+      return
+    }
     if (fromCart) {
       // BUYING WHOLE CART
       try {
@@ -124,7 +126,8 @@ useEffect(() => {
         console.error(error);
       }
     } else {
-      // BUYING SINGLE PRODUCT 
+      // BUYING SINGLE PRODUCT
+     
       try {
         const res = await axios.post(
           `${API_URL}/api/order/buynow`,
@@ -150,14 +153,18 @@ useEffect(() => {
       }
     }
   };
-  const updateQuantity = async (id: string, change: number, prevQuat?: number) => {
-    
-      const newQuantity = prevQuat + change;
-      setQuanity(newQuantity)
-      try {
-        if (fromCart) {
-          await axios.put(
-            `${API_URL}/api/cart/update-quantity`,
+
+  const updateQuantity = async (
+    id: string,
+    change: number,
+    prevQuat?: number
+  ) => {
+    const newQuantity = prevQuat + change;
+    setQuanity(newQuantity);
+    try {
+      if (fromCart) {
+        await axios.put(
+          `${API_URL}/api/cart/update-quantity`,
           {
             cartItemId: id,
             quantity: newQuantity,
@@ -169,42 +176,40 @@ useEffect(() => {
           }
         );
       }
-        if (newQuantity <= 0) {
-          setData((items) => items.filter((item) => item.id !== id));
-          
-        } else {
-          setData((items) =>
-            items.map((item) =>
-              item.id === id ? { ...item, quantity: newQuantity } : item
-            )
-          );
-        }
-      } catch (error) {
-        console.error("Error updating quantity:", error);
+      if (newQuantity <= 0) {
+        setData((items) => items.filter((item) => item.id !== id));
+      } else {
+        setData((items) =>
+          items.map((item) =>
+            item.id === id ? { ...item, quantity: newQuantity } : item
+          )
+        );
       }
-
-  }
-
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+    }
+  };
 
   useEffect(() => {
-  if (fromCart && data.length > 0) {
-    const total = data.reduce(
-      (sum, item) => sum + item.finalPrice * item.quantity,
-      0
-    );
-    setPrice(total);
-  } else if (!fromCart && data.length > 0) {
-    const unitPrice = data[0].finalPrice;
-    setPrice(unitPrice * quantity);
-  }
-
-
-}, [quantity, data]);
-
+    if (fromCart && data.length > 0) {
+      const total = data.reduce(
+        (sum, item) => sum + item.finalPrice * item.quantity,
+        0
+      );
+      setPrice(total);
+    } else if (!fromCart && data.length > 0) {
+      const unitPrice = data[0].finalPrice;
+      setPrice(unitPrice * quantity);
+    }
+  }, [quantity, data]);
 
   if (loading) {
     return <Loader />;
   }
+  if (!fromCart || data.length <= 0) {
+      return <EmptyCart/>
+    }
+  
   return (
     <div className="min-h-screen h-auto w-screen relative mb-16">
       <div className="flex items-center justify-center gap-0 h-14  text-black mb-2 px-6 border-2 border-neutral-200">
@@ -277,23 +282,6 @@ useEffect(() => {
         </div>
 
         <h2 className="text-2xl font-bold font-sans text-black mb-2">Items</h2>
-
-        {/* { console.log(data) } */}
-        {/* {data.length > 0 ? (
-          data.map((items, index) => (
-            <CartItemCard
-              quantity={quantity}
-              setQuantity={setQuanity}
-              key={index}
-              item={items}
-              updateQuantity={1}
-              price={price}
-              discount={code}
-            />
-          ))
-        ) : (
-          <Loader />
-        )} */}
 
         {data.length > 0 ? (
           data.map((item, index) => (

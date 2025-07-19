@@ -25,6 +25,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
   };
 
   const handleSend = async () => {
+    const phoneRegex = /^[6-9]\d{9}$/;
     if (
       !formData.name ||
       !formData.email ||
@@ -33,6 +34,10 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
       !formData.phone
     ) {
       setResponseMsg("Please fill in all required fields.");
+      return;
+    }
+    if (!phoneRegex.test(formData.phone)) {
+      toast.error("Please enter a valid 10-digit phone number.");
       return;
     }
 
@@ -45,10 +50,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
         propertyId: type !== "marketplace" ? id : null,
       };
 
-      const res = await axios.post(
-        `${API_URL}/api/enquiry`,
-        payload
-      );
+      const res = await axios.post(`${API_URL}/api/enquiry`, payload);
       toast.success("Enquiry sent successfully!");
       // console.log("Send: ",res);
 

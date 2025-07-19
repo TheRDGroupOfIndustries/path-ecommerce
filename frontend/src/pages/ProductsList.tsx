@@ -71,8 +71,13 @@ const ProductsList = () => {
     window.history.back();
   };
 
-
- if (!products) return <Loader />;
+if (products === undefined) return <Loader />;
+if (products.length == 0)
+  return (
+    <div className="flex items-center justify-center h-screen text-center">
+      <h2 className="text-3xl font-semibold text-gray-800">No products available</h2>
+    </div>
+  );
 
 
   return (

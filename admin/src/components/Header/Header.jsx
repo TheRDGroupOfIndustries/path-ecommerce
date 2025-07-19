@@ -16,16 +16,7 @@ const Header = ({ toggleSidebar, toggleDarkMode, darkMode }) => {
           <Menu size={20} />
         </button>
 
-        <div className="search-section">
-          <div className="search-container">
-            <input type="text" placeholder="Search..." className="search-input" />
-            <button className="search-button">
-              <Search size={18} />
-            </button>
-          </div>
-        </div>
-
-        <div className="header-actions">
+        <div className="header-actions" style={{ marginLeft: "auto" }}>
           <button className="dark-mode-toggle" onClick={toggleDarkMode}>
             {darkMode ? <Moon size={18} /> : <Sun size={18} />}
           </button>

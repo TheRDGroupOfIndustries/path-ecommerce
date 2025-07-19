@@ -5,10 +5,11 @@
   }
   
  .admin-kyc-wrapper .admin-kyc-title {
-    font-size: 1.8rem;
-    font-weight: 700;
+    font-size: 1.5rem;
+    font-weight:600;
     color: #333;
     margin-bottom: 1.5rem;
+    text-align: center;
   }
   
  .admin-kyc-wrapper .table-container {
@@ -36,7 +37,7 @@
   
  .admin-kyc-wrapper .admin-kyc-table th {
     background-color: #f0f2f5;
-    color: #444;
+    color: #727272;
     font-weight: 600;
   }
   

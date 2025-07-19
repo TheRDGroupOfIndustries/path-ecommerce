@@ -134,7 +134,7 @@ const Shop = () => {
               className={`rounded-2xl px-6 py-2 border-2 transition-colors duration-200
                 ${
                   activeFilter === filter
-                    ? "primary-bg text-white border-blue-900 shadow"
+                    ? "primary-bg text-white border-transparent shadow"
                     : "bg-transparent border-gray-300 text-gray-600 hover:bg-blue-50"
                 }
               `}

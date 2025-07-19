@@ -52,6 +52,12 @@ const EditProfile = () => {
       if (selectedImage) {
         payload.append("image", selectedImage);
       }
+      const phoneRegex = /^[6-9]\d{9}$/;
+
+      if (!phoneRegex.test(formData.phone)) {
+        toast.error("Please enter a valid 10-digit phone number.");
+        return;
+      }
       const res = await axios.put(
         `${API_URL}/api/users/update-user/${user.id}`,
         payload,
@@ -132,15 +138,20 @@ const EditProfile = () => {
 
           <div className="space-y-2">
             <Label htmlFor="phone">Phone</Label>
-            <Input
-              name="phone"
-              placeholder="Phone"
-              type="text"
-              required
-              value={formData.phone}
-              onChange={handleChange}
-              className="bg-gray-200 py-6"
-            />
+            <div className="flex bg-gray-200 rounded-lg overflow-hidden">
+              <span className="flex items-center px-3 text-sm text-gray-600 bg-gray-300">
+                +91
+              </span>
+              <Input
+                name="phone"
+                placeholder="Phone"
+                type="text"
+                required
+                value={formData.phone}
+                onChange={handleChange}
+                className="bg-gray-200 py-6 border-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none rounded-r-lg"
+              />
+            </div>
           </div>
 
           <div className="mt-auto pt-6">

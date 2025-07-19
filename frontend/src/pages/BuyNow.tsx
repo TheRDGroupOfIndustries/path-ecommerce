@@ -38,7 +38,6 @@ function BuyNow() {
       setName(req.data.user.name);
       setAddress(req.data.user.address);
     }
-   
   }
 
   async function GetItem() {
@@ -98,9 +97,9 @@ function BuyNow() {
   const [quantity, setQuanity] = useState(1);
 
   const placeOrder = async () => {
-    if(!address){
-      toast.error("Kindly include the address first.")
-      return
+    if (!address) {
+      toast.error("Kindly include the address first.");
+      return;
     }
     if (fromCart) {
       // BUYING WHOLE CART
@@ -127,7 +126,7 @@ function BuyNow() {
       }
     } else {
       // BUYING SINGLE PRODUCT
-     
+
       try {
         const res = await axios.post(
           `${API_URL}/api/order/buynow`,
@@ -212,7 +211,12 @@ function BuyNow() {
   if (loading) {
     return <Loader />;
   }
-  
+
+  if (!loading && data.length === 0) {
+    return <EmptyCart />;
+  }
+
+
   return (
     <div className="min-h-screen h-auto w-screen relative mb-16">
       <div className="flex items-center justify-center gap-0 h-14  text-black mb-2 px-6 border-2 border-neutral-200">

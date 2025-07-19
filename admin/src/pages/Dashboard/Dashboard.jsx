@@ -160,7 +160,7 @@ const prevEnquiry = () => {
   
   const latestEnquiries = [...enquiry]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .slice(0, 2);
+    .slice(0, 3);
     
   return (
     <div className={`dashboard-page ${darkMode ? "dark" : ""}`}>

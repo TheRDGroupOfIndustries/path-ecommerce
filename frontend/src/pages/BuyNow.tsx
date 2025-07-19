@@ -18,7 +18,7 @@ function BuyNow() {
   const id = param.id;
   const ok = param?.code;
   const code = ok ? atob(ok) : "";
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [address, setAddress] = useState<string | null>(null);
   const [data, setData] = useState([]);
   const [name, setName] = useState("");
@@ -203,12 +203,15 @@ function BuyNow() {
     }
   }, [quantity, data]);
 
+  useEffect(() => {
+    if (!loading && data.length <= 0) {
+      navigate(-1)
+    }
+  }, [data, loading])
+  
   if (loading) {
     return <Loader />;
   }
-  if (!fromCart || data.length <= 0) {
-      return <EmptyCart/>
-    }
   
   return (
     <div className="min-h-screen h-auto w-screen relative mb-16">

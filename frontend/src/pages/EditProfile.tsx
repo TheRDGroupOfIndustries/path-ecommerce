@@ -17,7 +17,6 @@ const EditProfile = () => {
   const [previewUrl, setPreviewUrl] = useState(user?.imageUrl || PROIFLE_IMAGE);
   const [isLoading, setIsLoading] = useState(false);
 
-
   const [formData, setFormData] = useState({
     name: user?.name || "",
     phone: user?.phone || "",
@@ -38,7 +37,7 @@ const EditProfile = () => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedImage(file);
-      setPreviewUrl(URL.createObjectURL(file)); 
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
@@ -62,7 +61,6 @@ const EditProfile = () => {
           },
         }
       );
-   
 
       toast.success("Profile updated successfully");
 
@@ -75,9 +73,9 @@ const EditProfile = () => {
       });
     } catch (error) {
       console.error("Error updating user:", error);
-      toast.error("Failed to update profile"); 
+      toast.error("Failed to update profile");
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -93,19 +91,6 @@ const EditProfile = () => {
       </div>
 
       {/* Profile image */}
-      {/* <div className="text-white flex flex-col items-center text-center pb-8 ">
-        <div className="relative w-32 h-32">
-          <img
-            src={user.imageUrl || PROIFLE_IMAGE}
-            alt="Profile"
-            className="w-full h-full rounded-full object-cover"
-          />
-          <div className="absolute bottom-1 right-1 bg-black p-1 rounded-full border border-white">
-            <CiCamera className="w-5 h-5 text-white" />
-          </div>
-        </div>
-      </div> */}
-
       <div className="text-white flex flex-col items-center text-center pb-8">
         <div className="relative w-32 h-32">
           <img
@@ -130,8 +115,8 @@ const EditProfile = () => {
       </div>
 
       {/* Form */}
-      <div className="bg-white rounded-t-3xl pt-10 pb-60 px-4 text-black space-y-4">
-        <form className="space-y-4" onSubmit={handleSubmit}>
+      <div className="bg-white rounded-t-3xl px-4 text-black flex-1 flex flex-col">
+        <form className="space-y-4 pt-10 flex-1" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input
@@ -158,13 +143,15 @@ const EditProfile = () => {
             />
           </div>
 
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-fit mt-3 bg-black text-white py-4 rounded-lg flex items-center justify-center gap-2 px-6"
-          >
-            {isLoading ? "Updating..." : "Update Profile"}
-          </Button>
+          <div className="mt-auto pt-6">
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-black text-white py-4 rounded-lg flex items-center justify-center gap-2"
+            >
+              {isLoading ? "Updating..." : "Update Profile"}
+            </Button>
+          </div>
         </form>
       </div>
     </div>

@@ -7,13 +7,13 @@ import { ChevronLeft, LucideArrowRight, Star } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const ProductCard = ({ name, images, avgRating, totalReviews, type, id}) => {
+const ProductCard = ({ name, images, avgRating, totalReviews, type, id }) => {
   const navigate = useNavigate();
-const image = Array.isArray(images) ? images[0] : images;
+  const image = Array.isArray(images) ? images[0] : images;
   return (
     <Card
       className="rounded-lg mb-4 bg-gray-100 min-h-28 border-none shadow-none cursor-pointer"
-       onClick={() => navigate(`/reviews/${type}/${id}`)}
+      onClick={() => navigate(`/reviews/${type}/${id}`)}
     >
       <CardContent className="flex items-center justify-between px-4">
         <div className="flex flex-col justify-between gap-1">
@@ -25,17 +25,23 @@ const image = Array.isArray(images) ? images[0] : images;
               <Star
                 key={i}
                 className={`w-4 h-4 ${
-                  i < Math.floor(avgRating) ? "text-yellow-400 fill-current" : "text-gray-300"
+                  i < Math.floor(avgRating)
+                    ? "text-yellow-400 fill-current"
+                    : "text-gray-300"
                 }`}
               />
             ))}
             <span className="text-xs text-yellow-400">
-             ({avgRating.toFixed(1)} / 5)
+              ({avgRating.toFixed(1)} / 5)
             </span>
           </div>
-          <p className="text-lg mt-8">{totalReviews} Review
-{totalReviews > 1 ? "s" : ""}</p>
-          <p className="text-base text-blue-600 mt-0 font-sans flex flex-row  items-center gap-1">View <LucideArrowRight size={16} /></p>
+          <p className="text-lg mt-8">
+            {totalReviews} Review
+            {totalReviews > 1 ? "s" : ""}
+          </p>
+          <p className="text-base text-blue-600 mt-0 font-sans flex flex-row  items-center gap-1">
+            View <LucideArrowRight size={16} />
+          </p>
         </div>
 
         <img
@@ -48,13 +54,11 @@ const image = Array.isArray(images) ? images[0] : images;
   );
 };
 
-
 const ReviewsList = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
   const [productsWithReviews, setProductsWithReviews] = useState();
-
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -80,7 +84,6 @@ const ReviewsList = () => {
             name = review.property.name;
             images = review.property.imageUrl || [];
           } else {
-           
             return;
           }
 
@@ -118,33 +121,45 @@ const ReviewsList = () => {
     fetchReviews();
   }, []);
 
-  if (!productsWithReviews) return <Loader />;
-
+  if (productsWithReviews === undefined) return <Loader />;
+  if (productsWithReviews.length === 0)
     return (
-      <div className="container mx-auto p-4 mb-16">
-        {/* Header */}
-        <div className="flex items-center h-14 text-black mb-2">
-          <ChevronLeft className="w-8 h-8 cursor-pointer" onClick={() => navigate(-1)} />
-          <h2 className="flex-1 text-2xl text-center font-semibold">My Product Reviews</h2>
-        </div>
-
-        {/* Product Cards */}
-        {productsWithReviews.map(
-          ({ key, name, images, avgRating, totalReviews, type, id }) => (
-            <ProductCard
-              key={key}
-              name={name}
-              images={images}
-              avgRating={avgRating}
-              totalReviews={totalReviews}
-              type={type}
-              id={id}
-            />
-          )
-        )}
+      <div className="flex items-center justify-center h-screen text-center">
+        <h2 className="text-3xl font-semibold text-gray-800">
+           No reviews yet.
+        </h2>
       </div>
     );
 
+  return (
+    <div className="container mx-auto p-4 mb-16">
+      {/* Header */}
+      <div className="flex items-center h-14 text-black mb-2">
+        <ChevronLeft
+          className="w-8 h-8 cursor-pointer"
+          onClick={() => navigate(-1)}
+        />
+        <h2 className="flex-1 text-2xl text-center font-semibold">
+          My Product Reviews
+        </h2>
+      </div>
+
+      {/* Product Cards */}
+      {productsWithReviews.map(
+        ({ key, name, images, avgRating, totalReviews, type, id }) => (
+          <ProductCard
+            key={key}
+            name={name}
+            images={images}
+            avgRating={avgRating}
+            totalReviews={totalReviews}
+            type={type}
+            id={id}
+          />
+        )
+      )}
+    </div>
+  );
 };
 
 export default ReviewsList;

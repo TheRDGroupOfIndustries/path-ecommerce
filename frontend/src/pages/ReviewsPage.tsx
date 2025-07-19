@@ -9,7 +9,7 @@ import { API_URL } from "@/lib/api.env";
 
 const ReviewsPage = () => {
   const [activeTab, setActiveTab] = useState("All");
-  const [entityInfo, setEntityInfo] = useState(null); 
+  const [entityInfo, setEntityInfo] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const navigate = useNavigate();
@@ -24,7 +24,9 @@ const ReviewsPage = () => {
 
     const fetchReviews = async () => {
       try {
-        const reviewRes = await axios.get(`${API_URL}/api/review/${type}/${id}`);
+        const reviewRes = await axios.get(
+          `${API_URL}/api/review/${type}/${id}`
+        );
         const reviewsData = reviewRes.data;
 
         if (!reviewsData.length) {
@@ -90,9 +92,7 @@ const ReviewsPage = () => {
           className="w-8 h-8 cursor-pointer"
           onClick={() => navigate(-1)}
         />
-        <h2 className="flex-1 text-xl text-center">
-          {entityInfo.name}
-        </h2>
+        <h2 className="flex-1 text-xl text-center">{entityInfo.name}</h2>
       </div>
 
       <div className="py-4 space-y-4">
@@ -100,7 +100,6 @@ const ReviewsPage = () => {
         <div className="w-full h-64 rounded-lg overflow-hidden">
           <img
             src={
-            
               Array.isArray(entityInfo.imageUrl)
                 ? entityInfo.imageUrl[0]
                 : entityInfo.images?.[0] || entityInfo.imageUrl
@@ -114,7 +113,9 @@ const ReviewsPage = () => {
         <div className="space-y-3">
           <h2 className="text-xl font-medium text-black">{entityInfo.name}</h2>
           <div className="flex items-center space-x-1">
-            <div className="flex items-center">{renderStars(averageRating)}</div>
+            <div className="flex items-center">
+              {renderStars(averageRating)}
+            </div>
             <span className="text-sm text-blue-600">
               ({averageRating.toFixed(1)} / 5) {reviews.length} review
               {reviews.length > 1 ? "s" : ""}
@@ -163,18 +164,20 @@ const ReviewsPage = () => {
           </div>
 
           {/* Review Tabs */}
-          <div className="flex items-center space-x-4">
+          <div className="flex overflow-x-auto space-x-3 pb-2 px-1">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`flex px-3 py-1 text-sm rounded-lg transition-colors ${
+                className={`flex items-center px-3 py-1 text-sm rounded-lg whitespace-nowrap transition-colors ${
                   activeTab === tab
                     ? "bg-black text-white"
-                    : "text-black border-gray-200 border-2 hover:text-gray-700"
+                    : "text-black border border-gray-300 hover:text-gray-700"
                 }`}
               >
-                {tab !== "All" && <MdStar className="w-4 h-4 text-yellow-400" />}
+                {tab !== "All" && (
+                  <MdStar className="w-4 h-4 text-yellow-400 mr-1" />
+                )}
                 {tab}
               </button>
             ))}

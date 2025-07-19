@@ -7,6 +7,7 @@ import CartItemCard from "@/components/CartItemCard/CartItemCard";
 import { API_URL } from "@/lib/api.env";
 import Loader from "@/components/Loader/Loader";
 import ShadeBtn from "@/components/ui/ShadeBtn";
+import EmptyCart from "@/components/EmptyCart/EmptyCart";
 
 export default function MyCart() {
   const [cartItems, setCartItems] = useState([]);
@@ -82,32 +83,6 @@ export default function MyCart() {
     }
   };
 
-  //   const handleBuyNow = async () => {
-  //   try {
-  //     const res = await axios.post(
-  //       `${API_URL}/api/order/buynow/cart`,
-  //       {
-  //         paymentMode: "COD",
-  //         referralCode: null, // or pass actual referral if used
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //         },
-  //       }
-  //     );
-
-  //     console.log("Order Response:", res.data);
-  //     toast.success("Order placed successfully!");
-
-  //     navigate("/thanks");
-  //   } catch (err) {
-  //   const errorData = err?.response?.data;
-  //   console.error("Order error:", errorData);
-  //   toast.error(errorData?.message || "Order failed");
-  // }
-
-  // };
 
   const handleBuyNow = () => {
     navigate("/buy-now", {
@@ -131,25 +106,7 @@ export default function MyCart() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-center px-4">
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png"
-          alt="Empty Cart"
-          className="w-40 h-40 mb-6"
-        />
-        <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-          Your Cart is Empty
-        </h2>
-        <p className="text-gray-500 mb-6">
-          Looks like you haven’t added anything yet.
-        </p>
-        <Button
-          onClick={() => navigate("/")}
-          className="bg-indigo-600 text-white"
-        >
-          Go to Home
-        </Button>
-      </div>
+     <EmptyCart/>
     );
   }
 

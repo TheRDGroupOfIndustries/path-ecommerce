@@ -91,7 +91,7 @@ const SignUp = () => {
         otp: Number(number),
       });
       if (sendOtp.status === 400) {
-        setError("Invalid Email..");
+        setError("Unable to send OTP, Try again later...");
         setLoading(false);
         return;
       }
@@ -133,9 +133,7 @@ const SignUp = () => {
       navigate("/login");
     } catch (err: any) {
       setError(
-        err.response?.data?.message ||
-          err.message ||
-          "Registration failed. Please try again."
+          "Ops, Its not you, Its us, Please try again a bit later."
       );
     } finally {
       setIsLoading(false);
@@ -246,10 +244,12 @@ const SignUp = () => {
             <Button
               type="submit"
               className="w-full bg-black text-white hover:bg-gray-900 py-7 text-xl primary-bg cursor-pointer"
-              disabled={isLoading}
+              disabled={loading}
             >
-              {isLoading
-                ? "...": 
+            {
+              loading && step === 0 ? "Generating OTP..." :
+              loading && step === 1 ? "Verifying OTP..." :
+              loading && step === 2 ? "Signing up..." :
                 step === 0
                 ? "Send OTP"
                 : step === 1

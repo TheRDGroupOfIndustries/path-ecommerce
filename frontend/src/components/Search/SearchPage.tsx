@@ -39,9 +39,7 @@ function SearchPage() {
     try {
       setLoading(true);
       const req = await axios.get(`${dynamicUrl}/${input}`);
-      // console.log(dynamicUrl);
       if (req.status === 201) {
-        // console.log(req.data);
         setData(req.data);
       }
     } catch (error) {
@@ -52,11 +50,11 @@ function SearchPage() {
     }
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      handleChange();
-    }, 3000);
-  }, [input]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     handleChange();
+  //   }, 3000);
+  // }, [input]);
 
   if (loading) {
     return <SearchLoader />;

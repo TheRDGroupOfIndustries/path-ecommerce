@@ -207,9 +207,16 @@ export default function MyOrders() {
       getUserOrders();
     }
   }, [user]);
-   if (loading) return <Loader />;
-  if(userOrders.length<=0 ||sellerOrders.length<=0) return <EmptyCart/>
-    
+  if (loading) return <Loader />;
+
+  if (
+    (user?.role === "SELLER" || user?.role === "ADMIN") &&
+    sellerOrders.length <= 0
+  )
+    return <EmptyCart />;
+
+  if ((!user?.role || user?.role === "USER") && userOrders.length <= 0)
+    return <EmptyCart />;
 
   return (
     <div className="container mx-auto p-4 mb-16">

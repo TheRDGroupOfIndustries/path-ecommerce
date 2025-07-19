@@ -8,7 +8,7 @@ import { MdStar, MdStarBorder } from "react-icons/md";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/authContext";
-
+import PROIFLE_IMAGE from "@/assets/user_img.png";
 import { API_URL } from "@/lib/api.env";
 
 const Enquire = () => {
@@ -242,7 +242,7 @@ if (!property || !seller) return <Loader />;
             <div key={idx} className="flex gap-3 mb-4 flex-col">
               <div className="flex flex-row justify-start items-center gap-3">
                 <img
-                  src={review.user.imageUrl || "https://placehold.co/40x40"}
+                  src={review.user.imageUrl || PROIFLE_IMAGE}
                   alt={review.user.name}
                   className="w-10 h-10 rounded-full object-cover"
                 />

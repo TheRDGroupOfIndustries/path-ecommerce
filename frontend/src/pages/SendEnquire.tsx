@@ -1,12 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { API_URL } from "@/lib/api.env";
+import { useAuth } from "@/context/authContext";
 
 const SendEnquire = ({ setShowPopup, type, id }) => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,22 +19,24 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
   const [loading, setLoading] = useState(false);
   const [responseMsg, setResponseMsg] = useState("");
 
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        name: user.name || "",
+        email: user.email || "",
+      }));
+    }
+  }, [user]);
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
-
   const handleSend = async () => {
     const phoneRegex = /^[6-9]\d{9}$/;
-    if (
-      !formData.name ||
-      !formData.email ||
-      !formData.message ||
-      !formData.subject ||
-      !formData.phone
-    ) {
+    if (!formData.message || !formData.subject || !formData.phone) {
       setResponseMsg("Please fill in all required fields.");
       return;
     }
@@ -50,12 +54,18 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
         propertyId: type !== "marketplace" ? id : null,
       };
 
-      const res = await axios.post(`${API_URL}/api/enquiry`, payload);
+      await axios.post(`${API_URL}/api/enquiry`, payload);
       toast.success("Enquiry sent successfully!");
       // console.log("Send: ",res);
 
       setResponseMsg("Enquiry sent successfully!");
-      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+      setFormData({
+        name: user?.name || "",
+        email: user?.email || "",
+        phone: "",
+        subject: "",
+        message: "",
+      });
 
       setTimeout(() => {
         setShowPopup(false);
@@ -63,8 +73,8 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
       }, 1000);
     } catch (err) {
       console.error("Enquiry failed:", err);
-      setResponseMsg("Failed to send enquiry. Try again later.");
       toast.error("Failed to send enquiry. Try again later.");
+      setResponseMsg("Failed to send enquiry. Try again later.");
     }
     setLoading(false);
   };
@@ -93,6 +103,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
             type="text"
             value={formData.name}
             onChange={handleChange}
+            disabled
             placeholder="Full name"
             className="w-full p-4 py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50"
           />
@@ -100,6 +111,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
             name="email"
             type="email"
             value={formData.email}
+            disabled
             onChange={handleChange}
             placeholder="Your email"
             className="w-full p-4 py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50"

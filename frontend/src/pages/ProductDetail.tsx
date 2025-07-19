@@ -35,7 +35,7 @@ const ProductDetail = () => {
 
         if (userData.cartItems.length > 0) {
           const prod = userData.cartItems.map((items) => items.productId);
-          console.log(prod);
+         
 
           if (prod.includes(id)) {
             setCart(true);
@@ -53,7 +53,6 @@ const ProductDetail = () => {
     fetchProduct();
   }, [id, isCart]);
 
-  
   const checkPriceValidity = (additionalDiscount) => {
     if (!product) return false;
 
@@ -91,7 +90,7 @@ const ProductDetail = () => {
           setReferralDiscount(0);
           return;
         }
-        setReferralDiscount(discount);
+        // setReferralDiscount(discount);
         setReferralStep("apply");
         setReferralError("");
       } catch (err) {
@@ -130,9 +129,16 @@ const ProductDetail = () => {
         } else {
           setReferralError("Something went wrong. Please try again.");
         }
-      } catch (err) {
-        console.error("Referral validation failed:", err);
-        setReferralError("Something went wrong. Please try again.");
+      } catch (error) {
+        const errorMessage =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          "Something went wrong";
+        toast.error(errorMessage);
+        setReferralError(errorMessage);
+        setReferralStep("check");
+        setReferralDiscount(0); 
+       
       }
     }
   };
@@ -313,8 +319,7 @@ const ProductDetail = () => {
         )}
         {referralStep === "apply" && (
           <p className="text-green-600 text-sm mt-1">
-            Referral code is valid. Click <strong>Apply</strong> to get{" "}
-            {referralDiscount}% extra off.
+            Referral code is valid. Click <strong>Apply</strong> to get extra off.
           </p>
         )}
 

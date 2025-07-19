@@ -3,7 +3,7 @@ import { Router } from "express";
 import {
     updateAssociateController,
     deleteAssociateController,
-} from "../controller/associate.controller";
+} from "../controller/associate.controller.js";
 
 
 const router = Router()

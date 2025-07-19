@@ -1,4 +1,4 @@
-import { deleteAssociate, updateAssociate } from "../model/associate.model";
+import { deleteAssociate, updateAssociate } from "../model/associate.model.js";
 
 
 

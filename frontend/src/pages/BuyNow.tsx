@@ -24,9 +24,13 @@ function BuyNow() {
   const [name, setName] = useState("");
 
   const [price, setPrice] = useState(0);
+  // const location = useLocation();
+  // const fromCart = location.state?.fromCart;
+  // const cartItemsFromCart = location.state?.cartItems;
+
   const location = useLocation();
-  const fromCart = location.state?.fromCart;
-  const cartItemsFromCart = location.state?.cartItems;
+  const fromCart = location?.state?.fromCart ?? false;
+  const cartItemsFromCart = location?.state?.cartItems ?? [];
 
   async function GetAddress() {
     const req = await axios.get(`${API_URL}/api/users/me`, {
@@ -42,7 +46,6 @@ function BuyNow() {
 
   async function GetItem() {
     try {
-      setLoading(true);
       const req = await axios.get(`${API_URL}/api/product/get-by-id/${id}`);
       if (req.status === 201) {
         const p = req.data;
@@ -87,6 +90,7 @@ function BuyNow() {
         0
       );
       setPrice(total);
+      setLoading(false);
     } else if (id) {
       GetItem();
     }
@@ -204,10 +208,11 @@ function BuyNow() {
 
   useEffect(() => {
     if (!loading && data.length <= 0) {
-      navigate(-1)
+      navigate(-1);
     }
-  }, [data, loading])
-  
+  }, [data, loading]);
+
+
   if (loading) {
     return <Loader />;
   }
@@ -215,7 +220,6 @@ function BuyNow() {
   if (!loading && data.length === 0) {
     return <EmptyCart />;
   }
-
 
   return (
     <div className="min-h-screen h-auto w-screen relative mb-16">

@@ -517,8 +517,11 @@
 }
 
 .dark .modal-edit-content {
-  background: #23294a;
-  color: #f1f5f9;
+  background: #23294a !important;
+  color: #f1f5f9 !important;
+}
+.dark .modal-edit-content h2{
+color: white;
 }
 .dark .modal-edit-content input,
 .dark .modal-edit-content textarea,
@@ -538,6 +541,13 @@
 .dark .item-edit-btn img {
   border: 1px solid #4a5568;
 }
+.dark .item-edit-btn button {
+  background-color: #f15757;
+  color: #fff;
+}
+.dark .item-edit-btn button:hover {
+  background-color: #d63031;
+}
 .dark .modal-edit-content .modal-actions button:first-child {
   background-color: #4e59bc;
   color: #fff;
@@ -545,6 +555,10 @@
 .dark .modal-edit-content .modal-actions button:last-child {
   background-color: #4a5568;
   color: #fff;
+}
+.dark .add-img-button-editmodel button{
+  background-color: #4f65f6;
+  color: white;
 }
 
 /* Responsive improvements for tablets */

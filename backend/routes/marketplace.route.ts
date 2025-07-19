@@ -1,6 +1,7 @@
 import * as marketPlaceController from "../controller/marketplace.controller.js";
 import { Router } from "express";
 import { isAuthenticated } from "../middlewares/auth.js";
+import { upload } from "../middlewares/multer.js";
 
 const route = Router();
 
@@ -29,11 +30,11 @@ route.get("/search/:value", async (req, res) => {
 route.get("/get-by-user/:userId", async (req, res) => {
   await marketPlaceController.marketplaceByUser(req, res);
 });
-route.post("/create", async (req, res) => {
+route.post("/create",upload.single("image"), async (req, res) => {
   await marketPlaceController.createMarketplace(req, res);
 });
 
-route.put("/update/:id", async (req, res) => {
+route.put("/update/:id",upload.single("image"), async (req, res) => {
   await marketPlaceController.updateMarketplace(req, res);
 });
 

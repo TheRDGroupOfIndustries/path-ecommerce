@@ -145,17 +145,44 @@ const ViewitemM = () => {
     }));
   };
 
+  const handleFileUpload = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    setEditForm((prev) => ({
+      ...prev,
+      imageUrl: [...(prev.imageUrl || []), reader.result], // base64 string
+    }));
+  };
+  reader.readAsDataURL(file);
+};
+
+
   return (
     <div className="user-container">
       {/* Edit Modal */}
-      {isModalOpen && (
-        <div style={{ zIndex: 2001, position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh' }}>
+     {isModalOpen && (
+        <div
+          style={{
+            zIndex: 2001,
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+          }}
+        >
           <div
             style={{
-              position: 'absolute',
-              top: 0, left: 0, width: '100vw', height: '100vh',
-              background: 'rgba(30,32,48,0.55)',
-              zIndex: 2001
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              background: "rgba(30,32,48,0.55)",
+              zIndex: 2001,
             }}
             onClick={() => setIsModalOpen(false)}
           />
@@ -163,26 +190,34 @@ const ViewitemM = () => {
             className="modal-edit-content"
             style={{
               zIndex: 2002,
-              position: 'fixed',
-              left: '50%',
-              top: '50%',
-              transform: 'translate(-50%, -50%)',
-              background: '#fff',
+              position: "fixed",
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+              background: "#fff",
               borderRadius: 12,
               padding: 24,
               maxWidth: 600,
-              width: '90vw',
-              boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+              width: "90vw",
+              boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
+              transition: "none",
+              animation: "none",
             }}
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             <h2>Edit Item</h2>
             <label>Name:</label>
-            <input name="name" value={editForm.name || ""} onChange={handleInputChange} />
-
+            <input
+              name="name"
+              value={editForm.name || ""}
+              onChange={handleInputChange}
+            />
             <label>Description:</label>
-            <textarea name="description" value={editForm.description || ""} onChange={handleInputChange} />
-
+            <textarea
+              name="description"
+              value={editForm.description || ""}
+              onChange={handleInputChange}
+            />
             <label>Category:</label>
             <input
               type="text"
@@ -191,26 +226,35 @@ const ViewitemM = () => {
               onChange={handleInputChange}
               placeholder="Enter category"
             />
-
-            <label>Images:</label>
-            <div className="image-edit-grid">
-              {editForm.imageUrl?.map((img, idx) => (
-                <div key={idx} className="item-edit-btn">
-                  <img src={img} alt={`img-${idx}`} width="60" height="60" />
-                  <button onClick={() => removeImage(idx)}>Remove</button>
-                </div>
-              ))}
+           <label>Images:</label>
+        <div className="image-edit-grid">
+          {editForm.imageUrl?.map((img, idx) => (
+            <div key={idx} className="item-edit-btn">
+              <img src={img} alt={`img-${idx}`} width="60" height="60" />
+              <button onClick={() => removeImage(idx)}>Remove</button>
             </div>
+          ))}
+        </div>
 
-            <input
-              name="newImage"
-              value={editForm.newImage || ""}
-              onChange={handleInputChange}
-              placeholder="Add new image URL"
-            />
-            <div className="add-img-button-editmodel">
-              <button onClick={handleAddImage}>Add Image</button>
-            </div>
+        {/* Add via URL */}
+        <input
+          name="newImage"
+          value={editForm.newImage || ""}
+          onChange={handleInputChange}
+          placeholder="Paste image URL"
+        />
+        <div className="add-img-button-editmodel">
+          <button onClick={handleAddImage}>Add</button>
+        </div>
+
+        {/* Add via File Upload */}
+        <label>Or Upload from Device:</label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileUpload}
+        />
+
             <div className="modal-actions">
               <button onClick={handleSaveEdit}>Save</button>
               <button onClick={() => setIsModalOpen(false)}>Cancel</button>

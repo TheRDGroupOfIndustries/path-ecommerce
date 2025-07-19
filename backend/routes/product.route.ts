@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as productController from "../controller/product.controller.js";
 import { isAuthenticated } from "../middlewares/auth.js";
+import { upload } from "../middlewares/multer.js";
 
 const router = Router();
 
@@ -55,7 +56,7 @@ router.delete("/delete-product/:id", async (req, res) => {
 });
 
 // Create product
-router.post("/create-product", isAuthenticated, async (req, res) => {
+router.post("/create-product",upload.single("image"), isAuthenticated, async (req, res) => {
   try {
     await productController.createData(req, res);
   } catch (error) {
@@ -66,7 +67,7 @@ router.post("/create-product", isAuthenticated, async (req, res) => {
 
 
 // Update product
-router.put("/update-product/:id", async (req, res) => {
+router.put("/update-product/:id", upload.single("image"),async (req, res) => {
   try {
     await productController.updateData(req, res);
   } catch (error) {

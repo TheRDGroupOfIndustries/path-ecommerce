@@ -149,6 +149,20 @@ const ViewitemP = () => {
     }));
   };
 
+  const handleFileUpload = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    setEditForm((prev) => ({
+      ...prev,
+      imageUrl: [...(prev.imageUrl || []), reader.result], // base64 string
+    }));
+  };
+  reader.readAsDataURL(file);
+};
+
   return (
     <div className="user-container">
       {isModalOpen && (
@@ -223,15 +237,25 @@ const ViewitemP = () => {
                 </div>
               ))}
             </div>
-            <input
-              name="newImage"
-              value={editForm.newImage || ""}
-              onChange={handleInputChange}
-              placeholder="Add new image URL"
-            />
-            <div className="add-img-button-editmodel">
-              <button onClick={handleAddImage}>Add Image</button>
-            </div>
+            {/* Add via URL */}
+        <input
+          name="newImage"
+          value={editForm.newImage || ""}
+          onChange={handleInputChange}
+          placeholder="Paste image URL"
+        />
+        <div className="add-img-button-editmodel">
+          <button onClick={handleAddImage}>Add</button>
+        </div>
+
+        {/* Add via File Upload */}
+        <label>Or Upload from Device:</label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileUpload}
+        />
+
             <div className="modal-actions">
               <button onClick={handleSaveEdit}>Save</button>
               <button onClick={() => setIsModalOpen(false)}>Cancel</button>

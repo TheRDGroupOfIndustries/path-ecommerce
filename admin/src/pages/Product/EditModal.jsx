@@ -1,6 +1,6 @@
 import { ImCross } from "react-icons/im";
 import { Rating } from "@mui/material";
-import './Product.css'
+import './Product.css';
 
 export default function EditModal({
   show,
@@ -17,6 +17,7 @@ export default function EditModal({
   rating,
   setRating,
   setFormRating,
+  handleFileUpload 
 }) {
   if (!show) return null;
 
@@ -29,16 +30,14 @@ export default function EditModal({
         </div>
 
         <form onSubmit={onSubmit}>
+          {/* Basic Fields */}
           <input type="text" name="name" value={formData.name} onChange={onChange} placeholder="Name" required />
-
           <textarea name="description" value={formData.description} onChange={onChange} rows="4" required />
-
           <input type="text" name="price" value={formData.price} onChange={onChange} placeholder="Price" required />
-
           <input type="number" name="discount" value={formData.discount} onChange={onChange} placeholder="Discount" min="0" max="100" />
-
           <input type="text" name="category" value={formData.category} onChange={onChange} placeholder="Category" required />
 
+          {/* Rating */}
           <Rating
             name="rating"
             value={Number(rating)}
@@ -48,7 +47,7 @@ export default function EditModal({
             }}
           />
 
-          {/* isTrendy Toggle */}
+          {/* Trendy Toggle */}
           <div className="form-sectionn"><br />
             <h4>Is Trendy?</h4>
             <select
@@ -63,7 +62,8 @@ export default function EditModal({
             </select>
           </div>
 
-          {/* Image Add Section */}
+          {/* Image Section (URL + File) */}
+          <h4>Product Images</h4>
           <input
             type="url"
             name="image"
@@ -77,7 +77,11 @@ export default function EditModal({
               }
             }}
           />
-
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleFileUpload(e, "images")}
+          />
           <div className="image-preview2-grid">
             {formData.images.map((img, idx) => (
               <div key={idx} className="preview2-item image-preview">
@@ -113,7 +117,7 @@ export default function EditModal({
             </div>
           </div>
 
-          {/* Highlights */}
+          {/* Highlights (URL + File Upload) */}
           <div className="form-section">
             <h4>Highlights</h4>
             <input
@@ -128,6 +132,11 @@ export default function EditModal({
                   e.preventDefault();
                 }
               }}
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleFileUpload(e, "highlights")}
             />
             <div className="preview2-grid">
               {formData.highlights.map((h, i) => (

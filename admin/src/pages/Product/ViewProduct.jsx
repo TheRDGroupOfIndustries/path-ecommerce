@@ -213,6 +213,22 @@ const ViewProduct = () => {
           });
       }
     };
+
+
+  const handleFileUpload = (e, field) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    setEditFormData((prev) => ({
+      ...prev,
+      [field]: [...(prev[field] || []), reader.result], // add base64 string to array
+    }));
+  };
+  reader.readAsDataURL(file);
+};
+
     
   
     useEffect(() => {
@@ -381,7 +397,6 @@ const ViewProduct = () => {
         )
       )}
 
-      {/* Edit Modal and View Modal remain unchanged */}
       {/* Edit Modal */}
           {showEditModal && (
             <div className="modal-overlay" style={{ zIndex: 2001 }}>
@@ -399,10 +414,12 @@ const ViewProduct = () => {
                   addArrayItem={addArrayItem}
                   removeArrayItem={removeArrayItem}
                   rating={ratingValue}
+                  handleFileUpload={handleFileUpload}
                   setRating={setRatingValue}
                   setFormRating={(val) =>
                     setEditFormData((prev) => ({ ...prev, ratings: val }))
                   }
+                  
                 />
               </div>
             </div>
@@ -504,7 +521,6 @@ const ViewProduct = () => {
 }
 
 export default ViewProduct
-
 
 
 

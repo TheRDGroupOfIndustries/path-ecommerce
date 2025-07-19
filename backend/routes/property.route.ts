@@ -1,6 +1,7 @@
 import * as propertyController from "../controller/property.controller.js";
 import { Router } from "express";
 import { isAuthenticated } from "../middlewares/auth.js";
+import { upload } from "../middlewares/multer.js";
 
 const route = Router();
 
@@ -30,11 +31,11 @@ route.get("/get-by-id/:id", async (req, res) => {
 route.get("/get-by-user/:userId", async (req, res) => {
   await propertyController.propertyByUser(req, res);
 });
-route.post("/create", async (req, res) => {
+route.post("/create",upload.single("image"), async (req, res) => {
   await propertyController.createProperty(req, res);
 });
 
-route.put("/update/:id", async (req, res) => {
+route.put("/update/:id",upload.single("image"), async (req, res) => {
   await propertyController.updateProperty(req, res);
 });
 

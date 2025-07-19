@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { postData } from "../../utils/api"
 import "./AddItemM.css"
-import {SquareCheckBig} from "lucide-react"
+import { SquareCheckBig } from "lucide-react"
 
 const AddItemM = () => {
   const [formData, setFormData] = useState({
@@ -15,8 +15,6 @@ const AddItemM = () => {
   const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
-
-  const categories = ["All", "Cloth", "Makeup", "Shoes","Furniture","Electronic"];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -77,15 +75,13 @@ const AddItemM = () => {
       newErrors.description = "Description must be at least 10 characters"
     }
 
-    if (!formData.category) {
+    if (!formData.category.trim()) {
       newErrors.category = "Category is required"
     }
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
-
-// submit
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -105,12 +101,11 @@ const AddItemM = () => {
       const payload = {
         ...formData,
         createdById: user.id,
-        imageUrl: formData.imageUrl, 
+        imageUrl: formData.imageUrl,
       }
 
       const response = await postData("/marketplace/create", payload)
 
-      // console.log("Item created:", response)
       setSubmitSuccess(true)
 
       setFormData({
@@ -181,21 +176,16 @@ const AddItemM = () => {
             <label htmlFor="category" className="form-label">
               Category <span className="required">*</span>
             </label>
-            <select
+            <input
+              type="text"
               id="category"
               name="category"
               value={formData.category}
               onChange={handleInputChange}
-              className={`form-select ${errors.category ? "input-error" : ""}`}
+              className={`form-input ${errors.category ? "input-error" : ""}`}
+              placeholder="Enter category (e.g. Shoes, Makeup)"
               style={{ borderRadius: 12, fontSize: 16, padding: '16px 20px' }}
-            >
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+            />
             {errors.category && <span className="error-text">{errors.category}</span>}
           </div>
 
@@ -231,7 +221,7 @@ const AddItemM = () => {
                       >
                         ×
                       </button>
-                      <img src={image || "/placeholder.svg"} alt={`Product ${index + 1}`} style={{ maxWidth:150, maxHeight: 80, borderRadius: 8 }} />
+                      <img src={image || "/placeholder.svg"} alt={`Product ${index + 1}`} style={{ maxWidth: 150, maxHeight: 80, borderRadius: 8 }} />
                     </div>
                   ))}
                 </div>

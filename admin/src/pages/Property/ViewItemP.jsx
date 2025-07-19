@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useContext } from "react";
 import { fetchDataFromApi, editData, deleteData } from "../../utils/api";
 import { ChevronDown,Pencil,Trash2 } from "lucide-react";
+import { myContext } from "../../App"
 
 const ViewitemP = () => {
+  const context = useContext(myContext);
   const [users, setUsers] = useState([]);
   const [filteredItem, setFilteredItem] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -45,7 +47,7 @@ const ViewitemP = () => {
               user.category?.toLowerCase() === selectedCategory.toLowerCase()
           );
     setFilteredItem(filtered);
-    setCurrentPage(1); // Reset to first page on filter change
+    setCurrentPage(1); 
   }, [selectedCategory, users]);
 
   const totalPages = Math.ceil(filteredItem.length / ITEMS_PER_PAGE);
@@ -66,38 +68,61 @@ const ViewitemP = () => {
     setIsModalOpen(true);
   };
 
-  const handleSaveEdit = async () => {
-    const { name, description, imageUrl, category, createdById } = editForm;
-    try {
-      const payload = {
-        name,
-        description,
-        imageUrl,
-        createdById,
-        category: category.toUpperCase(),
-      };
-      await editData(`/property/update/${editingItem}`, payload);
-      await fetchItems();
-      setEditingItem(null);
-      setEditForm({});
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Error updating item:", error);
-      alert("Failed to update item.");
-    }
-  };
+ const handleSaveEdit = async () => {
+  const { name, description, imageUrl, category, createdById } = editForm;
+  try {
+    const payload = {
+      name,
+      description,
+      imageUrl,
+      createdById,
+      category: category.toUpperCase(),
+    };
+
+    await editData(`/property/update/${editingItem}`, payload);
+
+    context.setAlertBox({
+      open: true,
+      msg: "Item updated successfully!",
+      error: false,
+    });
+
+    await fetchItems();
+    setEditingItem(null);
+    setEditForm({});
+    setIsModalOpen(false);
+  } catch (error) {
+    console.error("Error updating item:", error);
+    context.setAlertBox({
+      open: true,
+      msg: "Error updating product",
+      error: true,
+    });
+  }
+};
+
 
   const handleDelete = async (userId) => {
-    if (window.confirm("Are you sure you want to delete this Item?")) {
-      try {
-        await deleteData(`/property/delete/${userId}`);
-        setUsers(users.filter((user) => user.id !== userId));
-      } catch (error) {
-        console.error("Delete error:", error);
-        alert("Failed to delete item.");
-      }
+  if (window.confirm("Are you sure you want to delete this Item?")) {
+    try {
+      await deleteData(`/property/delete/${userId}`);
+      setUsers(users.filter((user) => user.id !== userId));
+
+      context.setAlertBox({
+        open: true,
+        msg: "Item deleted successfully!",
+        error: false,
+      });
+    } catch (error) {
+      console.error("Delete error:", error);
+      context.setAlertBox({
+        open: true,
+        msg: "Failed to delete item.",
+        error: true,
+      });
     }
-  };
+  }
+};
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -123,7 +148,7 @@ const ViewitemP = () => {
 
   return (
     <div className="user-container">
-      {isModalOpen && (
+ {isModalOpen && (
   <div style={{ zIndex: 2001, position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh' }}>
     <div
       style={{
@@ -162,16 +187,13 @@ const ViewitemP = () => {
       <textarea name="description" value={editForm.description || ""} onChange={handleInputChange} />
 
       <label>Category:</label>
-      <select name="category" value={editForm.category || ""} onChange={handleInputChange}>
-        {(() => {
-          const options = ["CLOTH", "MAKEUP", "SHOES", "FURNITURE", "ELECTRONIC"];
-          const current = (editForm.category || "").toUpperCase();
-          const uniqueOptions = options.includes(current) ? options : [current, ...options];
-          return uniqueOptions.map(opt => (
-            <option key={opt} value={opt}>{opt.charAt(0) + opt.slice(1).toLowerCase()}</option>
-          ));
-        })()}
-      </select>
+      <input
+        type="text"
+        name="category"
+        value={editForm.category || ""}
+        onChange={handleInputChange}
+        placeholder="Enter category"
+      />
 
       <label>Images:</label>
       <div className="image-edit-grid">
@@ -189,7 +211,7 @@ const ViewitemP = () => {
         placeholder="Add new image URL"
       />
       <div className="add-img-button-editmodel">
-       <button onClick={handleAddImage}>Add Image</button>
+        <button onClick={handleAddImage}>Add Image</button>
       </div>
       <div className="modal-actions">
         <button onClick={handleSaveEdit}>Save</button>
@@ -198,6 +220,7 @@ const ViewitemP = () => {
     </div>
   </div>
 )}
+
       <div className="user-header">
         <div className="user-header-main">
           <h1>View Items</h1>

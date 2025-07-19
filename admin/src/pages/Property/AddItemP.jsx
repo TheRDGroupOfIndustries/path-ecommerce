@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { postData } from "../../utils/api"
 import "../MarketPlace/AddItemM.css"
-import {SquareCheckBig} from "lucide-react"
+import { SquareCheckBig } from "lucide-react"
 
 const AddItemP = () => {
   const [formData, setFormData] = useState({
@@ -15,8 +15,6 @@ const AddItemP = () => {
   const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
-
-  const categories = ["All", "House", "Apartment", "Flat"];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -77,7 +75,7 @@ const AddItemP = () => {
       newErrors.description = "Description must be at least 10 characters"
     }
 
-    if (!formData.category) {
+    if (!formData.category.trim()) {
       newErrors.category = "Category is required"
     }
 
@@ -103,12 +101,11 @@ const AddItemP = () => {
       const payload = {
         ...formData,
         createdById: user.id,
-        imageUrl: formData.imageUrl, 
+        imageUrl: formData.imageUrl,
       }
 
-      const response = await postData("/property/create", payload)
+      await postData("/property/create", payload)
 
-      // console.log("Item created:", response)
       setSubmitSuccess(true)
 
       setFormData({
@@ -174,32 +171,27 @@ const AddItemP = () => {
             {errors.name && <span className="error-text">{errors.name}</span>}
           </div>
 
-          {/* Category Field */}
+          {/* Category Field  */}
           <div className="input-group1">
             <label htmlFor="category" className="form-label">
               Category <span className="required">*</span>
             </label>
-            <select
+            <input
+              type="text"
               id="category"
               name="category"
               value={formData.category}
               onChange={handleInputChange}
-              className={`form-select ${errors.category ? "input-error" : ""}`}
+              className={`form-input ${errors.category ? "input-error" : ""}`}
+              placeholder="Enter property category"
               style={{ borderRadius: 12, fontSize: 16, padding: '16px 20px' }}
-            >
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+            />
             {errors.category && <span className="error-text">{errors.category}</span>}
           </div>
 
-          {/* Product Images */}
+          {/* Image Upload */}
           <div className="form-section">
-            <label className="form-label" style={{ fontWeight: 600, marginBottom: 8 }}>Product images</label>
+            <label className="form-label" style={{ fontWeight: 600, marginBottom: 8 }}>Property images</label>
             <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 10 }}>
               <input
                 type="url"
@@ -229,7 +221,7 @@ const AddItemP = () => {
                       >
                         ×
                       </button>
-                      <img src={image || "/placeholder.svg"} alt={`Product ${index + 1}`} style={{ maxWidth:150, maxHeight: 80, borderRadius: 8 }} />
+                      <img src={image || "/placeholder.svg"} alt={`Product ${index + 1}`} style={{ maxWidth: 150, maxHeight: 80, borderRadius: 8 }} />
                     </div>
                   ))}
                 </div>
@@ -277,8 +269,8 @@ const AddItemP = () => {
             )}
           </button>
         </div>
-      </form>   
-      </div>
+      </form>
+    </div>
   )
 }
 

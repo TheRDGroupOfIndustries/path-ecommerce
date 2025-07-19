@@ -1006,7 +1006,6 @@ strong{
   max-height: 90vh; 
   overflow-y: auto; 
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.3s ease-in-out;
   position: relative;
   scrollbar-width: thin; 
   scrollbar-color: #ccc transparent;
@@ -1026,17 +1025,6 @@ strong{
   background: transparent;
 }
 
-
-@keyframes fadeIn {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
 
 /* Modal Header */
 .modal-header {

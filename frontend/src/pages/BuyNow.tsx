@@ -27,6 +27,7 @@ function BuyNow() {
   // const location = useLocation();
   // const fromCart = location.state?.fromCart;
   // const cartItemsFromCart = location.state?.cartItems;
+  const [buying, setBuying] = useState(false);
 
   const location = useLocation();
   const fromCart = location?.state?.fromCart ?? false;
@@ -108,6 +109,7 @@ function BuyNow() {
     if (fromCart) {
       // BUYING WHOLE CART
       try {
+        setBuying(true);
         const res = await axios.post(
           `${API_URL}/api/order/buynow/cart`,
           {
@@ -123,15 +125,18 @@ function BuyNow() {
         // console.log(res);
         if (res.status === 201) {
           navigate("/thanks");
+        setBuying(false);
         }
       } catch (error) {
         toast.error("Cart Order failed");
         console.error(error);
+        setBuying(false);
       }
     } else {
       // BUYING SINGLE PRODUCT
 
       try {
+        setBuying(true);
         const res = await axios.post(
           `${API_URL}/api/order/buynow`,
           {
@@ -139,6 +144,7 @@ function BuyNow() {
             paymentMode: "COD",
             referralCode: code || "",
             quantity: quantity,
+            price: price,
           },
           {
             headers: {
@@ -149,10 +155,12 @@ function BuyNow() {
 
         if (res.status === 201) {
           navigate("/thanks");
+        setBuying(false);
         }
       } catch (error) {
         toast.error("Order failed");
         console.error(error);
+        setBuying(false);
       }
     }
   };
@@ -215,10 +223,6 @@ function BuyNow() {
 
   if (loading) {
     return <Loader />;
-  }
-
-  if (!loading && data.length === 0) {
-    return <EmptyCart />;
   }
 
   return (
@@ -300,7 +304,7 @@ function BuyNow() {
               key={index}
               item={item}
               updateQuantity={updateQuantity}
-              price={item.finalPrice}
+              price={price}
               discount={code}
             />
           ))
@@ -310,7 +314,7 @@ function BuyNow() {
       </div>
 
       <div className="fixed bottom-4 w-full px-4">
-        <ShadeBtn title="Place Order" action={() => placeOrder()} />
+        <ShadeBtn title={`${buying ? "Processing..." : "Place Order"}`} action={buying ? () => {} : () => placeOrder()} />
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/context/authContext";
 import {
   ChevronLeft,
@@ -12,27 +11,34 @@ import {
   Megaphone,
   ListTodo,
   LogOut,
+  ExternalLink,
 } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PROIFLE_IMAGE from "@/assets/user_img.png";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 const ProfilePage = () => {
-  const { user ,logout} = useAuth();  
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const handleGoBack = () => {
     window.history.back();
   };
 
-  
-  
-    const [open, setOpen] = useState(false);
-    const handleConfirmLogout = () => {
-      logout();
-      navigate("/login");
-    };
+  const [open, setOpen] = useState(false);
+  const handleConfirmLogout = () => {
+    logout();
+    navigate("/login");
+  };
   // Define tab configs for each role
   const roleTabs = {
     USER: [
@@ -54,13 +60,12 @@ const ProfilePage = () => {
         desc: "Notifications, password",
         path: "/settings",
       },
-      
     ],
-    SELLER:[
+    SELLER: [
       {
         label: "My Product",
         icon: <ShoppingBag className="text-black font-bold" />,
-        desc: "Add New",
+        desc: "View your products",
         path: "/product-list",
       },
       {
@@ -80,6 +85,12 @@ const ProfilePage = () => {
         icon: <MessageSquareText className="text-black font-bold" />,
         desc: "Reviews for all items",
         path: "/my-reviews",
+      },
+      {
+        label: "Manage Products",
+        icon: <ExternalLink className="text-black font-bold" />,
+        desc: "View your dashboard",
+        path: "https://path-ecommerce.vercel.app",
       },
       {
         label: "Settings",
@@ -114,6 +125,12 @@ const ProfilePage = () => {
         path: "/my-reviews",
       },
       {
+        label: "View Dashboard",
+        icon: <ExternalLink className="text-black font-bold" />,
+        desc: "View your dashboard",
+        path: "https://path-ecommerce.vercel.app",
+      },
+      {
         label: "Settings",
         icon: <Settings className="text-black font-bold" />,
         desc: "Notifications, password",
@@ -142,7 +159,6 @@ const ProfilePage = () => {
     ],
   };
 
- 
   const tabs = roleTabs[user?.role] || [];
 
   return (
@@ -170,7 +186,7 @@ const ProfilePage = () => {
           <div
             key={tab.label}
             className="bg-gray-100 p-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200"
-            onClick={() => navigate(tab.path)}
+            onClick={tab.path.startsWith("https://") ? () => window.open(tab.path, "_blank") : () => navigate(tab.path)}
           >
             <div className="flex items-center space-x-5">
               {tab.icon}
@@ -225,7 +241,6 @@ const ProfilePage = () => {
           </DialogContent>
         </Dialog>
       </div>
-      
     </div>
   );
 };

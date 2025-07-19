@@ -25,6 +25,8 @@ const ProductDetail = () => {
   const [userRating, setUserRating] = useState(0);
   const [userReview, setUserReview] = useState("");
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -73,9 +75,16 @@ const ProductDetail = () => {
       }
 
       try {
+        setLoading(true)
         const res = await axios.post(`${API_URL}/api/referral/check`, {
           code,
-        });
+          productId: id,
+        }, {
+          headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+          }
+        }
+      );
 
         if (res.status != 200) {
           setReferralError("Referral code not found or expired.");
@@ -93,6 +102,7 @@ const ProductDetail = () => {
         // setReferralDiscount(discount);
         setReferralStep("apply");
         setReferralError("");
+        setLoading(false)
       } catch (err) {
         // console.error("Referral validation failed:", err);
         // setReferralError("Something went wrong. Please try again.");
@@ -108,8 +118,12 @@ const ProductDetail = () => {
           setReferralError("Something went wrong. Please try again.");
         }
       }
+      finally {
+        setLoading(false);
+      }
     } else if (referralStep === "apply") {
       try {
+        setLoading(true)
         const res = await axios.post(
           `${API_URL}/api/referral/apply`,
           {
@@ -126,6 +140,7 @@ const ProductDetail = () => {
           const discount = parseInt(code.split("-")[1]);
           setReferralDiscount(discount);
           setReferralStep("applied");
+          setLoading(false)
         } else {
           setReferralError("Something went wrong. Please try again.");
         }
@@ -299,6 +314,7 @@ const ProductDetail = () => {
           />
           <Button
             onClick={handleReferralButtonClick}
+            disabled={loading || referralStep === "applied"}
             className={`${
               referralStep === "applied"
                 ? "bg-green-500 cursor-default"

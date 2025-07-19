@@ -11,7 +11,7 @@ router.post("/create-or-update", async (req, res) => {
   await createReferral(req, res);
 });
 
-router.post("/check", async (req, res) => {
+router.post("/check", isAuthenticated, async (req, res) => {
    await checkReferralCode(req, res);
 });
 

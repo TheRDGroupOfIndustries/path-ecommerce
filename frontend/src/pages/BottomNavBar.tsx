@@ -32,11 +32,11 @@ const BottomNavBar= () => {
             >
               <Icon
                 size={24}
-                className={isActive ? "text-white" : "text-gray-500"}
+                className={isActive ? "text-white" : "text-white/40"}
               />
               <span
                 className={`text-[10px] ${
-                  isActive ? "text-white font-regular" : "font-light text-gray-500"
+                  isActive ? "text-white font-regular" : "font-light text-white/40"
                 }`}
               >
                 {tab.name}

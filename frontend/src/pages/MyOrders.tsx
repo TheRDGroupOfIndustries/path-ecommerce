@@ -171,10 +171,12 @@ export default function MyOrders() {
       });
 
       if (res.status === 200) {
+        console.log(res);
+        
         setUserOrders(res.data.user[0].orders);
       }
     } catch (error) {
-      // console.log("User order error", error);
+      console.log("User order error", error);
     } finally {
       setLoading(false);
     }
@@ -190,7 +192,7 @@ export default function MyOrders() {
       });
 
       if (res.status === 200) {
-        // console.log(res.data.orders)
+        console.log(res.data.orders)
         setSellerOrders(res.data.orders);
       }
     } catch (error) {
@@ -207,15 +209,16 @@ export default function MyOrders() {
       getUserOrders();
     }
   }, [user]);
+
   if (loading) return <Loader />;
 
   if (
-    (user?.role === "SELLER" || user?.role === "ADMIN") &&
+    (!loading && user?.role === "SELLER" || user?.role === "ADMIN") &&
     sellerOrders.length <= 0
   )
     return <EmptyCart />;
 
-  if ((!user?.role || user?.role === "USER") && userOrders.length <= 0)
+  if ((!loading && !user?.role || user?.role === "USER") && userOrders.length <= 0)
     return <EmptyCart />;
 
   return (

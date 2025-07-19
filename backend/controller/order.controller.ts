@@ -5,9 +5,10 @@ import * as userModel from "../model/user.model.js";
 // Buy now from single product
 export const buyNow = async (req: Request, res: Response) => {
   const userId = req.user?.id;
-  const { productId, quantity, paymentMode = "COD", referralCode } = req.body;
+  const { productId, quantity, paymentMode = "COD", referralCode, price } = req.body;
 
-  if (!userId || !productId || !quantity) {
+
+  if (!userId || !productId || !quantity || !price) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
@@ -84,7 +85,7 @@ export const buyNow = async (req: Request, res: Response) => {
       }
     }
 
-    const totalAmount = quantity * priceAfterReferralDiscount;
+    const totalAmount = price;
 
     const order = await db.order.create({
       data: {

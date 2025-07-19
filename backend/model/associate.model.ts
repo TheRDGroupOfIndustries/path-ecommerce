@@ -15,6 +15,17 @@ export const createAssociate = async (userId: string, level: number, percent: nu
 export const updateAssociate = async (userId: string, level: number, percent: number) => {
   return await db.associate.update({
     where: { userId },
-    data: { level, percent }
+    data: { level: Number(level), percent: Number(percent) }
   });
+};
+
+export const deleteAssociate = async (id: string) => {
+  await db.associate.delete({
+    where: { userId: id }
+  });
+
+  await db.user.update({
+    where: { id: id },
+    data: { role: "USER" }
+  })
 };

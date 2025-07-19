@@ -15,6 +15,7 @@ import sellerRoute from "./routes/getSellerProfile.route.js"
 import kycRoute from "./routes/kyc.route.js"
 import announcementRoute from "./routes/announcement.route.js"
 import associateRoute from "./routes/getAssociateProfile.route.js"
+import mangageAssociate from "./routes/associate.route.js"
 import reviewRoute from "./routes/review.route.js"
 import verify from "./routes/sendotp.route.js"
 import cartRoute from "./routes/cart.route.js"
@@ -83,6 +84,7 @@ app.use("/api/review",reviewRoute);
 app.use("/api/verification", verify)
 app.use("/api/cart",cartRoute);
 app.use("/api/order",orderRoute);
+app.use("/api/manage-associate", mangageAssociate)
 
 import type { Request, Response, NextFunction } from 'express';
 

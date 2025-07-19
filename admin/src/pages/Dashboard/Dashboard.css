@@ -184,7 +184,7 @@
   padding: 2rem 2rem 1.5rem 2rem;
   display: flex;
   flex-direction: column;
-  min-width: 420px;
+  min-width: 370px;
   max-width: 420px;
   z-index: 1;
   margin-top: 0 !important;
@@ -426,8 +426,8 @@
   }
   .recent-enqueries-stack {
     min-width: 0;
-    max-width: 100%;
-    width: 100%;
+    max-width: 80%;
+    width: 80%;
   }
   .analytics-chart{
     width: 100%;
@@ -448,7 +448,7 @@
   }
   .recent-enqueries-stack {
     min-width: 0;
-    max-width: 100%;
+    max-width: 80%;
   }
   .analytics-chart{
     width: 100%;
@@ -472,7 +472,7 @@
   }
   .recent-enqueries-stack {
     min-width: 0;
-    max-width: 100%;
+    max-width: 80%;
   }
   .analytics-chart{
     width: 100%;

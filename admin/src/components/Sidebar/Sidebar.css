@@ -318,7 +318,7 @@
 .submenu-link.active {
   color: #4e59bc;
   font-weight: 600;
-  background: rgba(78, 89, 188, 0.08);
+  /* background: rgba(78, 89, 188, 0.08); */
   border-radius: 4px;
 }
 
@@ -329,7 +329,7 @@
 /* Dark mode for active submenu */
 .sidebar.dark .submenu-link.active {
   color: #a99cff;
-  background: rgba(169, 156, 255, 0.12);
+  /* background: rgba(169, 156, 255, 0.12); */
 }
 
 .sidebar.dark .submenu-link.active .submenu-bullet {

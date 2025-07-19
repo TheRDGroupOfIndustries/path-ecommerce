@@ -209,7 +209,7 @@ const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {
                     {item.submenu.map((subItem, idx) => (
                       <li key={idx} className="submenu-item">
                         <div
-                          className={`submenu-link${activeSubmenuItem === subItem.link ? " active" : ""}`}
+                          className={`submenu-link ${activeSubmenuItem === subItem.link ? " active" : ""}`}
                           onClick={() => setActiveSubmenuItem(subItem.link) || navigate(subItem.link)}
                         >
                           {activeSubmenuItem === subItem.link && (

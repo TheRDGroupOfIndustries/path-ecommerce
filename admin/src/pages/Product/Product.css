@@ -26,12 +26,13 @@ strong{
 }
 
 .product-stats {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #667eea;
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
   color: white;
   padding: 10px 20px;
   border-radius: 25px;
   font-weight: 500;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  /* box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); */
 }
 
 .filter-section {
@@ -709,7 +710,7 @@ strong{
     grid-template-columns: 1fr;
   }
   .product-stats {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     padding: 6px 10px;
   }
 }
@@ -819,8 +820,8 @@ strong{
     font-size: 1rem !important;
   }
   .product-stats {
-    font-size: 0.6rem;
-    padding: 4px 6px;
+    font-size: 0.9rem;
+    padding: 4px 10px;
   }
   .modal-content {
     padding: 0.5rem;

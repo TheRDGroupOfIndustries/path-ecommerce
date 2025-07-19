@@ -13,18 +13,19 @@
   border-radius: 20px;
   padding: 20px 0 20px 0;
   margin-bottom: 40px;
+  margin-top: 16px;
   text-align: center;
   box-shadow: 0 10px 30px rgba(53, 56, 150, 0.08);
   border:1px solid #353896;
 }
 
 .add-item-header .add-item-title {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   font-weight: 700;
   margin-bottom: 8px;
 }
 .add-item-header .add-item-subtitle {
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   opacity: 0.9;
 }
 
@@ -264,16 +265,16 @@
     padding: 20px 8px;
   }
   .add-item-form {
-    padding: 24px 8px;
+    padding: 24px 10px;
   }
 }
 @media (max-width: 600px) {
   .add-item-header {
-    padding: 24px 0 18px 0;
-    font-size: 1.2rem;
+    padding: 24px 8px 18px 8px;
+    font-size: 1rem;
   }
   .add-item-form {
-    padding: 16px 4px;
+    padding: 16px 10px;
   }
   .form-grid {
     gap: 18px;
@@ -578,7 +579,7 @@ color: white;
     font-size: 1rem;
   }
   .add-item-form {
-    padding: 8px 2px;
+    padding: 14px;
   }
   .form-grid {
     gap: 10px;

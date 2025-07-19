@@ -1,5 +1,6 @@
 body {
   background: #f6f7ff;
+  overflow-x: hidden;
 }
 
 .app-layout {

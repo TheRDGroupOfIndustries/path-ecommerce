@@ -6,8 +6,6 @@
   font-size: 0.9rem;
 }
 
-
-
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -67,4 +65,8 @@
 }
 .dark .close-btnn2 {
   color: #f1f5f9 !important;
+}
+
+.dark .description-clamp{
+  color: white !important;
 }

@@ -1,9 +1,9 @@
 import { useState, useContext } from "react";
-import {  FaEye, FaEyeSlash } from "react-icons/fa6";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { postData } from "../../utils/api";
 import { myContext } from "../../App";
 import "./Signup.css";
-import {UsersRound,Mails,PhoneCall,BookUser,KeyRound} from "lucide-react"
+import { UsersRound, Mails, PhoneCall, BookUser, KeyRound } from "lucide-react";
 
 const Signup = () => {
   const context = useContext(myContext);
@@ -22,6 +22,11 @@ const Signup = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "phone") {
+      if (!/^\d{0,10}$/.test(value)) return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -33,10 +38,10 @@ const Signup = () => {
     const data = new FormData();
 
     if (
-      formData.email === "" &&
-      formData.name === "" &&
-      formData.phone === "" &&
-      formData.password === "" &&
+      formData.email === "" ||
+      formData.name === "" ||
+      formData.phone === "" ||
+      formData.password === "" ||
       formData.confirmPassword === ""
     ) {
       context.setAlertBox({
@@ -44,7 +49,16 @@ const Signup = () => {
         msg: "Please provide all credentials!",
         error: true,
       });
-      return 
+      return;
+    }
+
+    if (!/^\d{10}$/.test(formData.phone)) {
+      context.setAlertBox({
+        open: true,
+        msg: "Phone number must be exactly 10 digits.",
+        error: true,
+      });
+      return;
     }
 
     data.append("name", formData.name);
@@ -106,7 +120,7 @@ const Signup = () => {
               <div className="input-wrapper">
                 <label className="input-label">Name</label>
                 <div className="input-group">
-                <UsersRound className="input-icon"/>    
+                  <UsersRound className="input-icon" />
                   <input
                     type="text"
                     name="name"
@@ -121,7 +135,7 @@ const Signup = () => {
               <div className="input-wrapper">
                 <label className="input-label">Email</label>
                 <div className="input-group">
-                <Mails className="input-icon"/>  
+                  <Mails className="input-icon" />
                   <input
                     type="email"
                     name="email"
@@ -136,7 +150,7 @@ const Signup = () => {
               <div className="input-wrapper">
                 <label className="input-label">Phone</label>
                 <div className="input-group">
-                 <PhoneCall className="input-icon"/>   
+                  <PhoneCall className="input-icon" />
                   <input
                     type="tel"
                     name="phone"
@@ -147,28 +161,11 @@ const Signup = () => {
                   />
                 </div>
               </div>
-{/* 
-              <div className="input-wrapper">
-                <label className="input-label">Role</label>
-                <div className="input-group">
-                 <BookUser className="input-icon"/> 
-                  <select
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select Role</option>
-                    <option value="ADMIN">Admin</option>
-                    <option value="SELLER">Seller</option>
-                  </select>
-                </div>
-              </div> */}
 
               <div className="input-wrapper">
                 <label className="input-label">Password</label>
                 <div className="input-group">
-               <KeyRound className="input-icon"/>
+                  <KeyRound className="input-icon" />
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
@@ -190,7 +187,7 @@ const Signup = () => {
               <div className="input-wrapper">
                 <label className="input-label">Confirm Password</label>
                 <div className="input-group">
-                   <KeyRound className="input-icon"/>
+                  <KeyRound className="input-icon" />
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     name="confirmPassword"
@@ -209,7 +206,7 @@ const Signup = () => {
                 </div>
               </div>
 
-              <div className="input-wrapper" >
+              <div className="input-wrapper">
                 <label className="input-label">Upload Image</label>
                 <input
                   type="file"
@@ -263,4 +260,21 @@ const Signup = () => {
 };
 
 export default Signup;
+
+//               <div className="input-wrapper">
+//                 <label className="input-label">Role</label>
+//                 <div className="input-group">
+//                  <BookUser className="input-icon"/> 
+//                   <select
+//                     name="role"
+//                     value={formData.role}
+//                     onChange={handleChange}
+//                     required
+//                   >
+//                     <option value="">Select Role</option>
+//                     <option value="ADMIN">Admin</option>
+//                     <option value="SELLER">Seller</option>
+//                   </select>
+//                 </div>
+//               </div> */}
 

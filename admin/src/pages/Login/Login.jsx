@@ -69,7 +69,7 @@ const handleSubmit = async (e) => {
         } else if (kyc.status === "PENDING") {
           window.location.href = "/kyc-status";
         } else if (kyc.status === "APPROVED") {
-          window.location.href = "/dashboard";
+          // window.location.href = "/dashboard";
         } else {
           window.location.href = "/kyc-status?rejected=true";
         }
@@ -91,7 +91,7 @@ const handleSubmit = async (e) => {
       }
     } else if (user.role === "ADMIN") {
       // Direct access to dashboard for admins
-      window.location.href = "/dashboard";
+      // window.location.href = "/dashboard";
     }
 
   } catch (error) {

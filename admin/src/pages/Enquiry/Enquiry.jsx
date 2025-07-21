@@ -46,6 +46,7 @@ const Enquiry = () => {
   if (user.marketplaceId) {
     res = await fetchDataFromApi(`/marketplace/get-by-id/${user.marketplaceId}`);
     if (res?.marketplace) {
+      console.log(res.marketplace)
       setModalData({ ...res.marketplace, type: "marketplace", subject: user.subject });
     } else {
       setModalData({ error: true });
@@ -53,6 +54,7 @@ const Enquiry = () => {
   } else if (user.propertyId) {
     res = await fetchDataFromApi(`/property/get-by-id/${user.propertyId}`);
     if (res) {
+      console.log(res.properties)
       setModalData({ ...res.properties, type: "property", subject: user.subject });
     } else {
       setModalData({ error: true });
@@ -148,34 +150,44 @@ const Enquiry = () => {
           <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "10px" }}>
             <tbody>
               <tr>
-                <td style={{ padding: "8px", fontWeight: "bold" }}>Subject:</td>
+                <td style={{ padding: "8px", fontWeight: "bold" }}>Subject</td>
                 <td style={{ padding: "8px" }}>{modalData.subject}</td>
               </tr>
               <tr>
-                <td style={{ padding: "8px", fontWeight: "bold" }}>Name:</td>
+                <td style={{ padding: "8px", fontWeight: "bold" }}>Name</td>
                 <td style={{ padding: "8px" }}>{modalData.name}</td>
               </tr>
               <tr>
-                <td style={{ padding: "8px", fontWeight: "bold" }}>Category:</td>
+                <td style={{ padding: "8px", fontWeight: "bold" }}>Category</td>
                 <td style={{ padding: "8px" }}>{modalData.category || "N/A"}</td>
               </tr>
               <tr>
-                <td style={{ padding: "8px", fontWeight: "bold" }}>Description:</td>
-                <td style={{ padding: "8px" }}>{modalData.description}</td>
+                <td style={{ padding: "8px", fontWeight: "bold", verticalAlign: "top" }}>Description</td>
+                <td style={{ padding: "8px" }}>
+                  <div className="clamp-description">{modalData.description}</div>
+                </td>
               </tr>
               <tr>
-                <td style={{ padding: "8px", fontWeight: "bold", verticalAlign: "top" }}>Image:</td>
-                <td style={{ padding: "8px" }}>
-                  {(modalData.image || modalData.imageUrl) ? (
-                    <img
-                      src={modalData.image || modalData.imageUrl}
-                      alt={modalData.name}
-                      style={{ maxWidth: "100%", borderRadius: "8px" }}
-                    />
-                  ) : (
-                    "No image available"
-                  )}
-                </td>
+                <td style={{ padding: "8px", fontWeight: "bold", verticalAlign: "top" }}>Image</td>
+                 <td style={{ padding: "8px" }}>
+                {modalData.image
+                  ? (
+                      <img
+                        src={modalData.image}
+                        alt={modalData.name}
+                        style={{ maxWidth: "100%", borderRadius: "8px" }}
+                      />
+                    )
+                  : Array.isArray(modalData.imageUrl) && modalData.imageUrl.length > 0
+                  ? (
+                      <img
+                        src={modalData.imageUrl[0]}
+                        alt={modalData.name}
+                        style={{ maxWidth: "100%", borderRadius: "8px" }}
+                      />
+                    )
+                  : "No image available"}
+              </td>
               </tr>
             </tbody>
           </table>

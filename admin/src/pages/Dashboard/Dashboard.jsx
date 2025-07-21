@@ -256,9 +256,15 @@ const prevEnquiry = () => {
               </div>
              {latestEnquiries.length > 0 ? (
             <div className="enqueries-content">
+              <div className="enquiry-flex">
               <div className="enquery-date">
                 {formatDate(latestEnquiries[currentEnquiry].createdAt)}
               </div>
+             <div className="from-bold">
+               from: {latestEnquiries[currentEnquiry].propertyId ? "Property" : "Marketplace"}
+            </div>
+            </div>
+
               <div className={`enquery-text${darkMode ? " dark" : ""}`}>
                 {latestEnquiries[currentEnquiry].message}
               </div>

@@ -499,3 +499,17 @@
   background-color: #cde2f9;
   color: #948bfb;
 }
+
+.from-bold {
+  
+  color:#b0b7d1;
+ 
+  font-style: italic;
+  font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+.enquiry-flex{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

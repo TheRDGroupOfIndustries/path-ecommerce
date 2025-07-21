@@ -1,5 +1,5 @@
 import { useEffect, useState,useRef } from "react";
-import { fetchDataFromApi, patchData } from "../../utils/api";
+import { fetchDataFromApi, patchData,deleteData } from "../../utils/api";
 import "./AdminKycList.css";
 import { Trash2 } from "lucide-react";
 
@@ -51,12 +51,7 @@ const AdminKYCList = () => {
   if (!confirmDelete) return;
 
   try {
-    await fetch(`/api/kyc/delete/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    await deleteData(`/kyc/delete/${id}`);
     setKycs((prev) => prev.filter((k) => k.id !== id));
   } catch (err) {
     console.error("Failed to delete KYC:", err);

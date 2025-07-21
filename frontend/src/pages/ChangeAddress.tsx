@@ -65,15 +65,15 @@ function ChangeAddress() {
     : [];
 
   const handleClick = async () => {
-    if (
-      userData.name === "" ||
-      userData.area === "" ||
-      userData.city === "" ||
-      userData.state === "" ||
-      userData.landmark === "" ||
-      userData.phone === "" ||
-      userData.pincode === ""
-    ) {
+   if (
+  !userData.name.trim() ||
+  !userData.area.trim() ||
+  !userData.city ||
+  !userData.state ||
+  !userData.landmark.trim() ||
+  !userData.phone.trim() ||
+  !userData.pincode.trim()
+) {
       toast.error("All fields are required")
       console.error("all fields are required");
       return;
@@ -117,27 +117,26 @@ function ChangeAddress() {
   const setAddressFromString = (input: string) => {
     const parts = input.split(",").map((part) => part.trim());
 
-    // setUserData({
-    //   name: parts[0] || "",
-    //   area: parts[1] || "",
-    //   landmark: parts[2] || "",
-    //   city: parts[3] || "",
-    //   phone: parts[6] || "",
-    //   state: parts[4] || "",
-    //   pincode: parts[5] || "",
-    // });
-
-    setUserData((prev) => ({
-      ...prev,
+    setUserData({
       name: parts[0] || "",
       area: parts[1] || "",
       landmark: parts[2] || "",
+      city: parts[3] || "",
       phone: parts[6] || "",
+      state: parts[4] || "",
       pincode: parts[5] || "",
-    
-      state: undefined,
-      city: undefined,
-    }));
+    });
+
+    // setUserData((prev) => ({
+    //   ...prev,
+    //   name: parts[0] || "",
+    //   area: parts[1] || "",
+    //   landmark: parts[2] || "",
+    //   phone: parts[6] || "",
+    //   pincode: parts[5] || "",
+    //   state: undefined,
+    //   city: undefined,
+    // }));
   };
 
   useEffect(() => {
@@ -190,7 +189,7 @@ function ChangeAddress() {
           {/* State select */}
           <Select
             required
-            value={userData.state || undefined}
+            value={userData.state }
             onValueChange={(value) => onChangeAction("state", value)}
           >
             <SelectTrigger className="w-full py-7 px-4 rounded-xl bg-gray-200 text-neutral-700 text-sm border-none outline-none">
@@ -205,10 +204,10 @@ function ChangeAddress() {
             </SelectContent>
           </Select>
 
-          {/* City select - Fixed to use consistent styling and correct field */}
+          {/* City select */}
           <Select
             required
-            value={userData.city || undefined}
+            value={userData.city }
             onValueChange={(value) => onChangeAction("city", value)}
             disabled={!userData.state} 
           >
@@ -239,9 +238,9 @@ function ChangeAddress() {
 
       <div className="fixed bottom-2 w-full px-4">
         <ShadeBtn
-          title="Change Address"
+          title={loading ? "Changing Address..." : "Change Address"}
           action={() => handleClick()}
-          loading={loading}
+        
         />
       </div>
     </div>

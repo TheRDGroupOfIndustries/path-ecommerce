@@ -1,6 +1,7 @@
 import { useEffect, useState,useRef } from "react";
 import { fetchDataFromApi, patchData } from "../../utils/api";
 import "./AdminKycList.css";
+import { Trash2 } from "lucide-react";
 
 const AdminKYCList = () => {
   const [kycs, setKycs] = useState([]);
@@ -45,6 +46,25 @@ const AdminKYCList = () => {
     setPreviewUrl(url);
   };
 
+  const handleDelete = async (id) => {
+  const confirmDelete = window.confirm("Are you sure you want to delete this KYC?");
+  if (!confirmDelete) return;
+
+  try {
+    await fetch(`/api/kyc/delete/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    setKycs((prev) => prev.filter((k) => k.id !== id));
+  } catch (err) {
+    console.error("Failed to delete KYC:", err);
+    alert("Error deleting KYC.");
+  }
+};
+
+
   return (
     <div className="admin-kyc-wrapper">
       <h3 className="admin-kyc-title">All KYC Submissions</h3>
@@ -68,6 +88,7 @@ const AdminKYCList = () => {
                 <th>Profile Image</th>
                 <th>Status</th>
                 <th>Actions</th>
+                <th>Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -113,6 +134,15 @@ const AdminKYCList = () => {
                       <span>{kyc.status}</span>
                     )}
                   </td>
+                  <td>
+                <button
+                  className="delete-icon delete-btn"
+                  onClick={() => handleDelete(kyc.id)}
+                  title="Delete KYC"
+                >
+                  <Trash2 />
+                </button>
+              </td>
                 </tr>
               ))}
             </tbody>

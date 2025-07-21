@@ -5,6 +5,7 @@ import {
   getKycBySeller,
   approveKyc,
   rejectKyc,
+  deleteKyc
 } from "../controller/kyc.controller.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 import { authorizeRole } from "../middlewares/roleee.js";
@@ -59,6 +60,8 @@ router.patch("/approve/:id", isAuthenticated, authorizeRole("ADMIN"), async (req
 router.patch("/reject/:id", isAuthenticated, authorizeRole("ADMIN"), async (req, res) => {
   await rejectKyc(req, res);
 });
+
+router.delete("/delete/:id", isAuthenticated, authorizeRole("ADMIN"), deleteKyc);
 
 export default router;
 

@@ -135,3 +135,28 @@ export const rejectKyc = async (req: Request, res: Response) => {
   }
 };
 
+// DELETE - Admin can delete any KYC by ID
+export const deleteKyc = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const existingKyc = await db.kyc.findUnique({
+      where: { id },
+    });
+
+    if (!existingKyc) {
+      return res.status(404).json({ message: "KYC not found" });
+    }
+
+    await db.kyc.delete({
+      where: { id },
+    });
+
+    res.status(200).json({ message: "KYC deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting KYC:", error);
+    res.status(500).json({ message: "Failed to delete KYC" });
+  }
+};
+
+

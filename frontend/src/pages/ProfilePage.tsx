@@ -12,6 +12,7 @@ import {
   ListTodo,
   LogOut,
   ExternalLink,
+  MessageCircleWarning,
 } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -53,6 +54,12 @@ const ProfilePage = () => {
         icon: <ListTodo className="text-black font-bold" />,
         desc: "All cart Items",
         path: "/my-cart",
+      },
+      {
+        label: "My Enquiries",
+        icon: <MessageCircleWarning  className="text-black font-bold" />,
+        desc: "All Enquiries",
+        path: "/my-enquiries",
       },
       {
         label: "Settings",

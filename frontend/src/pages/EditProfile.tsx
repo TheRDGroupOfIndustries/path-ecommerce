@@ -145,7 +145,7 @@ const EditProfile = () => {
               <Input
                 name="phone"
                 placeholder="Phone"
-                type="text"
+                type="number"
                 required
                 value={formData.phone}
                 onChange={handleChange}

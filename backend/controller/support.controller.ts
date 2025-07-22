@@ -43,3 +43,20 @@ export const getSupportMessagesBySeller = async (req: Request, res: Response) =>
     res.status(500).json({ error: "Failed to fetch support messages" });
   }
 };
+
+
+// DELETE Support Message
+export const deleteSupportMessage = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    await db.support.delete({
+      where: { id },
+    });
+
+    res.status(200).json({ message: "Support message deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting support message:", err);
+    res.status(500).json({ error: "Failed to delete support message" });
+  }
+};

@@ -132,6 +132,11 @@ const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {
       icon: Mails,
       link: "/enquiry",
     },
+      {
+      name: "Support",
+      icon: Mails,
+      link: "/support",
+    },
   ]
 
   const menuItems = role === "ADMIN" ? adminMenuItems : sellerMenuItems

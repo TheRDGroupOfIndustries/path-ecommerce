@@ -23,6 +23,7 @@ export const getUserEnquiries = async (req: Request, res: Response): Promise<voi
             id: true,
             name: true,
            imageUrl: true,
+           createdById: true,
           },
         },
         marketplace: {
@@ -30,25 +31,29 @@ export const getUserEnquiries = async (req: Request, res: Response): Promise<voi
             id: true,
             name: true,
             imageUrl: true,
+            createdById: true,
           },
         },
       },
       orderBy: { createdAt: "desc" },
     });
 
-    const formatted = enquiries.map((enquiry) => {
+      const formatted = enquiries.map((enquiry) => {
       let linkedTo = null;
       let image = null;
       let itemName = null;
+      let sellerId = null;
 
       if (enquiry.property) {
         linkedTo = "property";
-        image = image = enquiry.property.imageUrl?.[0] || null;
+        image = enquiry.property.imageUrl?.[0] || null;
         itemName = enquiry.property.name;
+        sellerId = enquiry.property.createdById;
       } else if (enquiry.marketplace) {
         linkedTo = "marketplace";
         image = enquiry.marketplace.imageUrl?.[0] || null;
         itemName = enquiry.marketplace.name;
+        sellerId = enquiry.marketplace.createdById;
       }
 
       return {
@@ -63,6 +68,7 @@ export const getUserEnquiries = async (req: Request, res: Response): Promise<voi
         itemId: enquiry.property?.id || enquiry.marketplace?.id || null,
         image,
         itemName,
+        sellerId,
       };
     });
 

@@ -49,22 +49,36 @@ export const getSellerDashboardDetails = async (req: Request, res: Response) => 
         }
       },
 
-        // Reviews given by the user 
+         // Reviews given by the user 
         reviews: {
-          select: {
-            id: true,
-            rating: true,
-            comment: true,
-            product: {
-              select: {
-                id: true,
-                name: true,
-                images: true,
-              }
-            },
-            createdAt: true
+        select: {
+          id: true,
+          rating: true,
+          comment: true,
+          createdAt: true,
+          product: {
+            select: {
+              id: true,
+              name: true,
+              images: true,
+            }
+          },
+          marketplace: {
+            select: {
+              id: true,
+              name: true,
+              imageUrl: true
+            }
+          },
+          property: {
+            select: {
+              id: true,
+              name: true,
+              imageUrl: true
+            }
           }
-        },
+        }
+      },
 
         // Marketplace and property enquiries
         marketplaces: {

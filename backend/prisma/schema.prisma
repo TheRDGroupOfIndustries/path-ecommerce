@@ -40,7 +40,7 @@ model User {
   orders        Order[]
   kyc           Kyc?
   cartItems     CartItem[]
-  
+
   supportMessages     Support[] @relation("SupportUser")
   receivedSupportMsgs Support[] @relation("SupportSeller")
 }
@@ -250,7 +250,7 @@ model Support {
   userId       String
   sellerId     String
   subject      String   // Order | Enquire | Other
-  subSubject   String   // Delivery Related | Payment Related | etc.
+  subSubject   String?   // Delivery Related | Payment Related | etc.
   relatedId    String?  // productId or enquireId
   message      String
   createdAt    DateTime @default(now())

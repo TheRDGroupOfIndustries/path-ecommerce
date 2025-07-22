@@ -63,71 +63,56 @@ export const getSellerDashboardDetails = async (req: Request, res: Response) => 
               images: true,
             }
           },
-          marketplace: {
-            select: {
-              id: true,
-              name: true,
-              imageUrl: true
-            }
-          },
-          property: {
-            select: {
-              id: true,
-              name: true,
-              imageUrl: true
-            }
-          }
         }
       },
 
-        // Marketplace and property enquiries
-  marketplaces: {
-  select: {
-    id: true,
-    name: true,
-    enquires: true,
-    reviews: {
+        // Marketplace and property enquiries,reviews
+      marketplaces: {
       select: {
         id: true,
-        rating: true,
-        comment: true,
-        createdAt: true,
-        user: {
+        name: true,
+        imageUrl: true, 
+        enquires: true,
+        reviews: {
           select: {
             id: true,
-            name: true,
-            imageUrl: true
+            rating: true,
+            comment: true,
+            createdAt: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                imageUrl: true
+              }
+            }
           }
         }
       }
-    }
-  }
-},
-properties: {
-  select: {
-    id: true,
-    name: true,
-    enquires: true,
-    reviews: {
+    },
+    properties: {
       select: {
         id: true,
-        rating: true,
-        comment: true,
-        createdAt: true,
-        user: {
+        name: true,
+        imageUrl: true, 
+        enquires: true,
+        reviews: {
           select: {
             id: true,
-            name: true,
-            imageUrl: true
+            rating: true,
+            comment: true,
+            createdAt: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                imageUrl: true
+              }
+            }
           }
         }
       }
-    }
-  }
-},
-
-
-
+    },
         // Orders placed by user 
         orders: {
           select: {

@@ -40,6 +40,9 @@ model User {
   orders        Order[]
   kyc           Kyc?
   cartItems     CartItem[]
+  
+  supportMessages     Support[] @relation("SupportUser")
+  receivedSupportMsgs Support[] @relation("SupportSeller")
 }
 
 model Marketplace {
@@ -239,4 +242,19 @@ model Announcement {
   id        String   @id @default(cuid())
   text      String
   createdAt DateTime @default(now())
+}
+
+
+model Support {
+  id           String   @id @default(cuid())
+  userId       String
+  sellerId     String
+  subject      String   // Order | Enquire | Other
+  subSubject   String   // Delivery Related | Payment Related | etc.
+  relatedId    String?  // productId or enquireId
+  message      String
+  createdAt    DateTime @default(now())
+
+  user         User     @relation("SupportUser", fields: [userId], references: [id], onDelete: Cascade)
+  seller       User     @relation("SupportSeller", fields: [sellerId], references: [id], onDelete: Cascade)
 }

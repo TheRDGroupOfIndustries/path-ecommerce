@@ -20,6 +20,7 @@ import reviewRoute from "./routes/review.route.js"
 import verify from "./routes/sendotp.route.js"
 import cartRoute from "./routes/cart.route.js"
 import orderRoute from "./routes/order.route.js"
+import supportRoute from "./routes/support.route.js"
 
 //chetan added
 import session from "express-session";
@@ -85,6 +86,7 @@ app.use("/api/verification", verify)
 app.use("/api/cart",cartRoute);
 app.use("/api/order",orderRoute);
 app.use("/api/manage-associate", mangageAssociate)
+app.use("/api/support",supportRoute)
 
 import type { Request, Response, NextFunction } from 'express';
 

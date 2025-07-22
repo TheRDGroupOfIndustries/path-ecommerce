@@ -81,20 +81,52 @@ export const getSellerDashboardDetails = async (req: Request, res: Response) => 
       },
 
         // Marketplace and property enquiries
-        marketplaces: {
+  marketplaces: {
+  select: {
+    id: true,
+    name: true,
+    enquires: true,
+    reviews: {
+      select: {
+        id: true,
+        rating: true,
+        comment: true,
+        createdAt: true,
+        user: {
           select: {
             id: true,
             name: true,
-            enquires: true
+            imageUrl: true
           }
-        },
-        properties: {
+        }
+      }
+    }
+  }
+},
+properties: {
+  select: {
+    id: true,
+    name: true,
+    enquires: true,
+    reviews: {
+      select: {
+        id: true,
+        rating: true,
+        comment: true,
+        createdAt: true,
+        user: {
           select: {
             id: true,
             name: true,
-            enquires: true
+            imageUrl: true
           }
-        },
+        }
+      }
+    }
+  }
+},
+
+
 
         // Orders placed by user 
         orders: {

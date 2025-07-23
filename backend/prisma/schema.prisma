@@ -248,7 +248,7 @@ model Announcement {
 model Support {
   id           String   @id @default(cuid())
   userId       String
-  sellerId     String
+  sellerId     String?
   subject      String   // Order | Enquire | Other
   subSubject   String?   // Delivery Related | Payment Related | etc.
   relatedId    String?  // productId or enquireId
@@ -256,5 +256,5 @@ model Support {
   createdAt    DateTime @default(now())
 
   user         User     @relation("SupportUser", fields: [userId], references: [id], onDelete: Cascade)
-  seller       User     @relation("SupportSeller", fields: [sellerId], references: [id], onDelete: Cascade)
+  seller       User?     @relation("SupportSeller", fields: [sellerId], references: [id], onDelete: Cascade)
 }

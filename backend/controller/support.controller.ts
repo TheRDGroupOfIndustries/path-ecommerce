@@ -60,3 +60,35 @@ export const deleteSupportMessage = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to delete support message" });
   }
 };
+
+// GET All Messages for Admin (no filter on sellerId)
+export const getAllSupportMessages = async (req: Request, res: Response) => {
+  try {
+    const messages = await db.support.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            imageUrl: true,
+          },
+        },
+        seller: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    console.log("Fetched admin support messages count:", messages.length);
+    res.json(messages);
+  } catch (err) {
+    console.error("Error fetching all support messages for admin:", err);
+    res.status(500).json({ error: "Failed to fetch support messages for admin" });
+  }
+};

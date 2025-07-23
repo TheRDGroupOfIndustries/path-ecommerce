@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { fetchDataFromApi, deleteData } from "../../utils/api"
-import { Trash2,MessageSquareReply  } from "lucide-react"
+import { Trash2, MessageSquareReply } from "lucide-react"
 import "./Support.css"
 
 const Support = () => {
@@ -13,19 +13,24 @@ const Support = () => {
   const [selectedMessage, setSelectedMessage] = useState(null)
   const [replySubject, setReplySubject] = useState("")
   const [replyMessage, setReplyMessage] = useState("")
+  const [helpMessage, setHelpMessage] = useState("")
 
   const storedUser = localStorage.getItem("user")
-  const sellerId = storedUser ? JSON.parse(storedUser).id : null
+  const user = storedUser ? JSON.parse(storedUser) : null
+  const sellerId = user?.id
+  const isAdmin = user?.role === "ADMIN"
 
-  const filterOptions = ["All", "Order", "Enquiry","Other"]
+  const filterOptions = isAdmin ? ["All", "Order", "Enquiry", "Other"] : ["All", "Order", "Enquiry"]
 
   useEffect(() => {
     const getSupportMessages = async () => {
-      if (!sellerId) return
+      if (!sellerId && !isAdmin) return
 
       try {
         setLoading(true)
-        const res = await fetchDataFromApi(`/support/${sellerId}`)
+        const res = await fetchDataFromApi(
+          isAdmin ? "/support/admin" : `/support/${sellerId}`
+        )
         setMessages(res)
         setFilteredMessages(res)
       } catch (err) {
@@ -36,18 +41,7 @@ const Support = () => {
     }
 
     getSupportMessages()
-  }, [sellerId])
-
-  useEffect(() => {
-    if (activeFilter === "All") {
-      setFilteredMessages(messages)
-    } else {
-      const filtered = messages.filter(
-        (msg) => msg.subject?.trim().toLowerCase() === activeFilter.toLowerCase()
-      )
-      setFilteredMessages(filtered)
-    }
-  }, [activeFilter, messages])
+  }, [sellerId, isAdmin])
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this message?")
@@ -55,7 +49,14 @@ const Support = () => {
 
     try {
       await deleteData(`/support/delete/${id}`)
-      setMessages((prev) => prev.filter((msg) => msg.id !== id))
+      const updated = messages.filter((msg) => msg.id !== id)
+      setMessages(updated)
+
+      // Also update filteredMessages to reflect deletion
+      const filtered = activeFilter === "All"
+        ? updated
+        : updated.filter((msg) => msg.subject?.toLowerCase() === activeFilter.toLowerCase())
+      setFilteredMessages(filtered)
     } catch (error) {
       console.error("Failed to delete message", error)
     }
@@ -63,12 +64,22 @@ const Support = () => {
 
   const handleFilterChange = (filter) => {
     setActiveFilter(filter)
+
+    if (filter === "All") {
+      setFilteredMessages(messages)
+    } else {
+      const filtered = messages.filter(
+        (msg) => msg.subject?.toLowerCase() === filter.toLowerCase()
+      )
+      setFilteredMessages(filtered)
+    }
   }
 
   const handleViewDetails = (msg) => {
     setSelectedMessage(msg)
     setReplySubject(msg.subject || "")
-    setReplyMessage(msg.message || "")
+    setHelpMessage(msg.message || "")
+    setReplyMessage("")
     setShowModal(true)
   }
 
@@ -76,6 +87,7 @@ const Support = () => {
     setShowModal(false)
     setSelectedMessage(null)
     setReplySubject("")
+    setHelpMessage("")
     setReplyMessage("")
   }
 
@@ -94,7 +106,7 @@ const Support = () => {
   return (
     <div className="support-container">
       <div className="support-header">
-        <h3 className="support-title">Help Messages</h3>
+        <h3 className="support-title">{isAdmin ? "Admin" : "Seller"} Help Messages</h3>
         <div className="support-count">Total Message: {filteredMessages.length}</div>
       </div>
 
@@ -147,6 +159,7 @@ const Support = () => {
                   <td>
                     <span className="sub-subject-badge">{msg.subSubject || msg.subject}</span>
                   </td>
+                  {/* <td>{msg.subject}</td> */}
                   <td className="date-cell">
                     {new Date(msg.createdAt).toLocaleDateString("en-US", {
                       year: "numeric",
@@ -163,7 +176,7 @@ const Support = () => {
                         title="View Details"
                         onClick={() => handleViewDetails(msg)}
                       >
-                       <MessageSquareReply size={13}/>
+                        <MessageSquareReply size={13} />
                       </button>
                       <button
                         className="action-btn delete-btn"
@@ -181,11 +194,14 @@ const Support = () => {
         </div>
       )}
 
-
       {/* Reply Modal */}
       {showModal && selectedMessage && (
         <div className="modal-overlay" style={{ zIndex: 2001 }} onClick={closeModal}>
-          <div className="modal-content" style={{ zIndex: 2002 }} onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-content"
+            style={{ zIndex: 2002 }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-header">
               <h3>Reply Form</h3>
               <button className="modal-close" onClick={closeModal} title="Close">
@@ -198,22 +214,56 @@ const Support = () => {
                 <h4>Reply to Message</h4>
                 <div className="detail-grid">
                   <div className="detail-item full-width">
-                    <label><strong>Subject:</strong></label>
+                    <label>
+                      <strong>Subject:</strong>
+                    </label>
                     <input
                       type="text"
                       value={replySubject}
                       onChange={(e) => setReplySubject(e.target.value)}
-                      style={{ width: "100%", padding: "8px", marginTop: "4px", borderRadius: "6px", border: "1px solid #ccc" }}
+                      style={{
+                        width: "100%",
+                        padding: "8px",
+                        marginTop: "4px",
+                        borderRadius: "6px",
+                        border: "1px solid #ccc",
+                      }}
                     />
                   </div>
 
                   <div className="detail-item full-width" style={{ marginTop: "12px" }}>
-                    <label><strong>Message:</strong></label>
+                    <label>
+                      <strong>Message:</strong>
+                    </label>
                     <textarea
-                      rows="5"
+                      rows="2"
+                      value={helpMessage}
+                      onChange={(e) => setHelpMessage(e.target.value)}
+                      style={{
+                        width: "100%",
+                        padding: "8px",
+                        marginTop: "4px",
+                        borderRadius: "6px",
+                        border: "1px solid #ccc",
+                      }}
+                    ></textarea>
+                  </div>
+
+                   <div className="detail-item full-width" style={{ marginTop: "12px" }}>
+                    <label>
+                      <strong>Reply:</strong>
+                    </label>
+                    <textarea
+                      rows="3"
                       value={replyMessage}
                       onChange={(e) => setReplyMessage(e.target.value)}
-                      style={{ width: "100%", padding: "8px", marginTop: "4px", borderRadius: "6px", border: "1px solid #ccc" }}
+                      style={{
+                        width: "100%",
+                        padding: "8px",
+                        marginTop: "4px",
+                        borderRadius: "6px",
+                        border: "1px solid #ccc",
+                      }}
                     ></textarea>
                   </div>
 
@@ -227,7 +277,7 @@ const Support = () => {
                         borderRadius: "6px",
                         border: "none",
                         cursor: "pointer",
-                        fontWeight: "bold"
+                        fontWeight: "bold",
                       }}
                     >
                       Submit

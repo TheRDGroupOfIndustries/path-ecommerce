@@ -14,6 +14,7 @@ import {
   ChevronDown,
   CircleUser,
   X,
+  HandHelping,
 } from "lucide-react"
 
 import "./Sidebar.css"
@@ -91,6 +92,11 @@ const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {
       icon: Mails,
       link: "/enquiry",
     },
+     {
+      name: "Support",
+      icon:  HandHelping,
+      link: "/support",
+    },
   ]
 
   const sellerMenuItems = [
@@ -134,7 +140,7 @@ const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {
     },
       {
       name: "Support",
-      icon: Mails,
+      icon:  HandHelping,
       link: "/support",
     },
   ]

@@ -15,6 +15,11 @@ const Support = () => {
   const [replyMessage, setReplyMessage] = useState("")
   const [helpMessage, setHelpMessage] = useState("")
 
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
+
   const storedUser = localStorage.getItem("user")
   const user = storedUser ? JSON.parse(storedUser) : null
   const sellerId = user?.id
@@ -52,7 +57,6 @@ const Support = () => {
       const updated = messages.filter((msg) => msg.id !== id)
       setMessages(updated)
 
-      // Also update filteredMessages to reflect deletion
       const filtered = activeFilter === "All"
         ? updated
         : updated.filter((msg) => msg.subject?.toLowerCase() === activeFilter.toLowerCase())
@@ -64,6 +68,7 @@ const Support = () => {
 
   const handleFilterChange = (filter) => {
     setActiveFilter(filter)
+    setCurrentPage(1);
 
     if (filter === "All") {
       setFilteredMessages(messages)
@@ -103,6 +108,18 @@ const Support = () => {
     return <div className="support-loading">Loading support messages...</div>
   }
 
+    // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentMessages = filteredMessages.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredMessages.length / itemsPerPage);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
   return (
     <div className="support-container">
       <div className="support-header">
@@ -127,6 +144,7 @@ const Support = () => {
           <p>No messages found for the selected filter.</p>
         </div>
       ) : (
+        <>
         <div className="support-table-container">
           <table className="support-table">
             <thead>
@@ -140,7 +158,7 @@ const Support = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredMessages.map((msg) => (
+              {currentMessages.map((msg) => (
                 <tr key={msg.id}>
                   <td>
                     <div className="user-info">
@@ -192,6 +210,29 @@ const Support = () => {
             </tbody>
           </table>
         </div>
+
+       <div className="pagination">
+            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+              Prev
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => handlePageChange(i + 1)}
+                className={currentPage === i + 1 ? "active-page" : ""}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+</>
+
       )}
 
       {/* Reply Modal */}
@@ -294,3 +335,21 @@ const Support = () => {
 }
 
 export default Support
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

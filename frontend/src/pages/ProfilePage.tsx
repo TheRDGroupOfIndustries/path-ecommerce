@@ -13,6 +13,7 @@ import {
   LogOut,
   ExternalLink,
   MessageCircleWarning,
+  Cable,
 } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -61,6 +62,13 @@ const ProfilePage = () => {
         desc: "All Enquiries",
         path: "/my-enquiries",
       },
+      {
+        label: "Help Desk",
+        icon: <Cable   className="text-black font-bold" />,
+        desc: "We're Here to Help",
+        path: "/help-desk",
+      },
+      
       {
         label: "Settings",
         icon: <Settings className="text-black font-bold" />,

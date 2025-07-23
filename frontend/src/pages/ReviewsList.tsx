@@ -60,73 +60,92 @@ const ReviewsList = () => {
 
   const [productsWithReviews, setProductsWithReviews] = useState();
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const res = await axios.get(`${API_URL}/api/review/get`);
-        const reviews = res.data;
 
-        const map = new Map();
+useEffect(() => {
+  const fetchSellerDashboard = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/seller/get-seller/${user?.id}`);
+      const data = res.data;
+      // console.log(data);
+      
 
-        reviews.forEach((review) => {
-          let key, name, images;
+      const map = new Map();
 
-          if (review.productId && review.product) {
-            key = `product-${review.productId}`;
-            name = review.product.name;
-            images = review.product.images || [];
-          } else if (review.marketplaceId && review.marketplace) {
-            key = `marketplace-${review.marketplaceId}`;
-            name = review.marketplace.name;
-            images = review.marketplace.imageUrl || [];
-          } else if (review.propertyId && review.property) {
-            key = `property-${review.propertyId}`;
-            name = review.property.name;
-            images = review.property.imageUrl || [];
-          } else {
-            return;
-          }
+      // ---------- 1. Product Reviews ----------
+      data.productSeller?.forEach((product) => {
+        if (product.review.length > 0) {
+          const ratings = product.review.map((r) => r.rating);
+          const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
 
-          if (!map.has(key)) {
-            map.set(key, {
-              key,
-              name,
-              images,
-              ratings: [review.rating],
-              type: key.split("-")[0], // "product" or "marketplace" or "property"
-              id: key.split("-")[1],
-            });
-          } else {
-            map.get(key).ratings.push(review.rating);
-          }
-        });
-
-        const arr = Array.from(map.values()).map((item) => {
-          const avgRating =
-            item.ratings.reduce((sum, r) => sum + r, 0) / item.ratings.length;
-
-          return {
-            ...item,
+          map.set(`product-${product.id}`, {
+            key: `product-${product.id}`,
+            name: product.name,
+            images: product.images,
             avgRating,
-            totalReviews: item.ratings.length,
-          };
-        });
+            totalReviews: ratings.length,
+            type: "product",
+            id: product.id,
+          });
+        }
+      });
 
-        setProductsWithReviews(arr);
-      } catch (err) {
-        console.error("Failed to fetch reviews", err);
-      }
-    };
+      // ---------- 2. Marketplace Reviews ----------
+      data.marketplaces?.forEach((mp) => {
+        if (mp.reviews.length > 0) {
+          const ratings = mp.reviews.map((r) => r.rating);
+          const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
 
-    fetchReviews();
-  }, []);
+          map.set(`marketplace-${mp.id}`, {
+            key: `marketplace-${mp.id}`,
+            name: mp.name,
+            images: mp.imageUrl,
+            avgRating,
+            totalReviews: ratings.length,
+            type: "marketplace",
+            id: mp.id,
+          });
+        }
+      });
+
+      // ---------- 3. Property Reviews ----------
+      data.properties?.forEach((prop) => {
+        if (prop.reviews.length > 0) {
+          const ratings = prop.reviews.map((r) => r.rating);
+          const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+
+          map.set(`property-${prop.id}`, {
+            key: `property-${prop.id}`,
+            name: prop.name,
+            images: prop.imageUrl,
+            avgRating,
+            totalReviews: ratings.length,
+            type: "property",
+            id: prop.id,
+          });
+        }
+      });
+
+      const finalArr = Array.from(map.values());
+      setProductsWithReviews(finalArr);
+    } catch (err) {
+      console.error("Failed to fetch seller dashboard data", err);
+    }
+  };
+
+  if (user?.id) {
+    fetchSellerDashboard();
+  }
+}, [user?.id]);
+
+
+
 
   if (productsWithReviews === undefined) return <Loader />;
   if (productsWithReviews.length === 0)
     return (
       <div className="flex items-center justify-center h-screen text-center">
         <h2 className="text-3xl font-semibold text-gray-800">
-           No reviews yet.
+          No reviews yet.
         </h2>
       </div>
     );

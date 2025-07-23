@@ -6,6 +6,7 @@ import ProtectedRoute from "./Auth/ProtectedRoute";
 import NotFound from "./components/Loader/Not-Found";
 import { Suspense, lazy, useEffect } from "react";
 import MyEnquiries from "./pages/MyEnquiries";
+import HelpDesk from "./pages/HelpDesk";
 
 // 1️⃣ Lazy load pages for better performance
 const Login = lazy(() => import("./Auth/Login"));
@@ -130,6 +131,7 @@ function App() {
             <Route path="/buy-now/:id/:code?" element={<ProtectedRoute><BuyNow /></ProtectedRoute>} />
             <Route path="/change-address/:address" element={<ProtectedRoute><ChangeAddress /></ProtectedRoute>} />
             <Route path="/my-enquiries" element={<ProtectedRoute><MyEnquiries /></ProtectedRoute>} />
+            <Route path="/help-desk" element={<ProtectedRoute><HelpDesk /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

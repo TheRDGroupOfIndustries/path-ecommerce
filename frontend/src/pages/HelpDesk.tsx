@@ -79,8 +79,10 @@ const HelpDesk = () => {
     if (loading) {
       return (
         <ChatBubble>
-          <span className="animate-spin h-4 w-4 border-2 border-t-transparent border-gray-500 rounded-full" />
-          <span className="text-sm">Loading...</span>
+          <div className="flex items-center space-x-2">
+            <span className="animate-spin h-5 w-5 border-2 border-t-transparent border-gray-500 rounded-full" />
+            <span className="text-sm sm:text-base">Loading...</span>
+          </div>
         </ChatBubble>
       );
     }
@@ -117,7 +119,7 @@ const HelpDesk = () => {
         ) : (
           <ChatBubble>
             <h2 className="text-sm font-medium mb-2">Your Orders</h2>
-            <div className="space-y-3 text-sm">
+            <div className="space-y-3 text-sm  overflow-auto ">
               {orders.map((order, i) => (
                 <Card
                   key={i}
@@ -328,7 +330,7 @@ const HelpDesk = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto h-[100dvh] flex flex-col bg-gray-50">
+    <div className="container p-4 mx-auto h-[100dvh] flex flex-col ">
       <div className="flex items-center justify-between px-4 py-3 border-b bg-white ">
         <ChevronLeft
           className="w-6 h-6 cursor-pointer text-black"

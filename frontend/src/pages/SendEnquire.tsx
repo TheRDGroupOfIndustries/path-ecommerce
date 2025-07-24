@@ -81,20 +81,27 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
 
   return (
     <div
-      className="fixed inset-0 z-70 flex items-end justify-center bg-black/40"
+      className="fixed inset-0 z-70 flex items-end justify-center bg-black/40 "
       onClick={() => setShowPopup(false)}
     >
       <div
-        className="primary-bg-dark text-white w-full max-w-md rounded-t-4xl p-6 h-[90vh] overflow-auto animate-slide-up flex flex-col"
+        className=" primary-bg-dark text-white w-full sm:max-w-lg md:max-w-xl rounded-t-3xl p-4 sm:p-6 h-[90vh] overflow-auto animate-slide-up flex flex-col"
         onClick={(e) => e.stopPropagation()}
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-3xl font-bold">Hey!</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold">Hey!</h2>
         </div>
 
-        <p className="mb-4 text-lg font-light">
-          Feel Free to ask anything about this{" "}
-          {type === "marketplace" ? "service" : "property"}!
+        <p className="mb-4 text-base sm:text-lg font-light">
+          Feel free to ask anything about this{" "}
+          <span className="font-medium">
+            {type === "marketplace" ? "service" : "property"}
+          </span>
+          !
         </p>
 
         <div className="flex flex-col gap-4 mb-4">
@@ -105,7 +112,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
             onChange={handleChange}
             disabled
             placeholder="Full name"
-            className="w-full p-4 py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50"
+            className="w-full p-4 py-6 sm:py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50 text-sm sm:text-base"
           />
           <Input
             name="email"
@@ -114,7 +121,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
             disabled
             onChange={handleChange}
             placeholder="Your email"
-            className="w-full p-4 py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50"
+            className="w-full p-4 py-6 sm:py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50 text-sm sm:text-base"
           />
           <Input
             name="phone"
@@ -122,7 +129,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
             value={formData.phone}
             onChange={handleChange}
             placeholder="Phone number"
-            className="w-full p-4 py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50"
+            className="w-full p-4 py-6 sm:py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50 text-sm sm:text-base"
           />
           <Input
             name="subject"
@@ -130,25 +137,26 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
             value={formData.subject}
             onChange={handleChange}
             placeholder="Subject"
-            className="w-full p-4 py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50"
+            className="w-full p-4 py-6 sm:py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50 text-sm sm:text-base"
           />
           <Textarea
             name="message"
             value={formData.message}
             onChange={handleChange}
             placeholder="Your message..."
-            className="w-full p-4 py-4 h-32 bg-white/20 text-white rounded-lg resize-none border-none font-light placeholder:text-white/50"
+            rows={3}
+            className="w-full p-4 py-3 sm:py-4 bg-white/20 text-white rounded-lg resize-none border-none font-light placeholder:text-white/50 text-sm sm:text-base"
           />
         </div>
 
         {responseMsg && (
-          <p className="text-sm mb-2 text-center">{responseMsg}</p>
+          <p className="text-sm sm:text-base mb-2 text-center">{responseMsg}</p>
         )}
 
         <Button
           disabled={loading}
           onClick={handleSend}
-          className="w-full bg-white text-black py-2 rounded-2xl border-none mt-auto hover:text-white"
+          className="cursor-pointer w-full bg-white text-black py-3 rounded-2xl border-none mt-auto hover:text-white text-sm sm:text-base"
         >
           {loading ? "Sending..." : "Send Enquiry"}
         </Button>

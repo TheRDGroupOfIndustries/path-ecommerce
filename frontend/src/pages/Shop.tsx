@@ -22,9 +22,7 @@ const Shop = () => {
   useEffect(() => {
     const fetchTrendy = async () => {
       try {
-        const res = await axios.get(
-          `${API_URL}/api/product/get-trendy`
-        );
+        const res = await axios.get(`${API_URL}/api/product/get-trendy`);
         setTrendy(res.data);
         // console.log("trendy: ",res.data);
       } catch (err) {
@@ -37,9 +35,7 @@ const Shop = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get(
-          `${API_URL}/api/product/get-all`
-        );
+        const res = await axios.get(`${API_URL}/api/product/get-all`);
         // console.log("res: ", res.data);
         setProducts(res.data);
         const categories = [...new Set(res.data.map((p) => p.category))];
@@ -64,22 +60,26 @@ const Shop = () => {
 
       {trendy.length > 0 && (
         <Carousel
-          className="w-full max-w-2xl overflow-visible mt-10"
+          className="w-full overflow-visible mt-10 "
           opts={{ loop: false }}
           setApi={(api) => {
             api.on("select", () => setActiveIndex(api.selectedScrollSnap()));
           }}
         >
-          <CarouselContent className="-ml-4">
+          <CarouselContent>
             {trendy.slice(0, 6).map((offer, index) => (
               <CarouselItem
                 key={offer?.id}
-                className="pl-4 basis-[75%]"
+                className="basis-[75%] sm:basis-[75%] md:basis-[60%] lg:basis-[45%] "
                 onClick={() => navigate(`/product-detail/${offer?.id}`)}
               >
                 <div
-                  className="relative h-54 rounded-lg shadow-lg bg-cover bg-center flex items-center"
-                  style={{ backgroundImage: `url(${offer?.images?.[0] || "https://placehold.co/600x400"})` }}
+                  className="relative h-[200px] sm:h-[240px] md:h-[280px] lg:h-[320px] xl:h-[380px] rounded-lg shadow-lg bg-cover bg-center flex items-center"
+                  style={{
+                    backgroundImage: `url(${
+                      offer?.images?.[0] || "https://placehold.co/600x400"
+                    })`,
+                  }}
                 >
                   <div className="absolute inset-0 bg-black/30 rounded-lg" />
                   <div className="relative z-10 flex flex-col justify-center h-full w-full px-4 ">
@@ -90,10 +90,8 @@ const Shop = () => {
                       <h3 className="text-2xl font-semibold text-white">
                         {offer?.name}
                       </h3>
-                      <p className="text-[10px] mb-2 text-white font-light">
-                        {offer?.description.length > 110
-                          ? offer?.description.slice(0, 115) + "..."
-                          : offer?.description}
+                      <p className="text-[10px] mb-2 text-white font-light line-clamp-3">
+                        {offer?.description}
                       </p>
                     </div>
                     <div className="flex justify-end">
@@ -144,7 +142,7 @@ const Shop = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4  lg:space-y-14 md:space-y-8">
           {filteredProducts.map((product) => (
             <ProductCard
               key={product.id}

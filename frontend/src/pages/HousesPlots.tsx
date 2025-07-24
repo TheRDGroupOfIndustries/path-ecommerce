@@ -14,11 +14,12 @@ const HousesPlots = () => {
       try {
         const res = await axios.get(`${API_URL}/api/property/get-all`);
         const data = res.data?.properties || [];
-        // console.log("house: ",res.data);
-        
+
         setProperties(data);
 
-        const categories = [...new Set(data.map(p => p.category.toUpperCase()))];
+        const categories = [
+          ...new Set(data.map((p) => p.category.toUpperCase())),
+        ];
 
         setTabs(["All Properties", ...categories]);
       } catch (error) {
@@ -32,15 +33,16 @@ const HousesPlots = () => {
   const filteredProperties =
     activeTab === "All Properties"
       ? properties
-      : properties.filter(p => p.category.toUpperCase() === activeTab);
-
+      : properties.filter((p) => p.category.toUpperCase() === activeTab);
 
   return (
     <div className="container mx-auto p-4 pb-28">
+      {/* Header */}
       <div className="flex flex-col gap-6 mb-10">
         <ProfileHeader type="Houses & Plots" />
 
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        {/* Tabs */}
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {tabs.map((tab) => (
             <button
               key={tab}
@@ -56,15 +58,17 @@ const HousesPlots = () => {
           ))}
         </div>
 
+        {/* Section Title */}
         <div className="relative w-fit">
           <h1 className="text-2xl font-bold text-black">{activeTab}</h1>
-          <div className=" w-full h-[1px] bg-black mt-1 relative">
+          <div className="w-full h-[1px] bg-black mt-1 relative">
             <div className="w-2 h-2 bg-black rounded-full absolute -bottom-1 -right-1"></div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      {/* Property Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {filteredProperties.map((property) => (
           <CardComponent
             key={property.id}

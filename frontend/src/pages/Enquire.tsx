@@ -26,7 +26,6 @@ const Enquire = () => {
   const [reviews, setReviews] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-
   const handleSubmitReview = async () => {
     if (!userRating || !userReview.trim()) {
       toast.error("Please give a rating and write a review.");
@@ -42,7 +41,6 @@ const Enquire = () => {
         userId: user?.id,
       };
 
-      
       if (type === "marketplace") {
         payload.marketplaceId = id;
       } else if (type === "property") {
@@ -79,7 +77,7 @@ const Enquire = () => {
 
       const res = await axios.get(endpoint);
       // console.log("res: ",res);
-      
+
       setReviews(res.data);
     } catch (err) {
       console.error("Failed to fetch reviews", err);
@@ -87,8 +85,10 @@ const Enquire = () => {
   };
 
   const averageRating = reviews.length
-  ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)
-  : "0.0";
+    ? (
+        reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+      ).toFixed(1)
+    : "0.0";
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -96,7 +96,7 @@ const Enquire = () => {
         const endpoint = `${API_URL}/api/${type}/get-by-id/${id}`;
         const res = await axios.get(endpoint);
         // console.log("end: ",res);
-        
+
         const list =
           type === "marketplace" ? res.data.marketplace : res.data.properties;
 
@@ -124,11 +124,11 @@ const Enquire = () => {
         <MdStarBorder key={i} className="w-4 h-4 text-yellow-400" />
       )
     );
-  
-if (!property || !seller) return <Loader />;
+
+  if (!property || !seller) return <Loader />;
 
   return (
-    <div className="w-full mx-auto bg-white min-h-screen relative pb-24">
+    <div className="w-full mx-auto bg-white container p-2 relative mb-20">
       <div className="flex items-center justify-between p-4 bg-white">
         <ChevronLeft
           className="w-6 h-6 text-gray-600 cursor-pointer"
@@ -149,7 +149,8 @@ if (!property || !seller) return <Loader />;
               : "https://placehold.co/600x400"
           }
           alt="Main property"
-          className="w-full h-64 object-cover rounded-lg"
+          // className="w-full h-64 object-cover rounded-lg"
+          className="w-full h-64 sm:h-72 md:h-80 lg:h-[28rem] object-cover rounded-lg border-1 border-cyan-400"
         />
       </div>
 
@@ -161,7 +162,8 @@ if (!property || !seller) return <Loader />;
               key={idx}
               src={img}
               alt={`Thumbnail ${idx + 1}`}
-              className={`w-16 h-16 object-cover rounded-lg cursor-pointer border-2 ${
+
+              className={`w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg cursor-pointer border-2 ${
                 mainImageIndex === idx
                   ? "border-cyan-400"
                   : "border-transparent"
@@ -176,7 +178,7 @@ if (!property || !seller) return <Loader />;
         <p className="text-cyan-400 text-sm mb-1 underline underline-offset-2">
           {seller?.name}
         </p>
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+        <h1 className="text-xl sm:text-2xl md:text-3xl  font-semibold text-gray-900 mb-2">
           {property?.name}
         </h1>
         <div className="flex items-center gap-1 bg-gray-200 w-fit px-1 ">
@@ -188,16 +190,16 @@ if (!property || !seller) return <Loader />;
 
       {/* Description */}
       <div className="px-4 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl sm:text-2xl md:text-2xl font-semibold text-gray-900 mb-2">
           Description
         </h2>
-        <p className="text-gray-600 text-sm leading-relaxed">
+        <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
           {property?.description}
         </p>
       </div>
 
       <div className="px-4 mb-6">
-        <h2 className="text-lg font-semibold mb-2 text-gray-800">
+        <h2 className="text-xl sm:text-2xl md:text-2xl font-semibold mb-2 text-gray-800">
           Add a Review
         </h2>
         {/* Star Rating */}
@@ -220,12 +222,12 @@ if (!property || !seller) return <Loader />;
           onChange={(e) => setUserReview(e.target.value)}
           placeholder="Write your review here..."
           rows={3}
-          className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          className="text-sm sm:text-base md:text-lg w-full border border-gray-300 rounded-lg p-3  focus:outline-none focus:ring-2 focus:ring-cyan-500"
         />{" "}
         <div className="flex justify-end">
           <Button
             onClick={handleSubmitReview}
-            className="mt-3 primary-bg-dark hover:primary-bg text-white font-medium px-6 py-3 rounded-lg"
+            className="text-sm sm:text-base md:text-lg cursor-pointer mt-3 primary-bg-dark hover:primary-bg text-white font-medium px-6 py-3 rounded-lg"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Submitting..." : "Submit Review"}
@@ -235,10 +237,13 @@ if (!property || !seller) return <Loader />;
 
       {/* Reviews */}
       <div className="px-4">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Reviews</h2>
+        <h2 className="text-xl sm:text-2xl md:text-2xl font-semibold text-gray-900 mb-4">
+          Reviews
+        </h2>
 
         {reviews.length > 0 ? (
           reviews.map((review, idx) => (
+           
             <div key={idx} className="flex gap-3 mb-4 flex-col">
               <div className="flex flex-row justify-start items-center gap-3">
                 <img
@@ -250,14 +255,14 @@ if (!property || !seller) return <Loader />;
                   <span className="flex items-center">
                     {renderUserStars(review.rating)}
                   </span>
-                  <h3 className="font-medium text-gray-900 text-sm">
+                  <h3 className="font-medium text-gray-900 text-sm sm:text-base">
                     {review.user.name}
                   </h3>
                 </div>
               </div>
 
               <div className="flex-1">
-                <p className="text-gray-600 text-xs mt-1 leading-relaxed ">
+                <p className="text-gray-600 text-xs sm:text-sm mt-1 leading-relaxed break-words max-w-full">
                   {review.comment}
                 </p>
               </div>
@@ -271,7 +276,7 @@ if (!property || !seller) return <Loader />;
       <div className="fixed bottom-0 left-0 right-0 z-60 w-full">
         <div className="relative w-full bg-black text-white  py-5 px-4 shadow-lg flex items-center justify-between  primary-bg-dark">
           <span
-            className="text-base w-full text-center px-6 py-2 rounded-full bg-white/20"
+            className="cursor-pointer text-base w-full text-center px-6 py-2 rounded-full bg-white/20"
             onClick={() => setShowPopup(true)}
           >
             Enquire Now

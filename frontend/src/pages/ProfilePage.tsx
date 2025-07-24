@@ -58,17 +58,17 @@ const ProfilePage = () => {
       },
       {
         label: "My Enquiries",
-        icon: <MessageCircleWarning  className="text-black font-bold" />,
+        icon: <MessageCircleWarning className="text-black font-bold" />,
         desc: "All Enquiries",
         path: "/my-enquiries",
       },
       {
         label: "Help Desk",
-        icon: <Cable   className="text-black font-bold" />,
+        icon: <Cable className="text-black font-bold" />,
         desc: "We're Here to Help",
         path: "/help-desk",
       },
-      
+
       {
         label: "Settings",
         icon: <Settings className="text-black font-bold" />,
@@ -177,18 +177,18 @@ const ProfilePage = () => {
   const tabs = roleTabs[user?.role] || [];
 
   return (
-    <div className="flex flex-col h-1/2 mb-10">
+    <div className="w-full  mx-auto flex flex-col mb-16 s">
       {/* Profile Header */}
       <ChevronLeft
         className=" absolute top-5 left-5  text-white cursor-pointer"
         onClick={handleGoBack}
         size={32}
       />
-      <div className=" bg-neutral-900 text-white p-10 flex flex-col items-center text-center gap-3">
+      <div className="bg-neutral-900 text-white flex flex-col items-center p-8 sm:p-4">
         <img
           src={user?.imageUrl || PROIFLE_IMAGE}
           alt="Profile"
-          className="w-32 h-32 rounded-full object-cover"
+          className="w-32 h-32   rounded-full object-cover"
         />
         <div className="items-center text-center">
           <h2 className="text-lg font-semibold">{user?.name}</h2>
@@ -196,68 +196,48 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      <div className="p-4 space-y-4 rounded-t-3xl bg-white py-16 h-1/2">
-        {tabs.map((tab) => (
+      <div className="p-4 space-y-4 rounded-t-3xl bg-white py-8 sm:py-4">
+        {tabs.map((tab) =>
           tab.path.startsWith("https://") ? (
-  <a
-    key={tab.label}
-    href={tab.path}
-    className="bg-gray-100 p-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200 no-underline"
-  >
-    <div className="flex items-center space-x-5">
-      {tab.icon}
-      <div>
-        <h3 className="text-lg text-black">{tab.label}</h3>
-        <p className="text-xs text-muted-foreground font-light">
-          {tab.desc}
-        </p>
-      </div>
-    </div>
-    <span className="text-gray-500">
-      <ChevronRight />
-    </span>
-  </a>
-) : (
-  <div
-    key={tab.label}
-    className="bg-gray-100 p-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200"
-    onClick={() => navigate(tab.path)}
-  >
-    <div className="flex items-center space-x-5">
-      {tab.icon}
-      <div>
-        <h3 className="text-lg text-black">{tab.label}</h3>
-        <p className="text-xs text-muted-foreground font-light">
-          {tab.desc}
-        </p>
-      </div>
-    </div>
-    <span className="text-gray-500">
-      <ChevronRight />
-    </span>
-  </div>
-)
-
-
-          // <div
-          //   key={tab.label}
-          //   className="bg-gray-100 p-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200"
-          //   onClick={() => navigate(tab.path)}
-          // >
-          //   <div className="flex items-center space-x-5">
-          //     {tab.icon}
-          //     <div>
-          //       <h3 className="text-lg text-black ">{tab.label}</h3>
-          //       <p className="text-xs text-muted-foreground font-light">
-          //         {tab.desc}
-          //       </p>
-          //     </div>
-          //   </div>
-          //   <span className="text-gray-500">
-          //     <ChevronRight />
-          //   </span>
-          // </div>
-        ))}
+            <a
+              key={tab.label}
+              href={tab.path}
+              className="bg-gray-100 p-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200 no-underline"
+            >
+              <div className="flex items-center space-x-5">
+                {tab.icon}
+                <div>
+                  <h3 className="text-lg text-black">{tab.label}</h3>
+                  <p className="text-xs text-muted-foreground font-light">
+                    {tab.desc}
+                  </p>
+                </div>
+              </div>
+              <span className="text-gray-500">
+                <ChevronRight />
+              </span>
+            </a>
+          ) : (
+            <div
+              key={tab.label}
+              className="bg-gray-100 p-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200"
+              onClick={() => navigate(tab.path)}
+            >
+              <div className="flex items-center space-x-5">
+                {tab.icon}
+                <div>
+                  <h3 className="text-lg text-black">{tab.label}</h3>
+                  <p className="text-xs text-muted-foreground font-light">
+                    {tab.desc}
+                  </p>
+                </div>
+              </div>
+              <span className="text-gray-500">
+                <ChevronRight />
+              </span>
+            </div>
+          )
+        )}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <div

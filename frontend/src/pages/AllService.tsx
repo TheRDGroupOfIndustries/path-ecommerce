@@ -14,10 +14,8 @@ const AllServicesPage = () => {
       try {
         const response = await axios.get(`${API_URL}/api/marketplace/get-all`);
         const marketplaces = response.data?.marketplaces || [];
-        // console.log("market : ",response.data);
         setServices(marketplaces);
 
-        // Get unique categories from API response
         const categories = [
           ...new Set(marketplaces.map((item) => item.category.toUpperCase())),
         ];
@@ -30,24 +28,29 @@ const AllServicesPage = () => {
 
     fetchServices();
   }, []);
-  // console.log("services:",services);
-  
+
   const filteredServices =
     activeTab === "All Services"
       ? services
-      : services.filter((service) => service.category.toUpperCase() === activeTab);
+      : services.filter(
+          (service) => service.category.toUpperCase() === activeTab
+        );
 
   return (
     <div className="container mx-auto p-4 pb-28">
       <div className="flex flex-col gap-6 mb-10">
         <ProfileHeader type="services" />
-        <div className="flex gap-2 overflow-x-auto pb-2">
+
+        {/* Tabs */}
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
-                activeTab === tab ? "primary-bg text-white" : "text-muted-foreground"
+                activeTab === tab
+                  ? "primary-bg text-white"
+                  : "text-muted-foreground"
               }`}
             >
               {tab}
@@ -55,16 +58,17 @@ const AllServicesPage = () => {
           ))}
         </div>
 
+        {/* Title */}
         <div className="relative w-fit">
           <h1 className="text-2xl font-bold text-black">{activeTab}</h1>
-          <div className=" w-full h-[1px] bg-black mt-1 relative">
+          <div className="w-full h-[1px] bg-black mt-1 relative">
             <div className="w-2 h-2 bg-black rounded-full absolute -bottom-1 -right-1"></div>
           </div>
         </div>
       </div>
 
-      
-      <div className="grid grid-cols-2 gap-4">
+      {/* Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {filteredServices.map((service) => (
           <CardComponent
             key={service.id}

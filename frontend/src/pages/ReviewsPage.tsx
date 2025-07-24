@@ -12,10 +12,9 @@ const ReviewsPage = () => {
   const [entityInfo, setEntityInfo] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [averageRating, setAverageRating] = useState(0);
   const navigate = useNavigate();
   const { type, id } = useParams();
-
-  const [averageRating, setAverageRating] = useState(0);
 
   const tabs = ["All", "1", "2", "3", "4", "5"];
 
@@ -36,7 +35,6 @@ const ReviewsPage = () => {
           return;
         }
 
-        // Extract entity info from the first review dynamically
         const firstReview = reviewsData[0];
         let info = null;
         if (type === "product") info = firstReview.product;
@@ -45,7 +43,6 @@ const ReviewsPage = () => {
 
         setEntityInfo(info);
 
-        // Calculate average rating
         const totalRating = reviewsData.reduce((sum, r) => sum + r.rating, 0);
         const avgRating = totalRating / reviewsData.length;
         setAverageRating(avgRating);
@@ -62,7 +59,7 @@ const ReviewsPage = () => {
   const filteredReviews =
     activeTab === "All"
       ? reviews
-      : reviews.filter((review) => String(review.rating) === activeTab);
+      : reviews.filter((r) => String(r.rating) === activeTab);
 
   const renderStars = (rating) =>
     [...Array(5)].map((_, i) =>
@@ -85,19 +82,21 @@ const ReviewsPage = () => {
   if (!entityInfo) return <Loader />;
 
   return (
-    <div className="container mx-auto p-4 mb-10">
+    <div className="container mx-auto sm:px-6  mb-16 p-4">
       {/* Header */}
       <div className="flex items-center h-14 mb-4 text-black">
         <ChevronLeft
           className="w-8 h-8 cursor-pointer"
           onClick={() => navigate(-1)}
         />
-        <h2 className="flex-1 text-xl text-center">{entityInfo.name}</h2>
+        <h2 className="flex-1 text-xl font-semibold text-center">
+          {entityInfo.name}
+        </h2>
       </div>
 
-      <div className="py-4 space-y-4">
-        {/* Entity Image */}
-        <div className="w-full h-64 rounded-lg overflow-hidden">
+      <div className="space-y-6">
+        {/* Image */}
+        <div className="w-full h-64 sm:h-72 md:h-80 lg:h-[28rem] object-cover rounded-xl">
           <img
             src={
               Array.isArray(entityInfo.imageUrl)
@@ -105,18 +104,18 @@ const ReviewsPage = () => {
                 : entityInfo.images?.[0] || entityInfo.imageUrl
             }
             alt={entityInfo.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover rounded-2xl"
           />
         </div>
 
         {/* Info */}
-        <div className="space-y-3">
-          <h2 className="text-xl font-medium text-black">{entityInfo.name}</h2>
-          <div className="flex items-center space-x-1">
-            <div className="flex items-center">
-              {renderStars(averageRating)}
-            </div>
-            <span className="text-sm text-blue-600">
+        <div className="space-y-2">
+          <h2 className="text-xl sm:text-2xl font-medium text-black">
+            {entityInfo.name}
+          </h2>
+          <div className="flex items-center space-x-2">
+            <div className="flex">{renderStars(averageRating)}</div>
+            <span className="text-sm sm:text-base text-blue-600">
               ({averageRating.toFixed(1)} / 5) {reviews.length} review
               {reviews.length > 1 ? "s" : ""}
             </span>
@@ -124,9 +123,11 @@ const ReviewsPage = () => {
         </div>
 
         {/* Description */}
-        <div className="space-y-2 pb-4">
-          <h3 className="text-xl font-medium text-black">Description</h3>
-          <p className="text-sm text-black mb-5 font-light">
+        <div className="space-y-2">
+          <h3 className="text-lg sm:text-xl md:text-xl font-medium text-black">
+            Description
+          </h3>
+          <p className="text-sm leading-relaxed text-black font-light">
             {!showFullDescription && entityInfo.description?.length > 150 ? (
               <>
                 {entityInfo.description.slice(0, 150)}...
@@ -154,22 +155,21 @@ const ReviewsPage = () => {
             )}
           </p>
         </div>
-
-        {/* Reviews Section */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium text-black">
+          <div className="text-lg sm:text-xl md:text-xl  flex items-center justify-between">
+            <h3 className="font-medium text-black">
               Reviews ({filteredReviews.length})
             </h3>
           </div>
 
-          {/* Review Tabs */}
-          <div className="flex overflow-x-auto space-x-3 pb-2 px-1">
+          {/* Tabs */}
+
+          <div className="flex overflow-x-auto space-x-3 scrollbar-hide">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`flex items-center px-3 py-1 text-sm rounded-lg whitespace-nowrap transition-colors ${
+                className={`flex items-center px-4 py-2 text-sm rounded-xl whitespace-nowrap transition-colors ${
                   activeTab === tab
                     ? "bg-black text-white"
                     : "text-black border border-gray-300 hover:text-gray-700"
@@ -183,27 +183,25 @@ const ReviewsPage = () => {
             ))}
           </div>
 
-          {/* Reviews List */}
-          <div className="-space-y-4">
+          {/* Reviews */}
+          <div className="space-y-0">
             {filteredReviews.length === 0 ? (
-              <div className="text-gray-400 text-center py-4">
+              <div className="text-gray-500 text-center text-sm  sm:text-xl md:text-xl py-4">
                 No reviews found.
               </div>
             ) : (
               filteredReviews.map((review) => (
-                <Card key={review.id} className="border-none shadow-none">
-                  <CardContent className="px-2">
-                    <div className="space-y-1">
-                      <div className="flex items-center">
-                        {renderUserStars(review.rating)}
-                      </div>
-                      <h4 className="text-sm font-medium text-black">
-                        {review.user.name}
-                      </h4>
-                      <p className="text-sm text-gray-800 leading-relaxed">
-                        "{review.comment}"
-                      </p>
+                <Card key={review.id} className="border-none shadow-none  ">
+                  <CardContent className="space-y-1 p-0">
+                    <div className="flex items-center">
+                      {renderUserStars(review.rating)}
                     </div>
+                    <h4 className="text-sm font-semibold text-black">
+                      {review.user.name}
+                    </h4>
+                    <p className="text-sm text-gray-700 leading-relaxed">
+                      {review.comment}
+                    </p>
                   </CardContent>
                 </Card>
               ))

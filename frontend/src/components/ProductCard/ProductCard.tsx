@@ -20,58 +20,56 @@ const ProductCard = ({
 }) => {
   const navigate = useNavigate();
 
-  
-  
-  
   return (
-   <Card className="w-full max-w-xs p-2 shadow-none border-none cursor-pointer h-72 flex flex-col" onClick={() => navigate(`/product-detail/${id}`)}>
-  <CardContent className="p-0 flex flex-col flex-1">
-    {/* Image */}
-    <div className="relative w-full h-38 mb-2 overflow-hidden">
-      <img
-        src={images[0]}
-        alt={title}
-        className="w-full h-full object-cover"
-      />
-      <div className="absolute bottom-1 left-1 flex items-center  px-1 py-[1px] ">
-        <span className="text-[10px]  text-black">
-          {ratings}
-        </span>
-        <div className="h-3 w-px bg-black mx-1" />
-        <Star className="w-3 h-3 text-yellow-400 fill-current" />
-      </div>
-    </div>
+    <Card
+       className="w-full sm:min-w-[160px] md:min-w-[200px] lg:min-w-[240px] p-2 shadow-none border-none cursor-pointer h-64 md:h-72  lg:h-80 flex flex-col"
 
-    <CardTitle className="text-base font-semibold leading-snug text-black">
-      {title}
-    </CardTitle>
-    <CardDescription className="text-[10px] text-gray-400 mb-1 leading-tight">
-      {description.length > 40
-        ? description.slice(0, 40) + "..."
-        : description}
-    </CardDescription>
+    
+      onClick={() => navigate(`/product-detail/${id}`)}
+    >
+      <CardContent className="p-0 flex flex-col flex-1">
+        {/* Image */}
+        <div className="relative w-full aspect-[4/3] mb-2 overflow-hidden">
+          <img
+            src={images[0]}
+            alt={title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute bottom-1 left-1 flex items-center  px-1 py-[1px] ">
+            <span className="text-[10px]  text-black ">{ratings}</span>
+            <div className="h-3 w-px bg-black mx-1" />
+            <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-current" />
+          </div>
+        </div>
 
-    {/* price and add to cart */}
-    <div className="flex items-center justify-between mt-auto ">
-      <p className="text-xs font-semibold text-black whitespace-nowrap">
-        Rs. {(price - (price * discount / 100)).toFixed(0)}{" "}
-        <span className="text-[9px] text-gray-400 line-through font-lightca">
-          Rs. {price}
-        </span>{" "}
-        <span className="text-yellow-500 ml-1 text-[9px] font-light">
-          ({discount} off%) 
-        </span>
-      </p>
-      {/* <button
+        <CardTitle className="text-base sm:text-lg font-semibold leading-snug text-black mb-1">
+          {title}
+        </CardTitle>
+
+        <CardDescription className="text-[10px] sm:text-xs text-gray-400 mb-1 leading-tight line-clamp-2">
+          {description}
+        </CardDescription>
+
+        {/* price and add to cart */}
+        <div className="flex items-center justify-between mt-auto ">
+          <p className="text-xs sm:text-sm font-semibold text-black whitespace-nowrap">
+            Rs. {(price - (price * discount) / 100).toFixed(0)}{" "}
+            <span className="text-[9px] sm:text-[10px] text-gray-400 line-through font-medium">
+              Rs. {price}
+            </span>{" "}
+            <span className="text-yellow-500 ml-1 text-[9px] font-light">
+              ({discount} off%)
+            </span>
+          </p>
+          {/* <button
         className="bg-blue-900 text-white p-1 rounded-full flex items-center justify-center w-6 h-6"
         aria-label="Add to cart"
       >
         <Plus size={14} />
       </button> */}
-    </div>
-  </CardContent>
-</Card>
-
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

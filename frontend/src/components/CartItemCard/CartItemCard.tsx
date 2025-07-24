@@ -39,7 +39,7 @@ const CartItemCard = ({ item, updateQuantity, discount }: {
               variant="outline"
               size="icon"
               onClick={() => updateQuantity(item.id, -1, item.quantity)}
-              className="w-9 h-9 rounded-full border-2 border-red-300 text-red-500 hover:bg-red-50"
+              className="cursor-pointer w-9 h-9 rounded-full border-2 border-red-300 text-red-500 hover:bg-red-50"
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -53,7 +53,7 @@ const CartItemCard = ({ item, updateQuantity, discount }: {
             <Button
               size="icon"
               onClick={() => updateQuantity(item.id, +1, item.quantity)}
-              className="w-9 h-9 rounded-full bg-indigo-600 text-white hover:bg-indigo-700"
+              className="cursor-pointer w-9 h-9 rounded-full bg-indigo-600 text-white hover:bg-indigo-700"
             >
               <Plus className="w-4 h-4" />
             </Button>

@@ -86,7 +86,7 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-black ">
+    <div className=" flex flex-col min-h-screen bg-black ">
       {/* Header */}
       <div className="flex items-center h-14 mb-4 text-white gap-4 pt-4 pl-4">
         <ChevronLeft

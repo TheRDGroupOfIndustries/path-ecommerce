@@ -37,7 +37,6 @@ const ProductDetail = () => {
 
         if (userData.cartItems.length > 0) {
           const prod = userData.cartItems.map((items) => items.productId);
-         
 
           if (prod.includes(id)) {
             setCart(true);
@@ -75,16 +74,19 @@ const ProductDetail = () => {
       }
 
       try {
-        setLoading(true)
-        const res = await axios.post(`${API_URL}/api/referral/check`, {
-          code,
-          productId: id,
-        }, {
-          headers: {
+        setLoading(true);
+        const res = await axios.post(
+          `${API_URL}/api/referral/check`,
+          {
+            code,
+            productId: id,
+          },
+          {
+            headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           }
-        }
-      );
+        );
 
         if (res.status != 200) {
           setReferralError("Referral code not found or expired.");
@@ -102,7 +104,7 @@ const ProductDetail = () => {
         // setReferralDiscount(discount);
         setReferralStep("apply");
         setReferralError("");
-        setLoading(false)
+        setLoading(false);
       } catch (err) {
         // console.error("Referral validation failed:", err);
         // setReferralError("Something went wrong. Please try again.");
@@ -117,13 +119,12 @@ const ProductDetail = () => {
         } else {
           setReferralError("Something went wrong. Please try again.");
         }
-      }
-      finally {
+      } finally {
         setLoading(false);
       }
     } else if (referralStep === "apply") {
       try {
-        setLoading(true)
+        setLoading(true);
         const res = await axios.post(
           `${API_URL}/api/referral/apply`,
           {
@@ -140,7 +141,7 @@ const ProductDetail = () => {
           const discount = parseInt(code.split("-")[1]);
           setReferralDiscount(discount);
           setReferralStep("applied");
-          setLoading(false)
+          setLoading(false);
         } else {
           setReferralError("Something went wrong. Please try again.");
         }
@@ -152,8 +153,7 @@ const ProductDetail = () => {
         toast.error(errorMessage);
         setReferralError(errorMessage);
         setReferralStep("check");
-        setReferralDiscount(0); 
-       
+        setReferralDiscount(0);
       }
     }
   };
@@ -229,7 +229,7 @@ const ProductDetail = () => {
   if (!product) return <Loader />;
 
   return (
-    <div className="w-full mx-auto bg-white min-h-screen relative pb-16">
+    <div className="w-full mx-auto bg-white container p-2 relative mb-16">
       {/* Header */}
       <div className="flex items-center justify-between p-4 bg-white">
         <ChevronLeft
@@ -246,7 +246,7 @@ const ProductDetail = () => {
         <img
           src={product.images?.[mainImageIndex]}
           alt="Main Product"
-          className="w-full h-64 object-cover rounded-lg"
+          className="w-full h-64 sm:h-72 md:h-80 lg:h-[28rem] object-cover rounded-lg border-1 border-cyan-400"
         />
       </div>
 
@@ -257,7 +257,7 @@ const ProductDetail = () => {
             key={idx}
             src={img}
             alt={`Thumb ${idx + 1}`}
-            className={`w-16 h-16 object-cover rounded-lg cursor-pointer border-2 ${
+            className={`w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg cursor-pointer border-2 ${
               mainImageIndex === idx ? "border-cyan-400" : "border-transparent"
             }`}
             onClick={() => setMainImageIndex(idx)}
@@ -270,7 +270,8 @@ const ProductDetail = () => {
         <p className="text-cyan-400 text-sm  underline underline-offset-2">
           {seller?.name}
         </p>
-        <h1 className="text-3xl font-semibold text-gray-900 ">
+
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900">
           {product.name}
         </h1>
         <div className="flex items-center gap-1 bg-gray-200 w-fit px-2 ">
@@ -280,7 +281,7 @@ const ProductDetail = () => {
         </div>
         <p className="text-gray-600 text-sm mb-2">{product.description}</p>
 
-        <div className="mt-2 text-2xl font-semibold text-cyan-700">
+        <div className="mt-2 text-lg sm:text-xl md:text-2xl font-semibold text-cyan-700">
           ₹ {calculateFinalPrice().toFixed(0)}
           <span className="text-sm text-gray-500 line-through ml-2">
             ₹ {product.price}
@@ -321,7 +322,7 @@ const ProductDetail = () => {
                 : referralStep === "apply"
                 ? "bg-blue-600 hover:bg-blue-700"
                 : "bg-black hover:bg-gray-900"
-            } text-white font-semibold px-4 py-2 rounded-lg`}
+            } text-white font-semibold px-4 py-2 rounded-lg cursor-pointer`}
           >
             {referralStep === "applied"
               ? "Applied"
@@ -335,7 +336,8 @@ const ProductDetail = () => {
         )}
         {referralStep === "apply" && (
           <p className="text-green-600 text-sm mt-1">
-            Referral code is valid. Click <strong>Apply</strong> to get extra off.
+            Referral code is valid. Click <strong>Apply</strong> to get extra
+            off.
           </p>
         )}
 
@@ -353,13 +355,13 @@ const ProductDetail = () => {
           <h2 className="text-md font-semibold mb-2 text-gray-800">
             Highlights
           </h2>
-          <div className="grid  gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {product.highlights.map((img, idx) => (
               <img
                 key={idx}
                 src={img}
                 alt={`Highlight ${idx + 1}`}
-                className="w-full h-full object-cover rounded-md"
+                className="w-full h-full object-cover rounded-md border-1 border-black"
               />
             ))}
           </div>
@@ -395,7 +397,7 @@ const ProductDetail = () => {
             <MdStar
               key={star}
               onClick={() => setUserRating(star)}
-              className={`w-6 h-6 cursor-pointer ${
+              className={`w-5 h-5 sm:w-6 sm:h-6 cursor-pointer ${
                 userRating >= star
                   ? "fill-yellow-400 text-yellow-400"
                   : "text-gray-400"
@@ -417,7 +419,7 @@ const ProductDetail = () => {
         <div className="flex justify-end">
           <Button
             onClick={handleSubmitReview}
-            className="mt-3 primary-bg-dark hover:primary-bg text-white font-medium px-6 py-3 rounded-lg"
+            className="mt-3 primary-bg-dark hover:primary-bg text-white font-medium px-6 py-3 rounded-lg cursor-pointer"
           >
             Submit Review
           </Button>
@@ -444,22 +446,23 @@ const ProductDetail = () => {
       )}
 
       {/* Bottom Bar */}
+
       <div className="fixed bottom-0 left-0 right-0 z-50 w-full">
-        <div className="relative  w-full bg-black text-white py-5 px-4 shadow-lg flex items-center justify-between primary-bg-dark">
+        <div className="flex gap-2 w-full relative bg-black text-white py-5 px-4 shadow-lg items-center justify-between primary-bg-dark">
           <Button
             onClick={() =>
               navigate(`/buy-now/${product.id}/${btoa(referralCode)}`)
             }
-            className="bg-white text-black px-8 py-4 rounded-full text-base w-2/4  font-medium hover:bg-white/80  shadow  transition-all"
+            className="w-1/2 bg-white cursor-pointer text-black px-4 py-3 rounded-full text-base font-medium hover:bg-white/80 shadow transition-all"
           >
             Buy Now
           </Button>
           <Button
             disabled={disable}
-            className={`bg-transparent px-8 py-4 hover:bg-white hover:text-black rounded-full text-base  font-medium shadow  ${
+            onClick={isCart ? () => navigate("/my-cart") : handleAddToCart}
+            className={`w-1/2 cursor-pointer bg-transparent px-4 py-3 hover:bg-white hover:text-black rounded-full text-base font-medium shadow ${
               isCart ? "border-0" : "border-2"
             }`}
-            onClick={isCart ? () => navigate("/my-cart") : handleAddToCart}
           >
             {isCart ? "View in cart" : "Add to Cart"}
           </Button>

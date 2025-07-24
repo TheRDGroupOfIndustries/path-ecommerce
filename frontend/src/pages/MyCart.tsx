@@ -83,7 +83,6 @@ export default function MyCart() {
     }
   };
 
-
   const handleBuyNow = () => {
     navigate("/buy-now", {
       state: {
@@ -105,13 +104,11 @@ export default function MyCart() {
   if (loading) return <Loader />;
 
   if (cartItems.length === 0) {
-    return (
-     <EmptyCart/>
-    );
+    return <EmptyCart />;
   }
 
   return (
-    <div className="min-h-screen mb-18">
+    <div className="container mb-18 lg:p-4 mx-auto">
       {/* Header */}
       <div className="px-6 mb-2">
         <div className="flex items-center justify-center h-14 text-black">

@@ -60,7 +60,7 @@ function SearchPage() {
     return <SearchLoader />;
   }
   return (
-    <div className="w-screen min-h-screen h-auto px-2">
+    <div className="w-screen min-h-screen h-auto px-2 mb-20">
       <div className="w-full h-20 py-4 flex justify-between items-center gap-2">
         <input
           type="text"

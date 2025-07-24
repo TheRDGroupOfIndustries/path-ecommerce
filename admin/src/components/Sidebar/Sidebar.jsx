@@ -39,7 +39,11 @@ const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {
     {
       name: "Users",
       icon: Users,
-      link: "/users",
+      hasSubmenu: true,
+      submenu: [
+        { title: "View Members", link: "/users" },
+        { title: "Referral Users", link: "/ref-user" },
+      ],
     },
     {
       name: "Marketplace",

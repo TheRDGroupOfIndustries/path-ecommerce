@@ -13,7 +13,7 @@ export const createReferral = async (req: Request, res: Response) => {
     }
 
     const firstName = user.name.split(" ")[0].toLowerCase();
-    const referralCode = `${firstName}-${percent}`;
+    const referralCode = `${firstName}-${percent}-${id.slice(0, 5)}`;
 
     const existingCode = await db.referral.findUnique({
     where: { referral: referralCode },
@@ -300,3 +300,6 @@ export const validateReferralCode = async (req: Request, res: Response) => {
     return res.status(500).json({ valid: false, error: "Internal Server Error" });
   }
 };
+
+
+

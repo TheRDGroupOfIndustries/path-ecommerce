@@ -37,3 +37,13 @@ export const deleteAssociate = async (userId: string) => {
     data: { role: "USER" },
   });
 };
+
+export const deleteReferralsByAssociateId = async (userId: string) => {
+  await db.referral.deleteMany({
+    where: {
+      createdForId: userId,
+    },
+  });
+};
+
+

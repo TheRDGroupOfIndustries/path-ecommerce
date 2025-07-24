@@ -43,6 +43,9 @@ model User {
 
   supportMessages     Support[] @relation("SupportUser")
   receivedSupportMsgs Support[] @relation("SupportSeller")
+
+  usedReferralId   String?                      // FK to Referral
+  usedReferral     Referral? @relation("ReferralUsedByUsers", fields: [usedReferralId], references: [id])
 }
 
 model Marketplace {
@@ -163,6 +166,7 @@ model Referral {
 
   createdFor   User     @relation("CreatedReferrals", fields: [createdForId], references: [id], onDelete: Cascade)
   transactions ReferralTransaction[]
+  usedByUsers User[] @relation("ReferralUsedByUsers")
 }
 
 model ReferralTransaction {

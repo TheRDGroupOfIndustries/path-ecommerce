@@ -5,6 +5,7 @@ import { generateTokens, verifyTokenFromHeader } from "../utils/jwt.js";
 import * as associateModel from "../model/associate.model.js";
 import { Role } from "@prisma/client";
 import { uploadBufferToCloudinary } from "../utils/uploadToCloudinary.js";
+import db from "../client/connect.js"; 
 
 export const allUsers = async (req: Request, res: Response) => {
   try {
@@ -49,8 +50,51 @@ export const userByEmail = async (req: Request, res: Response) => {
 };
 
 
+// export const createUser = async (req: Request, res: Response) => {
+//   const { name, email, password, confirmPassword, phone, role ,address} = req.body;
+
+//   if (password !== confirmPassword) {
+//     return res.status(400).json({ error: "Passwords do not match" });
+//   }
+
+//   try {
+//     const existingUser = await userModel.userByGmail(email);
+//     if (existingUser) {
+//       return res.status(409).json({ error: "User already exists" });
+//     }
+
+//     let imageUrl: string | undefined = undefined;
+
+//     if (req.file) {
+//       imageUrl = await uploadBufferToCloudinary(req.file.buffer, email, "profiles");
+//     }
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//     const user = await userModel.createUser({
+//       name,
+//       email,
+//       password: hashedPassword,
+//       phone,
+//       role: role?.toUpperCase() || "USER",
+//       imageUrl,
+//       address
+//     });
+
+//     if (user) {
+//       const token = generateTokens(user);
+//       return res.status(201).json({ message: "success", token, user });
+//     } else {
+//       return res.status(500).json({ error: "User creation failed" });
+//     }
+//   } catch (error) {
+//     console.error("Error creating user:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+
 export const createUser = async (req: Request, res: Response) => {
-  const { name, email, password, confirmPassword, phone, role ,address} = req.body;
+  const { name, email, password, confirmPassword, phone, role, address, referralCode } = req.body;
 
   if (password !== confirmPassword) {
     return res.status(400).json({ error: "Passwords do not match" });
@@ -69,19 +113,60 @@ export const createUser = async (req: Request, res: Response) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await userModel.createUser({
-      name,
-      email,
-      password: hashedPassword,
-      phone,
-      role: role?.toUpperCase() || "USER",
-      imageUrl,
-      address
+
+    let usedReferral = null;
+
+    //  Handle Referral Code
+    if (referralCode) {
+      usedReferral = await db.referral.findUnique({
+        where: { referral: referralCode },
+        include: {
+          createdFor: {
+            include: {
+              associate: true,
+            },
+          },
+        },
+      });
+
+      if (!usedReferral) {
+        return res.status(400).json({ error: "Invalid referral code" });
+      }
+// update usedBy array
+      await db.referral.update({
+        where: { id: usedReferral.id },
+        data: {
+          usedBy: {
+            push: email,
+          },
+        },
+      });
+    }
+
+    const user = await db.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        role: role?.toUpperCase() || "USER",
+        imageUrl,
+        address,
+        usedReferralId: usedReferral?.id, //  Save referral ID if valid
+      },
     });
 
     if (user) {
       const token = generateTokens(user);
-      return res.status(201).json({ message: "success", token, user });
+      return res.status(201).json({
+        message: "Signup successful",
+        token,
+        user,
+        referralUsed: usedReferral?.referral,
+        associate: usedReferral?.createdFor?.name,
+        associateLevel: usedReferral?.createdFor?.associate?.level ?? null,
+        associatePercent: usedReferral?.createdFor?.associate?.percent ?? null,
+      });
     } else {
       return res.status(500).json({ error: "User creation failed" });
     }
@@ -90,6 +175,7 @@ export const createUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 export const updatePassword = async (req: Request, res: Response) => {
   const { email } = req.params;
@@ -274,5 +360,39 @@ export const getOrders = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+export const getUsersWithReferralDetails = async (req: Request, res: Response) => {
+  try {
+    const users = await db.user.findMany({
+      include: {
+        usedReferral: {
+          include: {
+            createdFor: {
+              include: {
+                associate: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const enrichedUsers = users.map(user => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      usedReferralCode: user.usedReferral?.referral ?? null,
+      usedReferralOwner: user.usedReferral?.createdFor?.name ?? null,
+      associateLevel: user.usedReferral?.createdFor?.associate?.level ?? null,
+      associatePercent: user.usedReferral?.createdFor?.associate?.percent ?? null,
+    }));
+
+    return res.status(200).json({ users: enrichedUsers });
+  } catch (error) {
+    console.error("Error fetching users with referral details:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };

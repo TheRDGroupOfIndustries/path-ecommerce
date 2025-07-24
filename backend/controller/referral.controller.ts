@@ -274,3 +274,29 @@ export const getReferralDetails = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+
+
+// Simple Referral Code Validation
+export const validateReferralCode = async (req: Request, res: Response) => {
+  const { code } = req.params;
+
+  try {
+    if (!code || typeof code !== "string") {
+      return res.status(400).json({ valid: false, error: "Referral code is required" });
+    }
+
+    const referral = await db.referral.findUnique({
+      where: { referral: code },
+    });
+
+    if (!referral) {
+      return res.status(404).json({ valid: false, error: "Referral code not found" });
+    }
+
+    return res.status(200).json({ valid: true, message: "Referral code is valid" });
+  } catch (err) {
+    console.error("Error validating referral code:", err);
+    return res.status(500).json({ valid: false, error: "Internal Server Error" });
+  }
+};

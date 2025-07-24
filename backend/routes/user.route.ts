@@ -117,4 +117,10 @@ route.get(
   }
 );
 
+route.get("/signup-referral", async (req: Request, res: Response) => {
+  await userController.getUsersWithReferralDetails (req, res);
+});
+
+
+
 export default route;

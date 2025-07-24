@@ -49,51 +49,7 @@ export const userByEmail = async (req: Request, res: Response) => {
   }
 };
 
-
-// export const createUser = async (req: Request, res: Response) => {
-//   const { name, email, password, confirmPassword, phone, role ,address} = req.body;
-
-//   if (password !== confirmPassword) {
-//     return res.status(400).json({ error: "Passwords do not match" });
-//   }
-
-//   try {
-//     const existingUser = await userModel.userByGmail(email);
-//     if (existingUser) {
-//       return res.status(409).json({ error: "User already exists" });
-//     }
-
-//     let imageUrl: string | undefined = undefined;
-
-//     if (req.file) {
-//       imageUrl = await uploadBufferToCloudinary(req.file.buffer, email, "profiles");
-//     }
-
-//     const hashedPassword = await bcrypt.hash(password, 10);
-//     const user = await userModel.createUser({
-//       name,
-//       email,
-//       password: hashedPassword,
-//       phone,
-//       role: role?.toUpperCase() || "USER",
-//       imageUrl,
-//       address
-//     });
-
-//     if (user) {
-//       const token = generateTokens(user);
-//       return res.status(201).json({ message: "success", token, user });
-//     } else {
-//       return res.status(500).json({ error: "User creation failed" });
-//     }
-//   } catch (error) {
-//     console.error("Error creating user:", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
-
-
-export const createUser = async (req: Request, res: Response) => {
+export const createUserController = async (req: Request, res: Response) => {
   const { name, email, password, confirmPassword, phone, role, address, referralCode } = req.body;
 
   if (password !== confirmPassword) {
@@ -396,3 +352,48 @@ export const getUsersWithReferralDetails = async (req: Request, res: Response) =
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
+
+// export const createUser = async (req: Request, res: Response) => {
+//   const { name, email, password, confirmPassword, phone, role ,address} = req.body;
+
+//   if (password !== confirmPassword) {
+//     return res.status(400).json({ error: "Passwords do not match" });
+//   }
+
+//   try {
+//     const existingUser = await userModel.userByGmail(email);
+//     if (existingUser) {
+//       return res.status(409).json({ error: "User already exists" });
+//     }
+
+//     let imageUrl: string | undefined = undefined;
+
+//     if (req.file) {
+//       imageUrl = await uploadBufferToCloudinary(req.file.buffer, email, "profiles");
+//     }
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//     const user = await userModel.createUser({
+//       name,
+//       email,
+//       password: hashedPassword,
+//       phone,
+//       role: role?.toUpperCase() || "USER",
+//       imageUrl,
+//       address
+//     });
+
+//     if (user) {
+//       const token = generateTokens(user);
+//       return res.status(201).json({ message: "success", token, user });
+//     } else {
+//       return res.status(500).json({ error: "User creation failed" });
+//     }
+//   } catch (error) {
+//     console.error("Error creating user:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+

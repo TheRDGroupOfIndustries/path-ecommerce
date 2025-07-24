@@ -102,6 +102,7 @@ interface User {
   role?: string;
   imageUrl?: string;
   phone?: string;
+  referralCode?: string;
 }
 
 interface AuthContextType {

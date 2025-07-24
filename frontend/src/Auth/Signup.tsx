@@ -167,6 +167,7 @@ const validateReferralCode = async () => {
         confirmPassword: formData.confirmPassword,
         referralCode: formData.referralCode?.trim(),
       });
+
       navigate("/login");
     } catch (err: any) {
       setError(
@@ -220,49 +221,6 @@ const validateReferralCode = async () => {
               required
               className="py-6"
             />
-
-        {/* ✅ Referral Toggle */}
-<div className="flex items-center gap-2">
-  <input
-    type="checkbox"
-    id="referralToggle"
-    checked={showReferralInput}
-    onChange={() => setShowReferralInput(!showReferralInput)}
-  />
-  <label htmlFor="referralToggle" className="text-sm">
-    I have a referral code
-  </label>
-</div>
-
-{/* ✅ Referral Input (conditionally shown) */}
-{showReferralInput && (
-  <div className="space-y-1">
-    <div className="flex items-center gap-2">
-      <Input
-        type="text"
-        placeholder="Referral Code"
-        name="referralCode"
-        value={formData.referralCode}
-        onChange={handleChange}
-        className="py-6 flex-1"
-      />
-      <button
-        type="button"
-        onClick={validateReferralCode}
-        className="bg-blue-600 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-700 transition"
-      >
-        Check
-      </button>
-    </div>
-
-    {referralStatus && (
-      <p className={`text-sm ${referralStatus === "valid" ? "text-green-600" : "text-red-600"}`}>
-        {referralMessage}
-      </p>
-    )}
-  </div>
-)}
-
 
 
             {step === 0 ? (
@@ -320,6 +278,50 @@ const validateReferralCode = async () => {
                     {showCPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+
+                {/*  Referral Toggle */}
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="referralToggle"
+                checked={showReferralInput}
+                onChange={() => setShowReferralInput(!showReferralInput)}
+              />
+              <label htmlFor="referralToggle" className="text-sm">
+                I have a referral code
+              </label>
+            </div>
+
+            {/* Referral Input (conditionally shown) */}
+            {showReferralInput && (
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    placeholder="Referral Code"
+                    name="referralCode"
+                    value={formData.referralCode}
+                    onChange={handleChange}
+                    className="py-6 flex-1"
+                  />
+                  <button
+                    type="button"
+                    onClick={validateReferralCode}
+                    className="bg-blue-600 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                  >
+                    Check
+                  </button>
+                </div>
+
+                {referralStatus && (
+                  <p className={`text-sm ${referralStatus === "valid" ? "text-green-600" : "text-red-600"}`}>
+                    {referralMessage}
+                  </p>
+                )}
+              </div>
+            )}
+
+
               </>
             )}
 

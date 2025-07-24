@@ -46,7 +46,7 @@ route.post(
   "/create-user",
   upload.single("image"),
   async (req: Request, res: Response) => {
-    await userController.createUser(req, res);
+    await userController.createUserController(req, res);
   }
 );
 
@@ -116,5 +116,11 @@ route.get(
     );
   }
 );
+
+route.get("/signup-referral", async (req: Request, res: Response) => {
+  await userController.getUsersWithReferralDetails (req, res);
+});
+
+
 
 export default route;

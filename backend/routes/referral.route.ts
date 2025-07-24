@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createReferral , checkReferralCode , applyReferralCode, getReferralDetails, } from "../controller/referral.controller.js";
+import { createReferral , checkReferralCode , applyReferralCode, getReferralDetails,validateReferralCode } from "../controller/referral.controller.js";
 import db from "../client/connect.js";
 import { getAllReferralRevenue ,deleteReferral } from "../controller/referral.controller.js";
 import { isAuthenticated } from "../middlewares/auth.js";
@@ -54,6 +54,9 @@ router.delete("/:id", async (req, res) => {
 router.get("/detail/:id", async (req, res) => {
    await getReferralDetails(req, res);
   });
+
+
+router.get("/validate/:code", validateReferralCode);
 
 
 export default router;

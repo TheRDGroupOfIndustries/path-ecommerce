@@ -47,7 +47,7 @@ const ViewUser = () => {
         ? users
         : users.filter((user) => user.role === selectedRole);
     setFilteredUsers(filtered);
-    setCurrentPage(1); // Reset to first page on filter change
+    setCurrentPage(1); 
   }, [selectedRole, users]);
 
   // Pagination logic
@@ -210,6 +210,7 @@ const ViewUser = () => {
                 <th>Mobile</th>
                 <th>Email</th>
                 <th>Status</th>
+                <th>Referral</th>
                 <th>Operation</th>
               </tr>
             </thead>
@@ -229,6 +230,12 @@ const ViewUser = () => {
                   <td>
                     <span className={`role-badge role-${user.role?.toLowerCase()}`}>{user.role}</span>
                   </td>
+                 <td>
+                <span className={user.usedReferralId ? "bg-yellow-100 text-yellow-700 px-2 py-2 rounded" : ""}>
+                  {user.usedReferralId ? "Yes" : "No"}
+                </span>
+              </td>
+
                   <td className="actions">
                     <div className="action-buttons">
                       <button onClick={() => handleEdit(user)} className="edit-btn" title="Edit"><Pencil /></button>

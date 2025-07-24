@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { fetchDataFromApi } from "../../utils/api";
+import { fetchDataFromApi, editData,deleteData } from "../../utils/api";
 import "./Associate.css";
-import axios from "axios";
-
-function EditAssociate({closeModal, id, level, percentageInt}) {
-  const [selectedLevel, setSelectedLevel] = useState(level);
-  const [percentage, setPercentage] = useState(percentageInt);
-  const listLevel = Array.from({ length: 13 }, (_, i) => i); //till 12
-
+function EditAssociate({ closeModal, id, level, percentageInt }) {
+  const [selectedLevel, setSelectedLevel] = useState(level ?? 0);
+  const [percentage, setPercentage] = useState(percentageInt ?? "");
   const [percentageList, setPercentageList] = useState([]);
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const tempList = [];
     for (let i = 0; i <= 20; i++) {
@@ -20,131 +17,130 @@ function EditAssociate({closeModal, id, level, percentageInt}) {
 
   const handleSave = async () => {
     setLoading(true);
-    const req = await axios.put(`${import.meta.env.VITE_BASE_URL}/manage-associate/update/${id}`, {
-      level: selectedLevel,
-      percent: percentage
-    })
-    if (req.status === 200) {
-      closeModal()
-      window.location.reload();
+    try {
+      const res = await editData(`/manage-associate/update/${id}`, {
+        level: Number(selectedLevel),
+        percent: Number(percentage),
+      });
+
+      if (res) {
+        closeModal();
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Failed to update associate:", error);
+    } finally {
       setLoading(false);
     }
-  }
+  };
+
   return (
-    <div
-      style={{
-        position: "absolute",
-        inset: "0",
-        background: "rgba(0, 0, 0, 0.8)",
-        zIndex: 999,
-        width: "100vw",
-        height: "100vh",
+    <div style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0, 0, 0, 0.8)",
+      zIndex: 99999,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    }}>
+      <div style={{
+        position: "relative",
+        width: "50%",
+        maxWidth: "600px",
+        background: "white",
+        borderRadius: "16px",
+        padding: "40px 20px 20px 20px",
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "column",
         alignItems: "center",
-      }}
-    >
-      <div
-      onClick={closeModal}
-        style={{
-          width: "3rem",
-          height: "3rem",
-          background: "#ff000d60",
-          position: "absolute",
-          top: "6rem",
-          borderRadius: "70px",
-          display: "grid",
-          placeItems: "center",
-        }}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="26"
-          height="26"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="white"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="lucide lucide-x-icon lucide-x"
+        gap: "20px",
+      }}>
+        {/* Close button at top right */}
+        <div
+          onClick={closeModal}
+          style={{
+            position: "absolute",
+            top: "12px",
+            right: "12px",
+            width: "2.5rem",
+            height: "2.5rem",
+            background: "#ff000d60",
+            borderRadius: "50%",
+            display: "grid",
+            placeItems: "center",
+            cursor: "pointer",
+          }}
         >
-          <path d="M18 6 6 18" />
-          <path d="m6 6 12 12" />
-        </svg>
-      </div>
-      <div
-        style={{
-          width: "95%",
-          height: "auto",
-          background: "white",
-          borderRadius: "16px",
-          padding: "20px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "20px",
-        }}
-      >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="lucide lucide-x"
+          >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </div>
+
         <h3 style={{ fontWeight: "800", fontSize: "1.5rem" }}>
           Edit Level & Percentage
         </h3>
+
         <select
-          className="associate-select"
-          defaultValue={selectedLevel}
-          onChange={(e) => setSelectedLevel(e.target.value)}
+          value={selectedLevel}
+          onChange={(e) => setSelectedLevel(Number(e.target.value))}
           style={{
             width: "100%",
             padding: "18px",
-            marginTop: "10px",
             background: "#eeeeee",
             border: "none",
             borderRadius: "8px",
             outline: "none",
           }}
         >
-          {listLevel.map((level) => (
-            <option key={level} value={level}>
-              {level}
+          {Array.from({ length: 13 }, (_, i) => (
+            <option key={i} value={i}>
+              Level {i}
             </option>
           ))}
         </select>
 
         <select
-          className="associate-select"
           value={percentage}
-          onChange={(e) => setPercentage(e.target.value)}
+          onChange={(e) => setPercentage(Number(e.target.value))}
           style={{
             width: "100%",
             padding: "18px",
-            marginTop: "10px",
             background: "#eeeeee",
             border: "none",
             borderRadius: "8px",
             outline: "none",
           }}
         >
-          <option value="" disabled selected defaultValue={percentage}>
+          <option value="" disabled>
             Select percentage
           </option>
-          {percentageList.length > 0 &&
-            percentageList.map((level) => (
-              <option key={level} value={level}>
-                {level}
-              </option>
-            ))}
+          {percentageList.map((p) => (
+            <option key={p} value={p}>
+              {p}%
+            </option>
+          ))}
         </select>
 
         <button
-        onClick={handleSave}
-        disabled={loading}
+          onClick={handleSave}
+          disabled={loading}
           style={{
             width: "100%",
             background: "deepskyblue",
             border: "none",
-            marginTop: "10px",
-            outline: "none",
             padding: "12px 0",
             color: "white",
             borderRadius: "8px",
@@ -156,6 +152,7 @@ function EditAssociate({closeModal, id, level, percentageInt}) {
     </div>
   );
 }
+
 
 const ViewAssociate = () => {
   const [associates, setAssociates] = useState([]);
@@ -226,19 +223,19 @@ const ViewAssociate = () => {
     return entry?.totalCommission?.toFixed(2) || "0.00";
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this associate?")) {
-      try {
-        const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/manage-associate/delete/${id}`);
-        if (res.status === 200) {
-          fetchAssociates();
-        }
-      } catch (error) {
-        console.error("Failed to delete associate:", error);
+ const handleDelete = async (id) => {
+  if (window.confirm("Are you sure you want to delete this associate?")) {
+    try {
+      const res = await deleteData(`/manage-associate/delete/${id}`);
+      if (res) {
+        fetchAssociates(); // refresh list
       }
+    } catch (error) {
+      console.error("Failed to delete associate:", error);
     }
-  };
-
+  }
+};
+ 
   // console.log(model, level, percentageInt, expanded);
   return (
     <>
@@ -276,7 +273,8 @@ const ViewAssociate = () => {
                     <td>{a.name}</td>
                     <td>{a.email}</td>
                     <td>{a.associate?.level || "N/A"}</td>
-                    <td>{a.name.toLowerCase().split(" ")[0]}-{a.associate.percent}</td>
+                   <td>{a.name.toLowerCase().split(" ")[0]}-{a.associate?.percent ?? "N/A"}</td>
+
                     <td>
                       <button
                         onClick={() =>
@@ -297,7 +295,8 @@ const ViewAssociate = () => {
                         onClick={() => {
                           setModel(true);
                           setLevel(a.associate?.level);
-                          setPercentageInt(getReferralDetails(a.id)[0].percent);
+                            // const firstReferral = getReferralDetails(a.id)[0];
+                            setPercentageInt(a.associate?.percent ?? "");
                           setId(a.id)
                           // console.log(getReferralDetails(a.id)[0].percent);
                         }}

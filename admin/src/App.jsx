@@ -22,6 +22,9 @@ import KycStatusPage from "./pages/UserManagement/KycStatusPage";
 import AdminAnnouncment from "./pages/Announcment/AdminAnnouncment";
 import SellerAnnouncment from "./pages/Announcment/SellerAnnouncment";
 import ViewAssociate from "./pages/Associate/ViewAssociate";
+import Support from "./pages/Support/Support";
+import SupportDetails from "./pages/Support/SupportDetail";
+import RefUser from "./pages/UserManagement/RefUser";
 
 // Global Context
 export const myContext = createContext();
@@ -56,6 +59,9 @@ function AppLayout({ darkMode, toggleDarkMode, sidebarOpen, toggleSidebar }) {
           <Route path="/admin-anouncment" element={<AdminAnnouncment/>} />
           <Route path="/seller-anouncment" element={<SellerAnnouncment/>} />
           <Route path="/viewAssociate" element={<ViewAssociate/>} />
+          <Route path="/support" element={<Support/>} />
+          <Route path="/supportDetails" element={<SupportDetails/>} />
+          <Route path="/ref-user" element={<RefUser/>} />
         </Routes>
       </div>
     </>

@@ -14,6 +14,7 @@ import {
   ChevronDown,
   CircleUser,
   X,
+  HandHelping,
 } from "lucide-react"
 
 import "./Sidebar.css"
@@ -38,7 +39,11 @@ const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {
     {
       name: "Users",
       icon: Users,
-      link: "/users",
+      hasSubmenu: true,
+      submenu: [
+        { title: "View Members", link: "/users" },
+        { title: "Referral Users", link: "/ref-user" },
+      ],
     },
     {
       name: "Marketplace",
@@ -91,6 +96,11 @@ const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {
       icon: Mails,
       link: "/enquiry",
     },
+     {
+      name: "Support",
+      icon:  HandHelping,
+      link: "/support",
+    },
   ]
 
   const sellerMenuItems = [
@@ -131,6 +141,11 @@ const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {
       name: "Enqueries",
       icon: Mails,
       link: "/enquiry",
+    },
+      {
+      name: "Support",
+      icon:  HandHelping,
+      link: "/support",
     },
   ]
 

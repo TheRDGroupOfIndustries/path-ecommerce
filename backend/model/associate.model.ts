@@ -19,13 +19,31 @@ export const updateAssociate = async (userId: string, level: number, percent: nu
   });
 };
 
-export const deleteAssociate = async (id: string) => {
+export const deleteAssociate = async (userId: string) => {
+  const associate = await db.associate.findUnique({
+    where: { userId },
+  });
+
+  if (!associate) {
+    throw new Error("Associate not found");
+  }
+
   await db.associate.delete({
-    where: { userId: id }
+    where: { userId },
   });
 
   await db.user.update({
-    where: { id: id },
-    data: { role: "USER" }
-  })
+    where: { id: userId },
+    data: { role: "USER" },
+  });
 };
+
+export const deleteReferralsByAssociateId = async (userId: string) => {
+  await db.referral.deleteMany({
+    where: {
+      createdForId: userId,
+    },
+  });
+};
+
+

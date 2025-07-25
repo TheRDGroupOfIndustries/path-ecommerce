@@ -1,10 +1,71 @@
 import { Request, Response } from "express";
 import db from "../client/connect.js";
 
+// export const createEnquiry = async (req: Request, res: Response): Promise<void> => {
+//   const { name, email, phone, subject, message, marketplaceId, propertyId } = req.body;
+
+//   try {
+//     const enquiry = await db.enquire.create({
+//       data: {
+//         name,
+//         email,
+//         phone,
+//         subject,
+//         message,
+//         ...(marketplaceId ? { marketplaceId } : {}),
+//         ...(propertyId ? { propertyId } : {})
+//       },
+//     });
+
+//     res.status(201).json({ message: "Enquiry created successfully", enquiry });
+//   } catch (error: any) {
+//     console.error("Error creating enquiry:", error);
+//     res.status(500).json({
+//       error: "Failed to create enquiry",
+//       details: error?.message || error,
+//     });
+//   }
+// };
+
 export const createEnquiry = async (req: Request, res: Response): Promise<void> => {
-  const { name, email, phone, subject, message, marketplaceId, propertyId } = req.body;
+  const { name, email, phone, subject, message, marketplaceId, propertyId, referralCode } = req.body;
 
   try {
+    //  Prevent duplicate enquiries by same user for same property/marketplace
+    const alreadyEnquired = await db.enquire.findFirst({
+      where: {
+        email,
+        OR: [
+          { propertyId: propertyId ?? undefined },
+          { marketplaceId: marketplaceId ?? undefined },
+        ],
+      },
+    });
+
+    if (alreadyEnquired) {
+      res.status(400).json({ error: "You have already enquired about this item." });
+      return;
+    }
+
+    //  Handle referral code
+    let associateId = null;
+    if (referralCode) {
+      const referral = await db.referral.findUnique({
+        where: { referral: referralCode },
+        include: {
+          createdFor: true, // the associate user
+        },
+      });
+
+      if (!referral) {
+        res.status(400).json({ error: "Invalid referral code." });
+        return;
+      }
+
+      associateId = referral.createdForId;
+    }
+
+    //  Create enquiry
     const enquiry = await db.enquire.create({
       data: {
         name,
@@ -12,8 +73,10 @@ export const createEnquiry = async (req: Request, res: Response): Promise<void> 
         phone,
         subject,
         message,
+        referralCode,
+        associateId,
         ...(marketplaceId ? { marketplaceId } : {}),
-        ...(propertyId ? { propertyId } : {})
+        ...(propertyId ? { propertyId } : {}),
       },
     });
 
@@ -26,6 +89,7 @@ export const createEnquiry = async (req: Request, res: Response): Promise<void> 
     });
   }
 };
+
 
 
 export const getAllEnquiries = async (req: Request, res: Response): Promise<void> => {
@@ -81,6 +145,7 @@ export const getAllEnquiriesByRole = async (req: Request, res: Response): Promis
         },
         orderBy: { createdAt: "desc" },
         include: {
+          associate: true,
           marketplace: true,
           property: true,
         },

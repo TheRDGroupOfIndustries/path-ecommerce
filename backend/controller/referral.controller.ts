@@ -13,7 +13,7 @@ export const createReferral = async (req: Request, res: Response) => {
     }
 
     const firstName = user.name.split(" ")[0].toLowerCase();
-    const referralCode = `${firstName}-${percent}-${id.slice(0, 5)}`;
+    const referralCode = `${firstName}-${percent}`;
 
     const existingCode = await db.referral.findUnique({
     where: { referral: referralCode },

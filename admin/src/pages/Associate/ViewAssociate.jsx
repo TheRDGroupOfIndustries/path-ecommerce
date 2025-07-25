@@ -265,87 +265,96 @@ const ViewAssociate = () => {
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {associates?.map((a, index) => (
-                <React.Fragment key={a.id}>
+   <tbody>
+  {associates.length === 0 ? (
+    <tr>
+      <td colSpan="7" style={{ textAlign: "center", padding: "20px", color: "#666" }}>
+        No associate details yet.
+      </td>
+    </tr>
+  ) : (
+    associates.map((a, index) => (
+      <React.Fragment key={a.id}>
+        <tr>
+          <td>{index + 1}</td>
+          <td>{a.name}</td>
+          <td>{a.email}</td>
+          <td>{a.associate?.level || "N/A"}</td>
+          <td>{a.name.toLowerCase().split(" ")[0]}-{a.associate?.percent ?? "N/A"}</td>
+          <td>
+            <button
+              onClick={() =>
+                setExpanded(expanded === a.id ? null : a.id)
+              }
+            >
+              {expanded === a.id ? "Hide" : "Show"} Details
+            </button>
+          </td>
+          <td
+            style={{
+              display: "flex",
+              gap: "18px",
+              padding: "25px 10px",
+            }}
+          >
+            <button
+              onClick={() => {
+                setModel(true);
+                setLevel(a.associate?.level);
+                setPercentageInt(a.associate?.percent ?? "");
+                setId(a.id);
+              }}
+              style={{ color: "deepskyblue" }}
+            >
+              Edit
+            </button>
+            <button
+              style={{ color: "red" }}
+              onClick={() => handleDelete(a.id)}
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+        {expanded === a.id && (
+          <tr>
+            <td colSpan={5}>
+              <table className="subtable">
+                <thead>
                   <tr>
-                    <td>{index + 1}</td>
-                    <td>{a.name}</td>
-                    <td>{a.email}</td>
-                    <td>{a.associate?.level || "N/A"}</td>
-                   <td>{a.name.toLowerCase().split(" ")[0]}-{a.associate?.percent ?? "N/A"}</td>
-
-                    <td>
-                      <button
-                        onClick={() =>
-                          setExpanded(expanded === a.id ? null : a.id)
-                        }
-                      >
-                        {expanded === a.id ? "Hide" : "Show"} Details
-                      </button>
+                    <th>Referral Code</th>
+                    <th>Percentage (%)</th>
+                    <th>Commission (₹)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {getReferralDetails(a.id).map((ref, idx) => (
+                    <tr key={idx}>
+                      <td>{ref.code}</td>
+                      <td>{ref.percent}</td>
+                      <td>₹ {ref.commission}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colSpan={2}>
+                      <b>Total Commission</b>
                     </td>
-                    <td
-                      style={{
-                        display: "flex",
-                        gap: "18px",
-                        padding: "25px 10px",
-                      }}
-                    >
-                      <button
-                        onClick={() => {
-                          setModel(true);
-                          setLevel(a.associate?.level);
-                            // const firstReferral = getReferralDetails(a.id)[0];
-                            setPercentageInt(a.associate?.percent ?? "");
-                          setId(a.id)
-                          // console.log(getReferralDetails(a.id)[0].percent);
-                        }}
-                        style={{ color: "deepskyblue" }}
-                      >
-                        Edit
-                      </button>
-                      <button style={{color: 'red'}}
-                      onClick={() => handleDelete(a.id)}
-                      >Delete</button>
+                    <td>
+                      <b>₹ {getTotalCommission(a.id)}</b>
                     </td>
                   </tr>
-                  {expanded === a.id && (
-                    <tr>
-                      <td colSpan={5}>
-                        <table className="subtable">
-                          <thead>
-                            <tr>
-                              <th>Referral Code</th>
-                              <th>Percentage (%)</th>
-                              <th>Commission (₹)</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {getReferralDetails(a.id).map((ref, idx) => (
-                              <tr key={idx}>
-                                <td>{ref.code}</td>
-                                <td>{ref.percent}</td>
-                                <td>₹ {ref.commission}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                          <tfoot>
-                            <tr>
-                              <td colSpan={2}>
-                                <b>Total Commission</b>
-                              </td>
-                              <td>
-                                <b>₹ {getTotalCommission(a.id)}</b>
-                              </td>
-                            </tr>
-                          </tfoot>
-                        </table>
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
-              ))}
-            </tbody>
+                </tfoot>
+              </table>
+            </td>
+          </tr>
+        )}
+      </React.Fragment>
+    ))
+  )}
+</tbody>
+
           </table>
         </div>
       </div>

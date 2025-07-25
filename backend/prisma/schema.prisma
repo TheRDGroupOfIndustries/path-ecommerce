@@ -102,6 +102,8 @@ model Enquire {
   message       String
   marketplaceId String?
   propertyId    String?
+  referralCode  String?     //  New field
+  associateId   String?     // New field (FK to User who is associate)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now()) @updatedAt
 

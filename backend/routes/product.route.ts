@@ -88,7 +88,6 @@ router.get("/get-trendy", async (req, res) => {
 
 
 //by seller role 
-
 router.get("/by-role", isAuthenticated, async (req, res) => {
   try {
     await productController.getProductsByRole(req, res);

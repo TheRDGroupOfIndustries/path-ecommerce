@@ -72,14 +72,16 @@ export const buyNow = async (req: Request, res: Response) => {
           },
         });
 
-        if (!referral.usedBy.includes(userId)) {
-          await db.referral.update({
-            where: { id: referral.id },
-            data: {
-              usedBy: [...referral.usedBy, userId],
+        if (referralCode && referralDetails && !referralDetails.usedBy.includes(userId)) {
+        await db.referral.update({
+          where: { id: referralDetails.id },
+          data: {
+            usedBy: {
+              push: userId,
             },
-          });
-        }
+          },
+        });
+      }
       } else {
         return res.status(400).json({ message: "Invalid referral code format" });
       }
@@ -302,14 +304,17 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
             },
           });
 
-          if (!referral.usedBy.includes(userId)) {
-            await db.referral.update({
-              where: { id: referral.id },
-              data: {
-                usedBy: [...referral.usedBy, userId],
+          if (referral && !referral.usedBy.includes(userId)) {
+          await db.referral.update({
+            where: { id: referral.id },
+            data: {
+              usedBy: {
+                push: userId,
               },
-            });
-          }
+            },
+          });
+        }
+
         }
       }
 

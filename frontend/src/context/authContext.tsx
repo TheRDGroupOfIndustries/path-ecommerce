@@ -151,15 +151,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     const res = await authservices.login({ email, password });
     // console.log("login authservice1: ",res.token);
-    localStorage.setItem("token", res.token.accessToken);
-    setUser(res.user);
-  };
-
-  const register = async (data: { name: string; email: string; password: string,confirmPassword:string }) => {
-    const res = await authservices.register(data);
     localStorage.setItem("token", res.token);
     setUser(res.user);
   };
+
+
+const register = async (data: { name: string; email: string; password: string, confirmPassword: string, referralCode: string }) => {
+  const res = await authservices.register(data);
+  localStorage.setItem("token", res.token); // FIXED
+  setUser(res.user);
+};
+
 
   const logout = () => {
     localStorage.removeItem("token");

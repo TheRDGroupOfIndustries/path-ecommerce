@@ -15,7 +15,10 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
     phone: "",
     subject: "",
     message: "",
+    referralCode: "",
   });
+  const [referralValid, setReferralValid] = useState(null); // true | false | null
+  const [checkingReferral, setCheckingReferral] = useState(false);
   const [loading, setLoading] = useState(false);
   const [responseMsg, setResponseMsg] = useState("");
 
@@ -38,6 +41,8 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
     const phoneRegex = /^[6-9]\d{9}$/;
     if (!formData.message || !formData.subject || !formData.phone) {
       setResponseMsg("Please fill in all required fields.");
+      toast.error("Please fill in all required fields.");
+
       return;
     }
     if (!phoneRegex.test(formData.phone)) {
@@ -52,6 +57,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
         ...formData,
         marketplaceId: type === "marketplace" ? id : null,
         propertyId: type !== "marketplace" ? id : null,
+        referralCode: formData.referralCode || null,
       };
 
       await axios.post(`${API_URL}/api/enquiry`, payload);
@@ -65,6 +71,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
         phone: "",
         subject: "",
         message: "",
+        referralCode: "",
       });
 
       setTimeout(() => {
@@ -73,10 +80,44 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
       }, 1000);
     } catch (err) {
       console.error("Enquiry failed:", err);
-      toast.error("Failed to send enquiry. Try again later.");
-      setResponseMsg("Failed to send enquiry. Try again later.");
+
+      const errorMsg =
+        err?.response?.data?.error ||
+        "Failed to send enquiry. Try again later.";
+
+      toast.error(errorMsg);
+      setResponseMsg(errorMsg);
     }
     setLoading(false);
+  };
+  const handleCheckReferral = async () => {
+    if (!formData.referralCode) {
+      toast.error("Please enter a referral code to check.");
+      return;
+    }
+
+    try {
+      setCheckingReferral(true);
+      const res = await fetch(
+        `${API_URL}/api/referral/validate/${formData.referralCode}`
+      );
+      const data = await res.json();
+      console.log("data", data);
+
+      if (data.valid) {
+        setReferralValid(true);
+        toast.success("Referral code is valid!");
+      } else {
+        setReferralValid(false);
+        toast.error(data.error || "Invalid referral code.");
+      }
+    } catch (error) {
+      console.error("Referral check failed:", error);
+      setReferralValid(false);
+      toast.error("Something went wrong while checking referral code.");
+    } finally {
+      setCheckingReferral(false);
+    }
   };
 
   return (
@@ -147,6 +188,42 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
             rows={3}
             className="w-full p-4 py-3 sm:py-4 bg-white/20 text-white rounded-lg resize-none border-none font-light placeholder:text-white/50 text-sm sm:text-base"
           />
+          <div className="flex items-center gap-2">
+            <Input
+              name="referralCode"
+              type="text"
+              value={formData.referralCode}
+              onChange={handleChange}
+              placeholder="Referral code (optional)"
+              className="w-full p-4 py-6 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50 text-sm"
+            />
+            <Button
+              type="button"
+              onClick={handleCheckReferral}
+              className={`px-4 py-2 text-sm rounded-lg ${
+                referralValid === true
+                  ? "bg-green-600 text-white"
+                  : referralValid === false
+                  ? "bg-red-500 text-white"
+                  : "bg-blue-600 text-white"
+              }`}
+              disabled={checkingReferral}
+            >
+              {checkingReferral ? "Checking..." : "Check"}
+            </Button>
+          </div>
+
+          {referralValid !== null && (
+            <p
+              className={`text-sm ${
+                referralValid ? "text-green-400" : "text-red-400"
+              }`}
+            >
+              {referralValid
+                ? "Referral code is valid!"
+                : "Invalid referral code."}
+            </p>
+          )}
         </div>
 
         {responseMsg && (

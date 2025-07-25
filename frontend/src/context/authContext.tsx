@@ -108,7 +108,8 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (data: { name: string; email: string; password: string,confirmPassword:string }) => Promise<void>;
+      
+  register: (data: { name: string; email: string; password: string,confirmPassword:string, referralCode:string }) => Promise<void>;
   logout: () => void;
   loading: boolean;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;

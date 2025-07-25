@@ -68,6 +68,8 @@ export default function MyEnquiries() {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
+    //   console.log("res: ",res);
+      
       if (res.status === 200) {
         setEnquiries(res.data);
       }

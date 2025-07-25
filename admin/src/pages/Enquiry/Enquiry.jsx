@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { fetchDataFromApi, deleteData } from "../../utils/api";
-import { Trash2, X,Eye } from "lucide-react";
+import { Trash2, X, Eye } from "lucide-react";
 import "./Enquiry.css";
 
 const Enquiry = () => {
@@ -42,29 +42,27 @@ const Enquiry = () => {
   };
 
   const openModal = async (user) => {
-  let res;
-  if (user.marketplaceId) {
-    res = await fetchDataFromApi(`/marketplace/get-by-id/${user.marketplaceId}`);
-    if (res?.marketplace) {
-      console.log(res.marketplace)
-      setModalData({ ...res.marketplace, type: "marketplace", subject: user.subject });
-    } else {
-      setModalData({ error: true });
+    let res;
+    let itemData = {};
+    if (user.marketplaceId) {
+      res = await fetchDataFromApi(`/marketplace/get-by-id/${user.marketplaceId}`);
+      if (res?.marketplace) {
+        itemData = { ...res.marketplace, type: "marketplace" };
+      }
+    } else if (user.propertyId) {
+      res = await fetchDataFromApi(`/property/get-by-id/${user.propertyId}`);
+      if (res) {
+        itemData = { ...res.properties, type: "property" };
+      }
     }
-  } else if (user.propertyId) {
-    res = await fetchDataFromApi(`/property/get-by-id/${user.propertyId}`);
-    if (res) {
-      console.log(res.properties)
-      setModalData({ ...res.properties, type: "property", subject: user.subject });
-    } else {
-      setModalData({ error: true });
-    }
-  } else {
-    setModalData({ error: true });
-  }
-};
 
-
+    setModalData({
+      ...itemData,
+      subject: user.subject,
+      referralCode: user.referralCode,
+      associate: user.associate,
+    });
+  };
 
   const closeModal = () => setModalData(null);
 
@@ -109,6 +107,7 @@ const Enquiry = () => {
                 <th>Message</th>
                 <th>Email</th>
                 <th>Phone</th>
+                <th>Referral</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -120,10 +119,11 @@ const Enquiry = () => {
                   <td><div className="description-clamp">{user.message}</div></td>
                   <td>{user.email}</td>
                   <td>{user.phone}</td>
+                  <td>{user.referralCode ? "Yes" : "No"}</td>
                   <td>
                     <div className="action-buttons">
+                      <button className="view-btn" onClick={() => openModal(user)}><Eye /></button>
                       <button className="delete-btn" onClick={() => handleDelete(user.id)}><Trash2 /></button>
-                      <button className="view-btn" onClick={() => openModal(user)}><Eye/></button>
                     </div>
                   </td>
                 </tr>
@@ -134,71 +134,83 @@ const Enquiry = () => {
       )}
 
       {/* MODAL */}
-     {modalData && (
-  <div className="modal-overlay">
-    <div className="modal-box">
-      <button className="close-btnn2" onClick={closeModal}><X /></button>
+      {modalData && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <button className="close-btnn2" onClick={closeModal}><X /></button>
 
-      {modalData.error ? (
-        <p>This enquiry is not linked to any marketplace or property.</p>
-      ) : (
-        <>
-          <h1>
-            {modalData.type === "marketplace" ? "Marketplace Item" : "Property"} Details
-          </h1>
+            <h1>
+              {modalData.type === "marketplace" ? "Marketplace Item" : "Property"} Details
+            </h1>
 
-          <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "10px" }}>
-            <tbody>
-              <tr>
-                <td style={{ padding: "8px", fontWeight: "bold" }}>Subject</td>
-                <td style={{ padding: "8px" }}>{modalData.subject}</td>
-              </tr>
-              <tr>
-                <td style={{ padding: "8px", fontWeight: "bold" }}>Name</td>
-                <td style={{ padding: "8px" }}>{modalData.name}</td>
-              </tr>
-              <tr>
-                <td style={{ padding: "8px", fontWeight: "bold" }}>Category</td>
-                <td style={{ padding: "8px" }}>{modalData.category || "N/A"}</td>
-              </tr>
-              <tr>
-                <td style={{ padding: "8px", fontWeight: "bold", verticalAlign: "top" }}>Description</td>
-                <td style={{ padding: "8px" }}>
-                  <div className="clamp-description">{modalData.description}</div>
-                </td>
-              </tr>
-              <tr>
-                <td style={{ padding: "8px", fontWeight: "bold", verticalAlign: "top" }}>Image</td>
-                 <td style={{ padding: "8px" }}>
-                {modalData.image
-                  ? (
-                      <img
-                        src={modalData.image}
-                        alt={modalData.name}
-                        style={{ maxWidth: "100%", borderRadius: "8px" }}
-                      />
-                    )
-                  : Array.isArray(modalData.imageUrl) && modalData.imageUrl.length > 0
-                  ? (
-                      <img
-                        src={modalData.imageUrl[0]}
-                        alt={modalData.name}
-                        style={{ maxWidth: "100%", borderRadius: "8px" }}
-                      />
-                    )
-                  : "No image available"}
-              </td>
-              </tr>
-            </tbody>
-          </table>
-        </>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "10px" }}>
+              <tbody>
+                <tr>
+                  <td style={{ padding: "8px", fontWeight: "bold" }}>Subject</td>
+                  <td style={{ padding: "8px" }}>{modalData.subject}</td>
+                </tr>
+                <tr>
+                  <td style={{ padding: "8px", fontWeight: "bold" }}>Name</td>
+                  <td style={{ padding: "8px" }}>{modalData.name}</td>
+                </tr>
+                <tr>
+                  <td style={{ padding: "8px", fontWeight: "bold" }}>Category</td>
+                  <td style={{ padding: "8px" }}>{modalData.category || "N/A"}</td>
+                </tr>
+                <tr>
+                  <td style={{ padding: "8px", fontWeight: "bold", verticalAlign: "top" }}>Description</td>
+                  <td style={{ padding: "8px" }}>
+                    <div className="clamp-description">{modalData.description}</div>
+                  </td>
+                </tr>
+
+                  {/* Referral Code */}
+                {modalData.referralCode && (
+                  <tr>
+                    <td style={{ padding: "8px", fontWeight: "bold" }}>Referral Code</td>
+                    <td style={{ padding: "8px" }}>{modalData.referralCode}</td>
+                  </tr>
+                )}
+
+                {/* Associate Details */}
+                {modalData.associate && (
+                  <>
+                    <tr>
+                      <td style={{ padding: "8px", fontWeight: "bold" }}>Associate Name</td>
+                      <td style={{ padding: "8px" }}>{modalData.associate.name}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "8px", fontWeight: "bold" }}>Associate Email</td>
+                      <td style={{ padding: "8px" }}>{modalData.associate.email}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "8px", fontWeight: "bold" }}>Associate Phone</td>
+                      <td style={{ padding: "8px" }}>{modalData.associate.phone}</td>
+                    </tr>
+                  </>
+                )}
+
+                <tr>
+                  <td style={{ padding: "8px", fontWeight: "bold" }}>Image</td>
+                  <td style={{ padding: "8px" }}>
+                    {modalData.image ? (
+                      <img src={modalData.image} alt={modalData.name} style={{ maxWidth: "100%", borderRadius: "8px" }} />
+                    ) : Array.isArray(modalData.imageUrl) && modalData.imageUrl.length > 0 ? (
+                      <img src={modalData.imageUrl[0]} alt={modalData.name} style={{ maxWidth: "100%", borderRadius: "8px" }} />
+                    ) : "No image available"}
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+          </div>
+        </div>
       )}
-    </div>
-  </div>
-)}
-
     </div>
   );
 };
 
 export default Enquiry;
+
+
+

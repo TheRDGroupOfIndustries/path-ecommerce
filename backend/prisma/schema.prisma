@@ -46,6 +46,8 @@ model User {
 
   usedReferralId   String?                      // FK to Referral
   usedReferral     Referral? @relation("ReferralUsedByUsers", fields: [usedReferralId], references: [id])
+  enquiries     Enquire[] @relation("AssociateRelation")
+
 }
 
 model Marketplace {
@@ -102,14 +104,18 @@ model Enquire {
   message       String
   marketplaceId String?
   propertyId    String?
-  referralCode  String?     //  New field
-  associateId   String?     // New field (FK to User who is associate)
+  referralCode  String?
+  associateId   String?
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now()) @updatedAt
 
   marketplace   Marketplace? @relation(fields: [marketplaceId], references: [id],  onDelete: Cascade)
   property      Property?    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  associate     User? @relation("AssociateRelation", fields: [associateId], references: [id]) 
 }
+
 
 model Faq {
   id        String   @id @default(cuid())

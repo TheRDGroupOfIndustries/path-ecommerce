@@ -88,6 +88,8 @@ function MyReferrals() {
 
       const res = await axios.get(`${API_URL}/api/referral/detail/${user.id}`);
       const data = res.data;
+      // console.log(data);
+      
 
       // Show only codes which have at least 1 transaction
       const usedReferrals = data.referrals.filter(

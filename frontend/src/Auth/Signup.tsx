@@ -52,7 +52,7 @@ const validateReferralCode = async () => {
   if (!formData.referralCode.trim()) return;
 
   try {
-    const res = await fetch(`http://localhost:8000/api/referral/validate/${formData.referralCode}`);
+    const res = await fetch(`${API_URL}/api/referral/validate/${formData.referralCode}`);
     const data = await res.json();
 
     if (data.valid) {
@@ -180,7 +180,7 @@ const validateReferralCode = async () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4">
-      <Card className="w-full  p-4 border-none shadow-none">
+      <Card className="w-full max-w-md  p-4 border-none shadow-none">
         <CardContent className="p-0">
           <div className="flex justify-center mb-6">
             <img

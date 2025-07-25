@@ -177,7 +177,7 @@ const ProfilePage = () => {
   const tabs = roleTabs[user?.role] || [];
 
   return (
-    <div className="w-full  mx-auto flex flex-col mb-16 s">
+    <div className="w-full  mx-auto flex flex-col mb-16 ">
       {/* Profile Header */}
       <ChevronLeft
         className=" absolute top-5 left-5  text-white cursor-pointer"

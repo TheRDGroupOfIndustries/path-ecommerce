@@ -81,6 +81,7 @@ const HousesPlots = () => {
             }}
             btnText="View"
             type="property"
+            path={`/enquire/property/${property.id}`}
           />
         ))}
       </div>

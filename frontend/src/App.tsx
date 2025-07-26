@@ -7,6 +7,7 @@ import NotFound from "./components/Loader/Not-Found";
 import { Suspense, lazy, useEffect } from "react";
 import MyEnquiries from "./pages/MyEnquiries";
 import HelpDesk from "./pages/HelpDesk";
+import SupportResponse from "./pages/SupportResponse";
 
 // 1️⃣ Lazy load pages for better performance
 const Login = lazy(() => import("./Auth/Login"));
@@ -51,6 +52,7 @@ function App() {
     "/buy-now",
     "/my-cart",
     "/change-address",
+    "/support-response",
   ];
 
   const hideNavbar = hiddenPaths.some((path) =>
@@ -295,6 +297,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <HelpDesk />
+                </ProtectedRoute>
+              }
+            />
+                        <Route
+              path="/support-response"
+              element={
+                <ProtectedRoute>
+                  <SupportResponse />
+                  {/* <HelpDesk /> */}
                 </ProtectedRoute>
               }
             />

@@ -44,6 +44,49 @@ export const getSupportMessagesBySeller = async (req: Request, res: Response) =>
   }
 };
 
+export const updateReply = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const {replyMessage} = req.body
+  try {
+    const messages = await db.support.update({
+      where: { id: id },
+      data: {
+        replyMessage: replyMessage
+      }
+    });
+
+    res.status(200).json({data: messages});
+  } catch (err) {
+    console.error("Error fetching support messages:", err);
+    res.status(500).json({ error: "Failed to fetch support messages" });
+  }
+};
+
+export const getSupportMessagesForUser = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  try {
+    const messages = await db.support.findMany({
+      where: { userId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            imageUrl: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    res.status(200).json({data: messages});
+  } catch (err) {
+    console.error("Error fetching support messages:", err);
+    res.status(500).json({ error: "Failed to fetch support messages" });
+  }
+};
+
 
 // DELETE Support Message
 export const deleteSupportMessage = async (req: Request, res: Response) => {

@@ -2,6 +2,11 @@ import { useEffect, useState } from "react"
 import { fetchDataFromApi, deleteData } from "../../utils/api"
 import { Trash2, MessageSquareReply } from "lucide-react"
 import "./Support.css"
+import axios from "axios"
+
+
+const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:8000/api";
+
 
 const Support = () => {
   const [messages, setMessages] = useState([])
@@ -38,6 +43,8 @@ const Support = () => {
         )
         setMessages(res)
         setFilteredMessages(res)
+        // console.log(res);
+        
       } catch (err) {
         console.error("Failed to load messages", err)
       } finally {
@@ -84,7 +91,7 @@ const Support = () => {
     setSelectedMessage(msg)
     setReplySubject(msg.subject || "")
     setHelpMessage(msg.message || "")
-    setReplyMessage("")
+    setReplyMessage(msg.replyMessage || "")
     setShowModal(true)
   }
 
@@ -96,12 +103,16 @@ const Support = () => {
     setReplyMessage("")
   }
 
-  const handleReplySubmit = () => {
-    console.log("Reply Submitted")
-    console.log("Subject:", replySubject)
-    console.log("Message:", replyMessage)
-    alert("Reply submitted successfully!")
-    closeModal()
+  const [updating, setUpdating] = useState(false)
+  const handleReplySubmit = async (id) => {
+    setUpdating(true)
+    const req = await axios.put(`${BASE_URL}/support/update/${id}`, {
+      replyMessage: replyMessage
+    })
+    if (req.status === 200) {
+      setUpdating(false)
+      closeModal()
+    }
   }
 
   if (loading) {
@@ -260,8 +271,9 @@ const Support = () => {
                     </label>
                     <input
                       type="text"
+                      disabled={true}
                       value={replySubject}
-                      onChange={(e) => setReplySubject(e.target.value)}
+                      // onChange={(e) => setReplySubject(e.target.value)}
                       style={{
                         width: "100%",
                         padding: "8px",
@@ -279,7 +291,8 @@ const Support = () => {
                     <textarea
                       rows="2"
                       value={helpMessage}
-                      onChange={(e) => setHelpMessage(e.target.value)}
+                      disabled={true}
+                      // onChange={(e) => setHelpMessage(e.target.value)}
                       style={{
                         width: "100%",
                         padding: "8px",
@@ -310,7 +323,8 @@ const Support = () => {
 
                   <div style={{ marginTop: "16px", textAlign: "left" }}>
                     <button
-                      onClick={handleReplySubmit}
+                    disabled={updating}
+                      onClick={() => handleReplySubmit(selectedMessage.id)}
                       style={{
                         backgroundColor: "#3b82f6",
                         color: "white",
@@ -319,9 +333,12 @@ const Support = () => {
                         border: "none",
                         cursor: "pointer",
                         fontWeight: "bold",
+                        
                       }}
                     >
-                      Submit
+                      {
+                        updating ? "Updating..." : "Submit"
+                      }
                     </button>
                   </div>
                 </div>

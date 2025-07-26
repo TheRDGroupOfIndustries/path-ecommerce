@@ -70,6 +70,13 @@ const ProfilePage = () => {
       },
 
       {
+        label: "Support Response",
+        icon: <Cable className="text-black font-bold" />,
+        desc: "Your Replies for Queries",
+        path: "/support-response",
+      },
+
+      {
         label: "Settings",
         icon: <Settings className="text-black font-bold" />,
         desc: "Notifications, password",
@@ -183,7 +190,7 @@ const ProfilePage = () => {
   const tabs = roleTabs[user?.role] || [];
 
   return (
-    <div className="w-full  mx-auto flex flex-col sm:mb-16 ">
+    <div className="w-full  mx-auto flex flex-col md:mb-0 mb-16 ">
       {/* Profile Header */}
       <ChevronLeft
         className=" absolute top-5 left-5  text-white cursor-pointer"
@@ -266,7 +273,7 @@ const ProfilePage = () => {
             </div>
           </DialogTrigger>
 
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md" showCloseButton={false}>
             <DialogHeader>
               <DialogTitle>Are you sure you want to log out?</DialogTitle>
               <DialogDescription>

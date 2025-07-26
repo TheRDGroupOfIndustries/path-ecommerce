@@ -22,6 +22,8 @@ const Enquiry = () => {
   const fetchEnquiry = async () => {
     const res = await fetchDataFromApi("/enquiry/by-role");
     if (res && Array.isArray(res)) {
+      console.log(res);
+      
       setUsers(res);
     } else {
       console.error("Unexpected API response:", res);
@@ -88,6 +90,7 @@ const Enquiry = () => {
                 <div className="user-description description-clamp">{user.message}</div>
                 <div className="user-category">{user.email}</div>
                 <div className="user-category">{user.phone}</div>
+                {/* <div className="user-category">{user.phone}</div> */}
 
                 <div className="action-buttons">
                   <button className="delete-btn" onClick={() => handleDelete(user.id)}><Trash2 /></button>
@@ -107,6 +110,7 @@ const Enquiry = () => {
                 <th>Message</th>
                 <th>Email</th>
                 <th>Phone</th>
+                <th>Type</th>
                 <th>Referral</th>
                 <th>Actions</th>
               </tr>
@@ -119,6 +123,9 @@ const Enquiry = () => {
                   <td><div className="description-clamp">{user.message}</div></td>
                   <td>{user.email}</td>
                   <td>{user.phone}</td>
+                  {/* <td>{user.phone}</td> */}
+
+                  <td>{user.marketplace ? "Marketplace" : "Property"}</td>
                   <td>{user.referralCode ? "Yes" : "No"}</td>
                   <td>
                     <div className="action-buttons">

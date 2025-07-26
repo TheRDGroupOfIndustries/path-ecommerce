@@ -9,7 +9,7 @@ import {
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 
-const CardComponent = ({ service, btnText, type }) => {
+const CardComponent = ({ service, btnText, type, path }) => {
   const navigate = useNavigate();
 
   return (
@@ -47,8 +47,7 @@ const CardComponent = ({ service, btnText, type }) => {
           }`}
          
           onClick={(e) => {
-            e.stopPropagation();
-           
+            navigate(path)
           }}
           type="button"
         >

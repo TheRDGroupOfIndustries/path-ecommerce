@@ -86,7 +86,7 @@ app.use("/api/verification", verify)
 app.use("/api/cart",cartRoute);
 app.use("/api/order",orderRoute);
 app.use("/api/manage-associate", mangageAssociate)
-app.use("/api/support",supportRoute)
+app.use("/api/support", supportRoute)
 
 import type { Request, Response, NextFunction } from 'express';
 

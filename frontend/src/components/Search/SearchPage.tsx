@@ -47,6 +47,8 @@ function SearchPage() {
       const req = await axios.get(`${dynamicUrl}/${input}`);
       if (req.status === 201) {
         setData(req.data);
+        // console.log(req.data);
+        
       }
     } catch (error) {
       console.log(error);
@@ -113,6 +115,7 @@ function SearchPage() {
                 }}
                 btnText={"View"}
                 type={"marketplace"}
+                path={`/enquire/marketplace/${items.id}`}
               />
             ) : (
               <ProductCard

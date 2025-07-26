@@ -244,8 +244,6 @@
 
 // export default SendEnquire;
 
-
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -380,7 +378,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
-          animation: "slideUpMobile 0.3s ease-out forwards"
+          animation: "slideUpMobile 0.3s ease-out forwards",
         }}
       >
         <div className="flex justify-between items-center mb-4">
@@ -414,14 +412,22 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
             placeholder="Your email"
             className="w-full p-4 py-6 sm:py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50 text-sm sm:text-base"
           />
-          <Input
-            name="phone"
-            type="text"
-            value={formData.phone}
-            onChange={handleChange}
-            placeholder="Phone number"
-            className="w-full p-4 py-6 sm:py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50 text-sm sm:text-base"
-          />
+          <div className="flex rounded-lg overflow-hidden gap-2">
+            <span className="flex items-center px-3 text-sm text-gray-100 bg-white/20 rounded-lg">
+              +91
+            </span>
+            <Input
+              name="phone"
+              placeholder="Phone"
+              type="number"
+              required
+              value={formData.phone}
+              onChange={handleChange}
+              minLength={10}
+              maxLength={10}
+              className="w-full p-4 py-6 sm:py-7 bg-white/20 text-white rounded-lg border-none font-light placeholder:text-white/50 text-sm sm:text-base"
+            />
+          </div>
           <Input
             name="subject"
             type="text"
@@ -496,7 +502,7 @@ const SendEnquire = ({ setShowPopup, type, id }) => {
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
-          animation: "slideInRight 0.3s ease-out forwards"
+          animation: "slideInRight 0.3s ease-out forwards",
         }}
       >
         <div className="flex justify-between items-center mb-4">

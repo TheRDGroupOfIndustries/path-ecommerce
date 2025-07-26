@@ -79,8 +79,9 @@ const AllServicesPage = () => {
               image: service.imageUrl[0],
               description: service.description,
             }}
-            btnText="Enquire Now"
+            btnText="View"
             type="marketplace"
+            path={`/enquire/marketplace/${service.id}`}
           />
         ))}
       </div>

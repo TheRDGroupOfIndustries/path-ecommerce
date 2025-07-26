@@ -1,98 +1,83 @@
 import { Request, Response } from "express";
 import db from "../client/connect.js";
 
+
 // Add to Cart
-export const addToCart = async (req: Request, res: Response): Promise<void> => {
-  const userId = req.user?.id;
-  const { productId, quantity, referralCode, discountPrice } = req.body;
- 
-  console.log(discountPrice)
-
-  if (!userId) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
-  }
-
-  if (!productId) {
-    res.status(400).json({ message: "Product ID required" });
-    return;
-  }
+export const addToCart = async (req: Request, res: Response) => {
+  const { userId, productId, quantity, referralCode } = req.body;
 
   try {
+    // 1. Get the product
     const product = await db.products.findUnique({ where: { id: productId } });
 
     if (!product) {
-      res.status(404).json({ message: "Product not found" });
-      return;
+      return res.status(404).json({ message: "Product not found" });
     }
 
-    let discountedPrice = parseFloat(product.price);
+    const originalPrice = parseFloat(product.price); // ensure it's a number
+    const productDiscountPercent = product.discount || 0;
 
-    //  Prevent multiple referrals in cart
+    // 2. Apply product discount
+    const discountedPrice = originalPrice - (originalPrice * productDiscountPercent) / 100;
+
+    let referralFinalPrice = discountedPrice; // final amount user pays
+    let referralPercent: number | null = null;
+
+    // 3. Apply referral discount if code provided
     if (referralCode) {
-      const existingReferralItem = await db.cartItem.findFirst({
-        where: {
-          userId,
-          discountedPrice: {
-            not: parseFloat(product.price), // referral already applied
-          },
-        },
-        include: {
-          product: true,
-        },
-      });
+      const match = referralCode.trim().toLowerCase().match(/^([a-zA-Z]+)-(\d+)$/);
 
-      if (existingReferralItem) {
-          res.status(400).json({
-          message: "Referral already applied ",
-        });
+      if (!match) {
+        return res.status(400).json({ message: "Invalid referral code format. Use like 'alisha-5'" });
       }
 
-      const referral = await db.referral.findUnique({
-        where: { referral: referralCode },
-      });
+      referralPercent = parseFloat(match[2]);
 
-      if (referral && product.referralPercentage) {
-        const percent = product.referralPercentage;
-        discountedPrice = discountedPrice - (discountedPrice * percent) / 100;
-        discountedPrice = parseFloat(discountedPrice.toFixed(2));
+      if (isNaN(referralPercent) || referralPercent <= 0 || referralPercent > 100) {
+        return res.status(400).json({ message: "Referral percent must be between 1 and 100" });
       }
+
+      // Apply referral discount on top of discounted price
+      referralFinalPrice = discountedPrice - (discountedPrice * referralPercent) / 100;
     }
 
-    const existingItem = await db.cartItem.findFirst({
-      where: { userId, productId },
-    });
-
-    if (existingItem) {
-      const updatedItem = await db.cartItem.update({
-        where: { id: existingItem.id },
-        data: {
-          quantity: existingItem.quantity + (quantity || 1),
-          discountedPrice,
-        },
-      });
-
-      res.status(200).json(updatedItem);
-      return;
-    }
-
-    const newItem = await db.cartItem.create({
+    // 4. Save to cart
+    const cartItem = await db.cartItem.create({
       data: {
         userId,
         productId,
-        quantity: quantity || 1,
-        discountedPrice: parseFloat(discountPrice),
+        quantity,
+        referralCode: referralCode || null,
+        referralPercent,
+        discountedPrice: referralFinalPrice, // this is what user pays
+      },
+      include: {
+        product: true,
       },
     });
 
-    res.status(201).json(newItem);
+    // 5. Respond
+    return res.status(201).json({
+      message: "Product added to cart successfully",
+      cartItem: {
+        id: cartItem.id,
+        product: cartItem.product,
+        quantity: cartItem.quantity,
+        referralCode: cartItem.referralCode,
+        referralPercent: cartItem.referralPercent,
+        originalPrice,
+        productDiscountPercent,
+        discountedPrice,        // after product discount
+        finalPrice: referralFinalPrice, // after both discounts
+        createdAt: cartItem.createdAt,
+      },
+    });
   } catch (error) {
-    console.error("Add to cart error:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("❌ Error adding to cart:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
-//  Get Cart Items
 export const getCartItems = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
 
@@ -130,25 +115,43 @@ export const getCartItems = async (req: Request, res: Response): Promise<void> =
       },
     });
 
-    const modifiedCartItems = cartItems.map(item => {
-    const originalPrice = parseFloat(item.product.price);
-    const discounted = item.discountedPrice ?? originalPrice;
-    const referralApplied = discounted < originalPrice;
+    const modifiedCartItems = cartItems.map((item) => {
+      const originalPrice = parseFloat(item.product.price); // e.g., 3999
+      const productDiscountPercent = item.product.discount || 0;
 
-    return {
-    ...item,
-    referralApplied,
-    referralCode: referralApplied ? item.product.referralBy : null,
-   };
-   });
+      const productDiscountAmount = (productDiscountPercent / 100) * originalPrice;
+      const productDiscountPrice = parseFloat((originalPrice - productDiscountAmount).toFixed(2)); // 2199.45
 
+      const referralPercent = item.referralPercent ?? 0;
+      const referralApplied = referralPercent > 0;
+
+      // Use already stored discountedPrice (includes referral if applied)
+      const finalPrice = parseFloat((item.discountedPrice ?? productDiscountPrice).toFixed(2));
+
+      return {
+        id: item.id,
+        productId: item.productId,
+        userId: item.userId,
+        quantity: item.quantity,
+        referralCode: item.referralCode ?? null,
+        referralPercent: referralPercent || null,
+        referralApplied,
+        originalPrice,
+        productDiscountPercent,
+        productDiscountPrice,
+        finalPrice,
+        product: item.product,
+        createdAt: item.createdAt,
+      };
+    });
 
     res.status(200).json(modifiedCartItems);
   } catch (error) {
-    console.error("Get cart error:", error);
+    console.error("❌ Get cart error:", error);
     res.status(500).json({ message: "Failed to fetch cart items" });
   }
 };
+
 
 // Update Quantity
 export const updateCartItemQuantity = async (req: Request, res: Response): Promise<void> => {

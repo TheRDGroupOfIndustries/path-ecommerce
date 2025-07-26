@@ -24,7 +24,9 @@ export interface RegisterInput {
 }
 
 export interface AuthResponse {
-  token: string;
+  token: {
+    accessToken: string;
+  };
   user: {
     id: string;
     name: string;

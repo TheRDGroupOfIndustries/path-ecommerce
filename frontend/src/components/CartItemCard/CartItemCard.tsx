@@ -4,7 +4,7 @@ import { Trash2, Plus, Star } from "lucide-react";
 import React from "react";
 
 
-const CartItemCard = ({ item, updateQuantity, discount }: {
+const CartItemCard = ({ item, updateQuantity, discount, price }: {
   item: any,
   updateQuantity: any,
   price?: number
@@ -80,7 +80,7 @@ const CartItemCard = ({ item, updateQuantity, discount }: {
           {/* Price & discount */}
           <div className="flex items-center gap-2">
             <span className="text-base font-bold text-gray-900">
-              ₹ {" "} {item.finalPrice}
+              ₹ {" "} {price}
             </span>
             <span className="text-gray-400 text-xs line-through">
               ₹{item.price }

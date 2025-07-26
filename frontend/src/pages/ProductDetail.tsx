@@ -328,6 +328,7 @@ const handleReferralButtonClick = async () => {
         {
           productId: id,
           quantity: 1,
+          discountPrice: calculateFinalPrice().toFixed(0)
         },
         {
           headers: {

@@ -156,7 +156,6 @@ function EditAssociate({ closeModal, id, level, percentageInt }) {
 
 const ViewAssociate = () => {
   const [associates, setAssociates] = useState([]);
-  const [revenue, setRevenue] = useState([]);
   const [referrals, setReferrals] = useState([]);
   const [expanded, setExpanded] = useState(null);
 
@@ -166,7 +165,6 @@ const ViewAssociate = () => {
   const [id, setId] = useState("")
   useEffect(() => {
     fetchAssociates();
-    fetchRevenue();
     fetchReferrals();
   }, []);
 
@@ -181,15 +179,6 @@ const ViewAssociate = () => {
     }
   };
 
-  const fetchRevenue = async () => {
-    try {
-      const data = await fetchDataFromApi("/referral/revenue");
-      setRevenue(data);
-    } catch (error) {
-      console.error("Failed to fetch revenue:", error);
-    }
-  };
-
   const fetchReferrals = async () => {
     try {
       const data = await fetchDataFromApi("/referral/all");
@@ -200,28 +189,28 @@ const ViewAssociate = () => {
       console.error("Failed to fetch referrals:", error);
     }
   };
-
-  const getReferralDetails = (id) => {
-    return referrals
-      .filter((r) => r.createdForId === id)
-      .map((r) => {
-        const percent = r.transactions?.[0]?.percent ?? "N/A";
-        const commission = r.transactions
-          ?.reduce((sum, tx) => sum + (tx.commission || 0), 0)
-          .toFixed(2);
-        return {
-          code: r.referral,
-          percent,
-          commission,
-        };
-      });
-  };
+const getReferralDetails = (id) => {
+  return referrals
+    .filter((r) => r.createdForId === id)
+    .map((r) => {
+      const percent = r.transactions?.[0]?.percent ?? "N/A";
+      return {
+        code: r.referral,
+        percent,
+        commission: r.totalRevenue?.toFixed(2) || "0.00",
+        userCount: r.usedBy?.length || 0, 
+      };
+    });
+};
 
   // Get total commission for an associate
-  const getTotalCommission = (id) => {
-    const entry = revenue.find((r) => r.associateId === id);
-    return entry?.totalCommission?.toFixed(2) || "0.00";
-  };
+ const getTotalCommission = (id) => {
+  const total = referrals
+    .filter((r) => r.createdForId === id)
+    .reduce((sum, r) => sum + (r.totalRevenue || 0), 0);
+  return total.toFixed(2);
+};
+
 
  const handleDelete = async (id) => {
   if (window.confirm("Are you sure you want to delete this associate?")) {
@@ -325,6 +314,7 @@ const ViewAssociate = () => {
                 <thead>
                   <tr>
                     <th>Referral Code</th>
+                    <th>Users Used</th>
                     <th>Percentage (%)</th>
                     <th>Commission (₹)</th>
                   </tr>
@@ -333,6 +323,7 @@ const ViewAssociate = () => {
                   {getReferralDetails(a.id).map((ref, idx) => (
                     <tr key={idx}>
                       <td>{ref.code}</td>
+                      <td>{ref.userCount}</td>
                       <td>{ref.percent}</td>
                       <td>₹ {ref.commission}</td>
                     </tr>

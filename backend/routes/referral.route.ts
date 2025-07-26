@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { createReferral , checkReferralCode , applyReferralCode, getReferralDetails,validateReferralCode } from "../controller/referral.controller.js";
 import db from "../client/connect.js";
-import { getAllReferralRevenue ,deleteReferral } from "../controller/referral.controller.js";
+import {deleteReferral } from "../controller/referral.controller.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 
 
@@ -15,6 +15,7 @@ router.post("/check", isAuthenticated, async (req, res) => {
    await checkReferralCode(req, res);
 });
 
+
 router.get("/all", async (req, res) => {
   try {
     const referrals = await db.referral.findMany({
@@ -22,12 +23,31 @@ router.get("/all", async (req, res) => {
         transactions: {
           select: {
             percent: true,
-            commission: true
+            commission: true,
+            userId: true, 
           }
         }
       }
     });
-    res.status(200).json(referrals);
+
+    const filteredReferrals = referrals.map(ref => {
+      const seenUsers = new Set();
+      const uniqueTransactions = ref.transactions.filter(tx => {
+        if (!tx.userId || seenUsers.has(tx.userId)) return false;
+        seenUsers.add(tx.userId);
+        return true;
+      });
+
+      const totalRevenue = uniqueTransactions.reduce((sum, tx) => sum + tx.commission, 0);
+
+      return {
+        ...ref,
+        transactions: uniqueTransactions,
+        totalRevenue, 
+      };
+    });
+
+    res.status(200).json(filteredReferrals);
   } catch (err) {
     console.error("Error fetching referrals:", err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -35,15 +55,10 @@ router.get("/all", async (req, res) => {
 });
 
 
-
 router.post("/apply",isAuthenticated, async (req,res) => {
   await applyReferralCode(req,res);
 });
 
-
-router.get("/revenue", async (req, res) => {
-  await getAllReferralRevenue(req, res);
-});
 
 
 router.delete("/:id", async (req, res) => {

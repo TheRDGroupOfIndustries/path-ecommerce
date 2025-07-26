@@ -161,37 +161,6 @@ if (!updatedReferral.usedBy.includes(userId)) {
 };
 
 
-
-export const getAllReferralRevenue = async (req: Request, res: Response) => {
-  try {
-     //@ts-ignore
-    const revenue = await db.referralTransaction.groupBy({
-      by: ['associateId'],
-      _sum: {
-        commission: true,
-      },
-    });
-
-    const detailed = await Promise.all(
-      revenue.map(async (r: { associateId: any; _sum: { commission: any; }; }) => {
-        const user = await db.user.findUnique({ where: { id: r.associateId } });
-        return {
-          associateId: r.associateId,
-          name: user?.name || "N/A",
-          email: user?.email || "N/A",
-          totalCommission: r._sum.commission || 0,
-        };
-      })
-    );
-
-    res.status(200).json(detailed);
-  } catch (err) {
-    console.error("Error fetching referral revenue:", err);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
-
 // Delete Referral By ID
 export const deleteReferral = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -219,25 +188,46 @@ export const getReferralDetails = async (req: Request, res: Response) => {
       where: { createdForId: id },
       include: {
         transactions: {
+          orderBy: { createdAt: "desc" },
           include: {
             user: {
-              select: { id: true, name: true, email: true, phone: true, imageUrl: true },
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+                imageUrl: true,
+              },
             },
             product: {
-              select: { id: true, name: true, price: true, images: true, category: true },
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                images: true,
+                category: true,
+              },
             },
             associate: {
-              select: { id: true, name: true, email: true, phone: true, imageUrl: true },
-            },
-            referral: {
-              select: { referral: true },
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+                imageUrl: true,
+              },
             },
           },
-          orderBy: { createdAt: "desc" },
         },
         createdFor: {
           select: {
-            id: true, name: true, email: true, phone: true, imageUrl: true, role: true, createdAt: true,
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            imageUrl: true,
+            role: true,
+            createdAt: true,
           },
         },
       },
@@ -247,31 +237,72 @@ export const getReferralDetails = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "No referrals found for this associate" });
     }
 
-    const allUsedByIds = referrals.flatMap((r: { usedBy: any; }) => r.usedBy);
+    // Collect unique usedBy user IDs
+    const allUsedByIds = referrals.flatMap((r) => r.usedBy);
+    const uniqueUsedByIds = [...new Set(allUsedByIds)];
 
     const usedByUsers = await db.user.findMany({
-      where: { id: { in: allUsedByIds } },
-      select: { id: true, name: true, email: true, phone: true, imageUrl: true, createdAt: true },
+      where: { id: { in: uniqueUsedByIds } },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        imageUrl: true,
+        createdAt: true,
+      },
     });
 
+    // Deduplicate transactions (referralId + userId)
+    const seenPairs = new Set<string>();
+    const uniqueTransactions = [];
+
+    for (const referral of referrals) {
+      for (const txn of referral.transactions) {
+        const key = `${referral.id}_${txn.userId}`;
+        if (!seenPairs.has(key)) {
+          seenPairs.add(key);
+          uniqueTransactions.push(txn);
+        }
+      }
+    }
+
+    // Calculate total revenue from deduplicated transactions
+    const totalRevenue = uniqueTransactions.reduce((sum, txn) => sum + txn.commission, 0);
+
+    // Final response
     res.status(200).json({
       totalReferralCodes: referrals.length,
-      referrals: referrals.map((r: { id: any; referral: any; usedBy: string | any[]; transactions: string | any[]; }) => ({
+      totalUsedByUsers: uniqueUsedByIds.length,
+      totalTransactions: uniqueTransactions.length,
+      totalRevenue,
+      createdFor: referrals[0].createdFor,
+      usedByUsers,
+     referrals: referrals.map((r) => {
+      const userSeen = new Set<string>();
+      const uniqueTxns = [];
+
+      for (const txn of r.transactions) {
+        if (!userSeen.has(txn.userId)) {
+          userSeen.add(txn.userId);
+          uniqueTxns.push(txn);
+        }
+      }
+      return {
         id: r.id,
         referralCode: r.referral,
         totalUsedBy: r.usedBy.length,
-        totalTransactions: r.transactions.length,
-        transactions: r.transactions,
-      })),
-      createdFor: referrals[0].createdFor,
-      usedByUsers,
+        totalTransactions: uniqueTxns.length,
+        transactions: uniqueTxns,
+      };
+    }),
+
     });
   } catch (err) {
     console.error("Error fetching referral details", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 
 // Simple Referral Code Validation

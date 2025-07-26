@@ -257,6 +257,11 @@ const handleReferralButtonClick = async () => {
       const discount = parseInt(code.split("-")[1]);
       setReferralDiscount(discount);
       setReferralStep("applied");
+    } else if (res.status === 400) {
+      setReferralError("Referral code already used by you.");
+      toast.error("Same referral cannot use twice.");
+      setReferralStep("check");
+      setReferralDiscount(0);
     } else {
       setReferralError("Something went wrong. Please try again.");
     }

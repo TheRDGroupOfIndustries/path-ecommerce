@@ -61,9 +61,7 @@ export const checkReferralCode = async (req: Request, res: Response) => {
     });
     const userId = req.user.id;
     const user = await db.user.findUnique({where: { id: userId }, include: { orders: true }});
-    const existingOrder = user.orders.find(order =>
-        order.referralCode === code
-      );
+    const existingOrder = user.orders.find(order => order.productId === productId && order.referralCode === code);
       if (existingOrder) {
         return res.status(400).json({ error: "You already used this referral code" });
       }
@@ -109,17 +107,6 @@ export const applyReferralCode = async (req: Request, res: Response) => {
 
     const user = await db.user.findUnique({where: { id: userId }, include: { orders: true }});
     if (!referral) return res.status(404).json({ error: "Invalid referral code" });
-
-   const existingOrder = user.orders.find(order =>
-      order.referralCode === code
-    );
-    if (existingOrder) {
-      return res.status(400).json({ error: "You already used this referral code" });
-    }
-
-    if (referral.usedBy.includes(userId)) {
-      return res.status(400).json({ error: "You already used this referral code" });
-    }
 
     const product = await db.products.findUnique({ where: { id: productId } });
     if (!product) return res.status(404).json({ error: "Product not found" });

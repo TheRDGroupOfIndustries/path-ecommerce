@@ -13,6 +13,8 @@ export const generateTokens = (user: UserPayload) => {
 };
 
 export const verifyTokenFromHeader = (authHeader: string): UserPayload | null => {
+  // console.log("Verifying token from header:", authHeader);
+  
   if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
 
   const token = authHeader.split(" ")[1];

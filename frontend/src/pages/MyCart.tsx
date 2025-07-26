@@ -38,6 +38,7 @@ export default function MyCart() {
           sellerName: item.product.seller.name,
         }));
 
+        console.log(res.data);
         setCartItems(mapped);
       } catch (err) {
         console.error("Error fetching cart items:", err);

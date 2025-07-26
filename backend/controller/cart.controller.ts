@@ -152,7 +152,6 @@ export const getCartItems = async (req: Request, res: Response): Promise<void> =
   }
 };
 
-
 // Update Quantity
 export const updateCartItemQuantity = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;

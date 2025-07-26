@@ -1,0 +1,755 @@
+/* Container and Layout */
+.associate-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.page-header p {
+  font-size: 1.1rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Table Container */
+.table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+/* Main Table Styles */
+.associate-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.associate-table thead {
+  background: whitesmoke;
+  color: rgb(143, 142, 142);
+}
+
+.associate-table th {
+  padding: 1.25rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.associate-table tbody tr.main-row {
+  border-bottom: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.associate-table tbody tr.main-row:hover {
+  background-color: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.associate-table td {
+  padding: 1.25rem 1rem;
+  vertical-align: middle;
+}
+
+/* Serial Number */
+.serial-number {
+  font-weight: 600;
+  color: #64748b;
+  width: 60px;
+  text-align: center;
+}
+
+/* Associate Info */
+.associate-info {
+  min-width: 200px;
+}
+
+.associate-details .name {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.associate-details .email {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+/* Referral Code */
+.referral-code code {
+  background: #f1f5f9;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-size: 0.875rem;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+/* Commission Amount */
+.commission-amount {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #059669;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Expanded Row Styles */
+.expanded-row {
+  background: #f8fafc;
+}
+
+.expanded-row td {
+  padding: 0;
+}
+
+.details-container {
+  padding: 2rem;
+  border-top: 3px solid #e2e8f0;
+}
+
+.details-container h4 {
+  margin: 0 0 1.5rem 0;
+  color: #1e293b;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Referral Details */
+.referral-details {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.referral-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.referral-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.referral-code-display {
+  font-size: 1rem;
+}
+
+.referral-code-display code {
+  background: #f1f5f9;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  margin-left: 0.5rem;
+}
+
+.referral-stats {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.stat1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stat1-label {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat1-value {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #1e293b;
+}
+
+.stat1-value.commission {
+  color: #059669;
+  font-size: 1.2rem;
+}
+
+/* User Categories */
+.user-categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.user-category {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.user-category h5 {
+  margin: 0 0 1rem 0;
+  color: #374151;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.user-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  border: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.user-item:last-child {
+  margin-bottom: 0;
+}
+
+.user-name {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.user-email {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.no-users {
+  color: #9ca3af;
+  font-style: italic;
+  text-align: center;
+  padding: 1rem;
+  margin: 0;
+}
+
+.no-referrals {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
+}
+
+/* No Data State */
+.no-data {
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.no-data-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.no-data-content svg {
+  color: #9ca3af;
+}
+
+.no-data-content h3 {
+  margin: 0;
+  color: #374151;
+  font-size: 1.25rem;
+}
+
+.no-data-content p {
+  margin: 0;
+  color: #6b7280;
+}
+
+/* Modal Styles */
+.modal5-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.modal5-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.modal5-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ef4444;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.modal5-close:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: scale(1.05);
+}
+
+.modal5-header {
+  padding: 2rem 2rem 1rem 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.modal5-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.modal5-body {
+  padding: 2rem;
+}
+
+.form5-group {
+  margin-bottom: 1.5rem;
+}
+
+.form5-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form5-select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+
+.modal5-footer {
+  padding: 1rem 2rem 2rem 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .associate-container {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 2rem;
+  }
+
+  .associate-table th,
+  .associate-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .referral-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .referral-stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .user-categories {
+    grid-template-columns: 1fr;
+  }
+
+  .user-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .modal5-container {
+    margin: 1rem;
+    max-width: none;
+  }
+
+  .modal5-header,
+  .modal5-body,
+  .modal5-footer {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .associate-container {
+    padding: 0.5rem;
+  }
+
+  .page-header {
+    margin-bottom: 1rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .associate-table {
+    font-size: 0.875rem;
+  }
+
+  .associate-table th,
+  .associate-table td {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .details-container {
+    padding: 1rem;
+  }
+
+  .referral-card {
+    padding: 1rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .associate-container {
+    background: white;
+    box-shadow: none;
+  }
+
+
+  .modal5-overlay {
+    display: none;
+  }
+
+  .associate-table {
+    border-collapse: collapse;
+  }
+
+  .associate-table th,
+  .associate-table td {
+    border: 1px solid #000;
+    padding: 0.5rem;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .associate-table th {
+    background: #000;
+    color: #fff;
+  }
+}
+
+
+
+@media (max-width: 640px) {
+  .associate-table {
+    font-size: 0.75rem;
+  }
+
+  .associate-table th,
+  .associate-table td {
+    padding: 0.4rem 0.3rem;
+    white-space: nowrap;
+  }
+
+  .referral-code code {
+    font-size: 0.75rem;
+  }
+
+  .user-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.5rem;
+  }
+
+  .user-category h5 {
+    font-size: 0.9rem;
+  }
+
+  .stat1-value {
+    font-size: 1rem;
+  }
+
+  .stat1-value.commission {
+    font-size: 1.1rem;
+  }
+}
+
+/* Base styling (you likely already have this) */
+.associate-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.associate-table th,
+.associate-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+/* ===== Responsive styles for screens below 600px ===== */
+@media screen and (max-width: 600px) {
+  .associate-table,
+  .associate-table thead,
+  .associate-table tbody,
+  .associate-table th,
+  .associate-table td,
+  .associate-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .associate-table thead {
+    display: none;
+  }
+
+  .associate-table tr {
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    padding: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .associate-table td {
+    position: relative;
+    padding-left: 50%;
+    text-align: left;
+    border: none;
+    border-bottom: 1px solid #eee;
+  }
+
+  .associate-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 45%;
+    font-weight: bold;
+    white-space: nowrap;
+    color: #555;
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .expanded-row td {
+    padding: 10px !important;
+  }
+
+  .referral-details {
+    padding: 10px;
+  }
+
+  .referral-card {
+    border: 1px solid #ddd;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background-color: #f9f9f9;
+  }
+
+  .user-category h5 {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  .user-list {
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .user-item {
+    margin-bottom: 6px;
+  }
+}
+
+
+.dark .associate-container {
+  background-color:#181c2f;
+}
+
+.dark .page-header h1,
+.dark .stat1-value,
+.dark .associate-details .name {
+  color: #f1f5f9;
+}
+
+.dark .page-header p,
+.dark .associate-details .email,
+.dark .user-email,
+.dark .stat1-label {
+  color: #94a3b8;
+}
+
+.dark .associate-table {
+  background-color: #1e293b;
+  color: #f1f5f9;
+}
+
+.dark .associate-table tbody tr.main-row:hover {
+  background-color: #334155;
+}
+
+.dark .associate-table th {
+  background: #1e293b;
+  color: #94a3b8;
+}
+
+.dark .associate-table td {
+  border-color: #334155;
+}
+
+.dark .referral-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.dark .user-category {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.dark .user-item {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.dark .referral-code code {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+.dark .stat1-value.commission {
+  color: #34d399;
+}
+
+.dark .no-users,
+.dark .no-referrals {
+  color: #9ca3af;
+}
+
+.dark .modal5-container {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+.dark .modal5-close {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fecaca;
+}
+
+.dark .modal5-close:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+.dark .modal5-header {
+  background: linear-gradient(135deg, #4338ca 0%, #6b21a8 100%);
+}
+.dark .expanded-row{
+    background-color: #0f172a;
+}
+.dark .referral-code-display code {
+    background-color: #0f172a;
+}
+.dark .details-container{
+    border-top: black;
+}
+.dark .details-container h4 {
+    color: white;
+}

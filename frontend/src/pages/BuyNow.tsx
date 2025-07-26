@@ -33,6 +33,8 @@ function BuyNow() {
   const fromCart = location?.state?.fromCart ?? false;
   const cartItemsFromCart = location?.state?.cartItems ?? [];
 
+  // console.log("cartItemsFromCart ",cartItemsFromCart);
+
   async function GetAddress() {
     const req = await axios.get(`${API_URL}/api/users/me`, {
       headers: {
@@ -86,11 +88,13 @@ function BuyNow() {
     if (fromCart && cartItemsFromCart?.length > 0) {
       // Cart-based checkout
       setData(cartItemsFromCart);
+
       const total = cartItemsFromCart.reduce(
-        (sum, item) => sum + item.finalPrice * item.quantity,
+        (sum, item) => sum + item.discountedPrice * item.quantity,
         0
       );
-      setPrice(total);
+      // setPrice(total);
+      setPrice(parseFloat(total.toFixed(2)));
       setLoading(false);
     } else if (id) {
       GetItem();
@@ -122,6 +126,7 @@ function BuyNow() {
             },
           }
         );
+            console.log("buynow/cart:",res);
         // console.log(res);
         if (res.status === 201) {
           navigate("/thanks");
@@ -152,6 +157,8 @@ function BuyNow() {
             },
           }
         );
+        console.log("buynow:",res);
+        
 
         if (res.status === 201) {
           navigate("/thanks");
@@ -201,16 +208,30 @@ function BuyNow() {
     }
   };
 
+  // useEffect(() => {
+  //   if (fromCart && data.length > 0) {
+  //     const total = data.reduce(
+  //       (sum, item) => sum + item.finalPrice * item.quantity,
+  //       0
+  //     );
+  //     // setPrice(total);
+  //     setPrice(parseFloat(total.toFixed(2)));
+  //   } else if (!fromCart && data.length > 0) {
+  //     const unitPrice = data[0].discountedPrice;
+  //     setPrice(unitPrice * quantity);
+  //   }
+  // }, [quantity, data]);
+
   useEffect(() => {
     if (fromCart && data.length > 0) {
       const total = data.reduce(
-        (sum, item) => sum + item.finalPrice * item.quantity,
+        (sum, item) => sum + item.discountedPrice * item.quantity,
         0
       );
-      setPrice(total);
+      setPrice(parseFloat(total.toFixed(2)));
     } else if (!fromCart && data.length > 0) {
       const unitPrice = data[0].finalPrice;
-      setPrice(unitPrice * quantity);
+      setPrice(parseFloat((unitPrice * quantity).toFixed(2)));
     }
   }, [quantity, data]);
 
@@ -223,6 +244,8 @@ function BuyNow() {
   if (loading) {
     return <Loader />;
   }
+  console.log("cartItemsFromCart: ", cartItemsFromCart);
+  console.log("data: ", data);
 
   return (
     <div className=" min-h-screen h-auto w-screen relative mb-16 p-4 container mx-auto">
@@ -300,16 +323,48 @@ function BuyNow() {
 
         <h2 className="text-2xl font-bold font-sans text-black mb-2">Items</h2>
 
-        {data.length > 0 ? (
+        {/* {data.length > 0 ? (
           data.map((item, index) => (
             <CartItemCard
               key={index}
               item={item}
               updateQuantity={updateQuantity}
-              price={price}
+              price={price }
               discount={code}
             />
           ))
+        ) : (
+          <Loader />
+        )} */}
+        {data.length > 0 ? (
+          fromCart ? (
+            // Cart items from "MyCart"
+            <div className="space-y-4">
+              {data.map((item, index) => (
+                <CartItemCard
+                  key={index}
+                  item={item}
+                  updateQuantity={updateQuantity}
+                  price={item.discountedPrice} // use finalPrice 
+                  // discount={item.discount}
+                  discountedPercent={item.discount}
+                />
+              ))}
+            </div>
+          ) : (
+            // Single product Buy Now
+            <div className="space-y-4">
+              {data.map((item, index) => (
+                <CartItemCard
+                  key={index}
+                  item={item}
+                  updateQuantity={updateQuantity}
+                  price={price}
+                  discount={code}
+                />
+              ))}
+            </div>
+          )
         ) : (
           <Loader />
         )}

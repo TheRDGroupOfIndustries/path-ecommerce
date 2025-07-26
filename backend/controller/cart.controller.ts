@@ -3,45 +3,140 @@ import db from "../client/connect.js";
 
 
 // Add to Cart
+// export const addToCart = async (req: Request, res: Response) => {
+//    const userId = req.user?.id;
+//    console.log("userID: ->> ",userId);
+   
+//   const { productId, quantity, referralCode } = req.body;
+
+//   if (!userId) {
+//     return res.status(401).json({ message: "Unauthorized" });
+//   }
+//   // const { userId, productId, quantity, referralCode } = req.body;
+
+//   try {
+//     // 1. Get the product
+//     const product = await db.products.findUnique({ where: { id: productId } });
+
+//     if (!product) {
+//       return res.status(404).json({ message: "Product not found" });
+//     }
+
+//     const originalPrice = parseFloat(product.price); // ensure it's a number
+//     const productDiscountPercent = product.discount || 0;
+
+//     // 2. Apply product discount
+//     const discountedPrice = originalPrice - (originalPrice * productDiscountPercent) / 100;
+
+//     let referralFinalPrice = discountedPrice; // final amount user pays
+//     let referralPercent: number | null = null;
+
+//     // 3. Apply referral discount if code provided
+//     if (referralCode) {
+//       const match = referralCode.trim().toLowerCase().match(/^([a-zA-Z]+)-(\d+)$/);
+
+//       if (!match) {
+//         return res.status(400).json({ message: "Invalid referral code format. Use like 'alisha-5'" });
+//       }
+
+//       referralPercent = parseFloat(match[2]);
+
+//       if (isNaN(referralPercent) || referralPercent <= 0 || referralPercent > 100) {
+//         return res.status(400).json({ message: "Referral percent must be between 1 and 100" });
+//       }
+
+//       // Apply referral discount on top of discounted price
+//       referralFinalPrice = discountedPrice - (discountedPrice * referralPercent) / 100;
+//     }
+
+//     // 4. Save to cart
+//     const cartItem = await db.cartItem.create({
+//       data: {
+//         userId,
+//         productId,
+//         quantity,
+//         referralCode: referralCode || null,
+//         referralPercent,
+//         discountedPrice: referralFinalPrice, // this is what user pays
+//       },
+//       include: {
+//         product: true,
+//       },
+//     });
+
+//     // 5. Respond
+//     return res.status(201).json({
+//       message: "Product added to cart successfully",
+//       cartItem: {
+//         id: cartItem.id,
+//         product: cartItem.product,
+//         quantity: cartItem.quantity,
+//         referralCode: cartItem.referralCode,
+//         referralPercent: cartItem.referralPercent,
+//         originalPrice,
+//         productDiscountPercent,
+//         discountedPrice,        // after product discount
+//         finalPrice: referralFinalPrice, // after both discounts
+//         createdAt: cartItem.createdAt,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("❌ Error adding to cart:", error);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
 export const addToCart = async (req: Request, res: Response) => {
-  const { userId, productId, quantity, referralCode } = req.body;
+  const userId = req.user?.id || req.body.userId;
+  const { productId, quantity = 1, referralCode } = req.body;
+
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized: userId is missing" });
+  }
 
   try {
     // 1. Get the product
-    const product = await db.products.findUnique({ where: { id: productId } });
+    const product = await db.products.findUnique({
+      where: { id: productId },
+    });
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    const originalPrice = parseFloat(product.price); // ensure it's a number
+    const originalPrice = parseFloat(product.price);
     const productDiscountPercent = product.discount || 0;
 
     // 2. Apply product discount
-    const discountedPrice = originalPrice - (originalPrice * productDiscountPercent) / 100;
+    const discountedPrice =
+      originalPrice - (originalPrice * productDiscountPercent) / 100;
 
-    let referralFinalPrice = discountedPrice; // final amount user pays
+    let referralFinalPrice = discountedPrice;
     let referralPercent: number | null = null;
 
-    // 3. Apply referral discount if code provided
+    // 3. Apply referral discount (if valid)
     if (referralCode) {
       const match = referralCode.trim().toLowerCase().match(/^([a-zA-Z]+)-(\d+)$/);
 
       if (!match) {
-        return res.status(400).json({ message: "Invalid referral code format. Use like 'alisha-5'" });
+        return res.status(400).json({
+          message: "Invalid referral code format. Use like 'alisha-5'",
+        });
       }
 
       referralPercent = parseFloat(match[2]);
 
       if (isNaN(referralPercent) || referralPercent <= 0 || referralPercent > 100) {
-        return res.status(400).json({ message: "Referral percent must be between 1 and 100" });
+        return res.status(400).json({
+          message: "Referral percent must be between 1 and 100",
+        });
       }
 
-      // Apply referral discount on top of discounted price
-      referralFinalPrice = discountedPrice - (discountedPrice * referralPercent) / 100;
+      referralFinalPrice =
+        discountedPrice - (discountedPrice * referralPercent) / 100;
     }
 
-    // 4. Save to cart
+    // 4. Create cart item
     const cartItem = await db.cartItem.create({
       data: {
         userId,
@@ -49,14 +144,14 @@ export const addToCart = async (req: Request, res: Response) => {
         quantity,
         referralCode: referralCode || null,
         referralPercent,
-        discountedPrice: referralFinalPrice, // this is what user pays
+        discountedPrice: referralFinalPrice,
       },
       include: {
         product: true,
       },
     });
 
-    // 5. Respond
+    // 5. Response
     return res.status(201).json({
       message: "Product added to cart successfully",
       cartItem: {
@@ -67,8 +162,8 @@ export const addToCart = async (req: Request, res: Response) => {
         referralPercent: cartItem.referralPercent,
         originalPrice,
         productDiscountPercent,
-        discountedPrice,        // after product discount
-        finalPrice: referralFinalPrice, // after both discounts
+        discountedPrice,
+        finalPrice: referralFinalPrice,
         createdAt: cartItem.createdAt,
       },
     });

@@ -1,8 +1,8 @@
 import { API_URL } from "@/lib/api.env";
 import axios from "axios";
-import { LucideSearch } from "lucide-react";
+import { LucidePanelRightClose, LucideSearch, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SearchLoader from "../Loader/SearchLoader";
 import CardComponent from "../CardComponent/CardComponent";
 import ProductCard from "../ProductCard/ProductCard";
@@ -17,6 +17,8 @@ function SearchPage() {
   const params = useParams();
   const type = params.type;
    const inputRef = useRef(null);
+
+   const router = useNavigate()
 
   useEffect(() => {
     switch (type) {
@@ -69,7 +71,7 @@ function SearchPage() {
         <input
          ref={inputRef}
           type="text"
-          className="w-5/6 py-4 px-4 rounded-xl outline-none border-none text-sm bg-gray-200"
+          className="md:w-full w-5/6 py-4 px-4 rounded-xl outline-none border-none text-sm bg-gray-200"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={`Search for ${type}...`}
@@ -79,6 +81,13 @@ function SearchPage() {
           className="primary-bg rounded-full grid place-items-center p-4"
         >
           <LucideSearch size={22} color="white" />
+        </button>
+        
+        <button
+          onClick={() => router(-1)}
+          className="md:grid bg-red-400/20 rounded-full hidden place-items-center p-4"
+        >
+          <X size={22} className="text-red-400" />
         </button>
       </div>
 

@@ -8,7 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const tabs = [
   { name: "Shop", icon: ShoppingBag, path: "/" },
-  { name: "Services", icon: HandPlatter, path: "/all-service" },
+  { name: "Marketplace", icon: HandPlatter, path: "/all-service" },
   { name: "Houses & Plots", icon: Building2, path: "/houses-plots" },
   { name: "Profile", icon: CircleUserRound, path: "/profile" },
 ];
@@ -18,7 +18,7 @@ const BottomNavBar= () => {
   const navigate = useNavigate();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 w-full ">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 w-full ">
       <div className="mx-auto primary-bg-dark text-white py-3 px-2 flex gap-10 items-center shadow-lg">
         {tabs.map((tab) => {
           const Icon = tab.icon;

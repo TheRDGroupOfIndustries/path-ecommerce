@@ -107,6 +107,12 @@ const ProfilePage = () => {
         desc: "View your dashboard",
         path: "https://path-ecommerce.vercel.app",
       },
+            {
+        label: "My Cart",
+        icon: <ListTodo className="text-black font-bold" />,
+        desc: "All cart Items",
+        path: "/my-cart",
+      },
       {
         label: "Settings",
         icon: <Settings className="text-black font-bold" />,

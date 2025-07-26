@@ -15,6 +15,8 @@ export default function MyCart() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // console.log(localStorage.getItem("token"));
+    
     const fetchCart = async () => {
       try {
         const res = await axios.get(`${API_URL}/api/cart`, {
@@ -26,6 +28,7 @@ export default function MyCart() {
         const mapped = res.data.map((item) => ({
           id: item.id,
           name: item.product.name,
+          discountedPrice: item.discountedPrice,
           description: item.product.description,
           discount: item.product.discount,
           rating: item.product.ratings,
@@ -38,6 +41,7 @@ export default function MyCart() {
           sellerName: item.product.seller.name,
         }));
 
+        console.log(mapped);
         setCartItems(mapped);
       } catch (err) {
         console.error("Error fetching cart items:", err);
@@ -93,7 +97,7 @@ export default function MyCart() {
   };
 
   const subtotal = cartItems.reduce(
-    (total, item) => total + item.finalPrice * item.quantity,
+    (total, item) => total + item.discountedPrice * item.quantity,
     0
   );
   const totalItems = cartItems.reduce(
@@ -147,6 +151,7 @@ export default function MyCart() {
               key={item.id}
               item={item}
               updateQuantity={updateQuantity}
+              price={item.discountedPrice}
             />
           ))}
         </div>

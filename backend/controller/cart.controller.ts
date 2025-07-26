@@ -4,7 +4,9 @@ import db from "../client/connect.js";
 // Add to Cart
 export const addToCart = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
-  const { productId, quantity, referralCode } = req.body;
+  const { productId, quantity, referralCode, discountPrice } = req.body;
+ 
+  console.log(discountPrice)
 
   if (!userId) {
     res.status(401).json({ message: "Unauthorized" });
@@ -79,7 +81,7 @@ export const addToCart = async (req: Request, res: Response): Promise<void> => {
         userId,
         productId,
         quantity: quantity || 1,
-        discountedPrice,
+        discountedPrice: parseFloat(discountPrice),
       },
     });
 

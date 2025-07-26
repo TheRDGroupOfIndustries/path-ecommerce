@@ -20,6 +20,7 @@ export const isAuthenticated = (
     res.status(401).json({ message: "Authorization token missing" });
     return;
   }
+  // console.log("Authorization header found:", authHeader);
 
   const token = authHeader.split(" ")[1];
 
@@ -29,6 +30,6 @@ export const isAuthenticated = (
     next();
   } catch (err) {
     console.error("Invalid token:", err);
-    res.status(401).json({ message: "Invalid or expired token" });
+    res.status(401).json({ message: "Invalid or expired token", header: authHeader });
   }
 };

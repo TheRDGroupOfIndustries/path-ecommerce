@@ -57,32 +57,6 @@ function App() {
     location.pathname.startsWith(path)
   );
 
-  // 2️⃣ Native app bridge (postMessage support)
-  useEffect(() => {
-    const handleNativeMessage = (event: MessageEvent) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.type === "auth" && data.token) {
-          console.log("Token received from native app:", data.token);
-
-          // Store token in localStorage (web context)
-          localStorage.setItem("token", data.token);
-
-          // Optional: Redirect or reload session if needed
-          window.location.href = "/";
-        }
-      } catch (err) {
-        console.error("Invalid message from native", err);
-      }
-    };
-
-    window.addEventListener("message", handleNativeMessage);
-
-    return () => {
-      window.removeEventListener("message", handleNativeMessage);
-    };
-  }, []);
-
   return (
     <AuthProvider>
       <div className="text-3xl text-gray-500 font-Sora">

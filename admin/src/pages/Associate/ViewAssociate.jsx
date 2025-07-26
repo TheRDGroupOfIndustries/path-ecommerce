@@ -260,6 +260,7 @@ const ViewAssociate = () => {
                 <th>Associate Name</th>
                 <th>Email</th>
                 <th>Level</th>
+                <th>Percent</th>
                 <th>Referral code</th>
                 <th>Details</th>
                 <th>Actions</th>
@@ -280,6 +281,7 @@ const ViewAssociate = () => {
           <td>{a.name}</td>
           <td>{a.email}</td>
           <td>{a.associate?.level || "N/A"}</td>
+          <td>{a.associate?.percent || "N/A"}%</td>
           <td>{a.name.toLowerCase().split(" ")[0]}-{a.associate?.percent ?? "N/A"}</td>
           <td>
             <button

@@ -271,52 +271,58 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
       const priceAfterDiscount = originalPrice - (originalPrice * productDiscount) / 100;
       const totalAmount = quantity * priceAfterDiscount;
 
-      let referralCode = product.referralBy || null;
+      let finalPrice = priceAfterDiscount;
+let referralCode = product.referralBy || null;
 
-      if (referralCode) {
-        const referral = await db.referral.findUnique({
-          where: { referral: referralCode },
-          include: { createdFor: true },
-        });
+if (referralCode) {
+  const referral = await db.referral.findUnique({
+    where: { referral: referralCode },
+    include: { createdFor: true },
+  });
 
-        if (referral) {
-          referralUsage.push({
-            referralCode: referral.referral,
-            createdBy: referral.createdForId,
-            usedBy: userId,
-            productId: product.id,
-            productName: product.name,
-            price: priceAfterDiscount,
-            commissionPercent: product.referralPercentage ?? 0,
-          });
+  if (referral) {
+    const referralPercent = product.referralPercentage ?? 0;
+    const referralDiscountAmount = (priceAfterDiscount * referralPercent) / 100;
+    finalPrice = priceAfterDiscount - referralDiscountAmount;
 
-          await db.referralTransaction.create({
-            data: {
-              referralId: referral.id,
-              associateId: referral.createdFor.id,
-              userId,
-              productId: product.id,
-              productName: product.name,
-              price: priceAfterDiscount,
-              percent: product.referralPercentage ?? 0,
-              commission: ((product.referralPercentage ?? 0) / 100) * priceAfterDiscount,
-              sellerId: product.sellerId,
-            },
-          });
+    referralUsage.push({
+      referralCode: referral.referral,
+      createdBy: referral.createdForId,
+      usedBy: userId,
+      productId: product.id,
+      productName: product.name,
+      price: finalPrice,
+      commissionPercent: referralPercent,
+    });
 
-          if (referral && !referral.usedBy.includes(userId)) {
-          await db.referral.update({
-            where: { id: referral.id },
-            data: {
-              usedBy: {
-                push: userId,
-              },
-            },
-          });
-        }
+    await db.referralTransaction.create({
+      data: {
+        referralId: referral.id,
+        associateId: referral.createdFor.id,
+        userId,
+        productId: product.id,
+        productName: product.name,
+        price: finalPrice,
+        percent: referralPercent,
+        commission: (referralPercent / 100) * priceAfterDiscount, 
+        sellerId: product.sellerId,
+      },
+    });
 
-        }
-      }
+    if (!referral.usedBy.includes(userId)) {
+      await db.referral.update({
+        where: { id: referral.id },
+        data: {
+          usedBy: {
+            push: userId,
+          },
+        },
+      });
+    }
+  }
+}
+
+     const totalAmount = quantity * finalPrice;
 
       const order = await db.order.create({
         data: {
@@ -332,12 +338,16 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
         },
       });
 
+
       orderResults.push({
         order,
         priceDetails: {
           originalPrice,
-          discountedPrice: priceAfterDiscount,
-          totalAmount,
+          productDiscount: productDiscount,
+          priceAfterProductDiscount: priceAfterDiscount,
+          referralDiscountPercent: referralCode ? product.referralPercentage ?? 0 : 0,
+          priceAfterReferralDiscount: finalPrice,
+          totalAmount: totalAmount,
         },
       });
 

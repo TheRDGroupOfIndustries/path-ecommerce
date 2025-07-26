@@ -157,8 +157,6 @@ export default function MyOrders() {
 
   const [userOrders, setUserOrders] = useState([]);
   const [sellerOrders, setSellerOrders] = useState([]);
-
-  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const getUserOrders = async () => {
@@ -171,7 +169,7 @@ export default function MyOrders() {
       });
 
       if (res.status === 200) {
-        console.log(res);
+        // console.log(res);
         
         setUserOrders(res.data.user[0].orders);
       }
@@ -192,7 +190,7 @@ export default function MyOrders() {
       });
 
       if (res.status === 200) {
-        console.log(res.data.orders)
+        // console.log(res.data.orders)
         setSellerOrders(res.data.orders);
       }
     } catch (error) {
@@ -238,7 +236,7 @@ export default function MyOrders() {
         </div>
       </div>
 
-      {user?.role === "SELLER" || user?.role === "ADMIN" ? (
+      {/* {user?.role === "SELLER" || user?.role === "ADMIN" ? (
         sellerOrders.length > 0 ? (
           sellerOrders.map((product) =>
             product.orders.map((order) => (
@@ -302,7 +300,76 @@ export default function MyOrders() {
         ))
       ) : (
         <Loader />
-      )}
+      )} */}
+      {user?.role === "SELLER" || user?.role === "ADMIN" ? (
+    sellerOrders.length > 0 ? (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
+        {sellerOrders.map((product) =>
+          product.orders.map((order) => (
+            <MyOrderItem
+              key={order.id}
+              id={order.id}
+              productId={product.name}
+              date={order.createdAt.split("T")[0]}
+              rating={product.ratings ?? 4}
+              price={order.totalAmount}
+              image={product.images[0]}
+              progress={order.status}
+              useremail={order.user.email}
+              progressColor={
+                order.status === "Pending"
+                  ? "text-blue-600"
+                  : order.status === "Dispatched"
+                  ? "text-yellow-600"
+                  : order.status === "Shipped"
+                  ? "text-purple-600"
+                  : order.status === "Arrived"
+                  ? "text-orange-600"
+                  : order.status === "Delivered"
+                  ? "text-green-600"
+                  : "text-gray-500"
+              }
+              canChangeStatus={true}
+            />
+          ))
+        )}
+      </div>
+    ) : (
+      <Loader />
+    )
+  ) : userOrders.length > 0 ? (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
+      {userOrders.map((order) => (
+        <MyOrderItem
+          key={order.id}
+          id={order.id}
+          productId={order.product.name}
+          date={order.createdAt.split("T")[0]}
+          rating={order.product.ratings}
+          price={order.totalAmount}
+          image={order.product.images[0]}
+          progress={order.status}
+          useremail={""}
+          progressColor={
+            order.status === "Pending"
+              ? "text-blue-600"
+              : order.status === "Dispatched"
+              ? "text-yellow-600"
+              : order.status === "Shipped"
+              ? "text-purple-600"
+              : order.status === "Arrived"
+              ? "text-orange-600"
+              : order.status === "Delivered"
+              ? "text-green-600"
+              : "text-gray-500"
+          }
+          canChangeStatus={false}
+        />
+      ))}
+    </div>
+  ) : (
+    <Loader />
+  )}
     </div>
   );
 }

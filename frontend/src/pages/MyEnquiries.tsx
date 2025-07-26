@@ -68,8 +68,8 @@ export default function MyEnquiries() {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-    //   console.log("res: ",res);
-      
+      //   console.log("res: ",res);
+
       if (res.status === 200) {
         setEnquiries(res.data);
       }
@@ -105,9 +105,14 @@ export default function MyEnquiries() {
         <div className="w-8 h-8" />
       </div>
 
-      {enquiries.map((enquiry) => (
+      {/* {enquiries.map((enquiry) => (
         <EnquiryCard key={enquiry.id} {...enquiry} />
-      ))}
+      ))} */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
+        {enquiries.map((enquiry) => (
+          <EnquiryCard key={enquiry.id} {...enquiry} />
+        ))}
+      </div>
     </div>
   );
 }

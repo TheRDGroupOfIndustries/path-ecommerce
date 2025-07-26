@@ -1,7 +1,7 @@
 import { API_URL } from "@/lib/api.env";
 import axios from "axios";
 import { LucideSearch } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import SearchLoader from "../Loader/SearchLoader";
 import CardComponent from "../CardComponent/CardComponent";
@@ -16,6 +16,7 @@ function SearchPage() {
   const [dynamicUrl, setDynamicUrl] = useState("");
   const params = useParams();
   const type = params.type;
+   const inputRef = useRef(null);
 
   useEffect(() => {
     switch (type) {
@@ -33,6 +34,9 @@ function SearchPage() {
       default:
         break;
     }
+  }, [type]);
+   useEffect(() => {
+    if (inputRef.current) inputRef.current.focus();
   }, []);
 
   const handleChange = async () => {
@@ -60,9 +64,10 @@ function SearchPage() {
     return <SearchLoader />;
   }
   return (
-    <div className="w-screen min-h-screen h-auto px-2 mb-20">
+    <div className="container mx-auto w-screen min-h-screen h-auto px-2 mb-20 sm:p-4">
       <div className="w-full h-20 py-4 flex justify-between items-center gap-2">
         <input
+         ref={inputRef}
           type="text"
           className="w-5/6 py-4 px-4 rounded-xl outline-none border-none text-sm bg-gray-200"
           value={input}
@@ -71,14 +76,21 @@ function SearchPage() {
         />
         <button
           onClick={() => handleChange()}
-          className="primary-bg rounded-2xl grid place-items-center p-4"
+          className="primary-bg rounded-full grid place-items-center p-4"
         >
           <LucideSearch size={22} color="white" />
         </button>
       </div>
 
       {data.length > 0 ? (
-        <div className="grid grid-cols-2 gap-4">
+        <div
+          className=" grid grid-cols-2
+          sm:grid-cols-2
+          md:grid-cols-3
+          lg:grid-cols-4
+          gap-4
+          mt-2"
+        >
           {data.map((items, i) =>
             serveCard ? (
               <CardComponent

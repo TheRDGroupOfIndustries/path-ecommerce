@@ -197,137 +197,137 @@ const ProductDetail = () => {
   //   }
   // };
 
-const handleReferralButtonClick = async () => {
-  const code = referralCode.trim().toLowerCase();
 
-  if (referralStep === "check") {
-    const isValidFormat = /^[a-zA-Z]+-\d+$/.test(code);
-    if (!isValidFormat) {
-      setReferralError("Invalid format. Use like 'adarsh-40'");
-      return;
-    }
+  const handleReferralButtonClick = async () => {
+    const code = referralCode.trim().toLowerCase();
 
-    try {
-      setLoading(true);
-      console.log("🔍 Sending referral CHECK request with:", {
-        code,
-        productId: id,
-        userId: user?.id ?? "",
-      });
+    if (referralStep === "check") {
+      const isValidFormat = /^[a-zA-Z]+-\d+$/.test(code);
+      if (!isValidFormat) {
+        setReferralError("Invalid format. Use like 'adarsh-40'");
+        return;
+      }
 
-      const res = await axios.post(
-        `${API_URL}/api/referral/check`,
-        {
+      try {
+        setLoading(true);
+        console.log("🔍 Sending referral CHECK request with:", {
           code,
           productId: id,
           userId: user?.id ?? "",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        });
+
+        const res = await axios.post(
+          `${API_URL}/api/referral/check`,
+          {
+            code,
+            productId: id,
+            userId: user?.id ?? "",
           },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        console.log("CHECK Response:", res.data);
+
+        if (res.status !== 200) {
+          setReferralError("Referral code not found or expired.");
+          return;
         }
-      );
 
-      console.log("CHECK Response:", res.data);
+        const discount = parseInt(code.split("-")[1]);
+        if (!checkPriceValidity(discount)) {
+          setReferralError("This coupon is not applicable for this product.");
+          setReferralStep("check");
+          setReferralCode("");
+          setReferralDiscount(0);
+          return;
+        }
 
-      if (res.status !== 200) {
-        setReferralError("Referral code not found or expired.");
-        return;
+        setReferralStep("apply");
+        setReferralError("");
+        setLoading(false);
+      } catch (err) {
+        console.error(" CHECK Referral validation failed:", err);
+
+        if (err.response && err.response.status === 404) {
+          setReferralError("Referral code not found or expired.");
+        } else if (
+          err.response &&
+          err.response.data &&
+          err.response.data.error
+        ) {
+          setReferralError(err.response.data.error);
+        } else {
+          setReferralError("Something went wrong. Please try again.");
+        }
+      } finally {
+        setLoading(false);
       }
+    } else if (referralStep === "apply") {
+      try {
+        setLoading(true);
+        console.log(" Sending referral APPLY request with:", {
+          code,
+          productId: id,
+          userId: user?.id ?? "",
+        });
 
-      const discount = parseInt(code.split("-")[1]);
-      if (!checkPriceValidity(discount)) {
-        setReferralError("This coupon is not applicable for this product.");
+        const res = await axios.post(
+          `${API_URL}/api/referral/apply`,
+          {
+            code,
+            productId: id,
+            userId: user?.id ?? "",
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        console.log("APPLY Response:", res.data);
+
+        if (res.status === 200) {
+          const discount = parseInt(code.split("-")[1]);
+          setReferralDiscount(discount);
+          setReferralStep("applied");
+        } else if (res.status === 400) {
+          setReferralError("Referral code already used by you.");
+          toast.error("Same referral cannot use twice.");
+          setReferralStep("check");
+          setReferralDiscount(0);
+        } else {
+          setReferralError("Something went wrong. Please try again.");
+        }
+      } catch (error) {
+        console.error("APPLY Referral failed:", error);
+
+        const status = error.response?.status;
+        const errorMessage =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          "Something went wrong";
+
+        if (status === 400) {
+          // Referral already used by user
+          toast.error("Referral code already used by you.");
+          setReferralError("Referral code already used by you.");
+        } else {
+          toast.error(errorMessage);
+          setReferralError(errorMessage);
+        }
+
         setReferralStep("check");
-        setReferralCode("");
         setReferralDiscount(0);
-        return;
+      } finally {
+        setLoading(false);
       }
-
-      setReferralStep("apply");
-      setReferralError("");
-      setLoading(false);
-    } catch (err) {
-      console.error(" CHECK Referral validation failed:", err);
-
-      if (err.response && err.response.status === 404) {
-        setReferralError("Referral code not found or expired.");
-      } else if (
-        err.response &&
-        err.response.data &&
-        err.response.data.error
-      ) {
-        setReferralError(err.response.data.error);
-      } else {
-        setReferralError("Something went wrong. Please try again.");
-      }
-    } finally {
-      setLoading(false);
     }
-  } else if (referralStep === "apply") {
-  try {
-    setLoading(true);
-    console.log(" Sending referral APPLY request with:", {
-      code,
-      productId: id,
-      userId: user?.id ?? "",
-    });
-
-    const res = await axios.post(
-      `${API_URL}/api/referral/apply`,
-      {
-        code,
-        productId: id,
-        userId: user?.id ?? "",
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-
-    console.log("APPLY Response:", res.data);
-
-    if (res.status === 200) {
-      const discount = parseInt(code.split("-")[1]);
-      setReferralDiscount(discount);
-      setReferralStep("applied");
-    } else if (res.status === 400) {
-      setReferralError("Referral code already used by you.");
-      toast.error("Same referral cannot use twice.");
-      setReferralStep("check");
-      setReferralDiscount(0);
-    } else {
-      setReferralError("Something went wrong. Please try again.");
-    }
-  } catch (error) {
-    console.error("APPLY Referral failed:", error);
-
-    const status = error.response?.status;
-    const errorMessage =
-      error.response?.data?.message ||
-      error.response?.data?.error ||
-      "Something went wrong";
-
-    if (status === 400) {
-      // Referral already used by user
-      toast.error("Referral code already used by you.");
-      setReferralError("Referral code already used by you.");
-    } else {
-      toast.error(errorMessage);
-      setReferralError(errorMessage);
-    }
-
-    setReferralStep("check");
-    setReferralDiscount(0);
-  } finally {
-    setLoading(false);
-  }
-}
-};
-
+  };
 
   const handleSubmitReview = async () => {
     if (!userRating || !userReview.trim()) {
@@ -365,7 +365,7 @@ const handleReferralButtonClick = async () => {
         {
           productId: id,
           quantity: 1,
-          discountPrice: calculateFinalPrice().toFixed(0)
+          discountPrice: calculateFinalPrice().toFixed(0),
         },
         {
           headers: {

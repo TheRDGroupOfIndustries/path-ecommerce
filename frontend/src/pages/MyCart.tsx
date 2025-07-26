@@ -16,7 +16,7 @@ export default function MyCart() {
 
   useEffect(() => {
     // console.log(localStorage.getItem("token"));
-    
+
     const fetchCart = async () => {
       try {
         const res = await axios.get(`${API_URL}/api/cart`, {

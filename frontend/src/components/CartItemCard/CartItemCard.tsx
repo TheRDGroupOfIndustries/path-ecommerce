@@ -4,11 +4,12 @@ import { Trash2, Plus, Star } from "lucide-react";
 import React from "react";
 
 
-const CartItemCard = ({ item, updateQuantity, discount, price }: {
+const CartItemCard = ({ item, updateQuantity, discount, price,discountedPercent }: {
   item: any,
   updateQuantity: any,
   price?: number
   discount?: string,
+  discountedPercent?:number
 }) => {
 
   const dis = discount ? discount.split("-")[1] : 0
@@ -86,7 +87,7 @@ const CartItemCard = ({ item, updateQuantity, discount, price }: {
               ₹{item.price }
             </span>
             <span className="text-xs text-orange-300 ">
-              {item.discount + Number(dis)}%OFF
+              {discountedPercent? discountedPercent:item.discount + Number(dis)}%OFF
             </span>
           </div>
         </div>

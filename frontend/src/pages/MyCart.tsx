@@ -16,7 +16,40 @@ export default function MyCart() {
 
   useEffect(() => {
     // console.log(localStorage.getItem("token"));
-    
+
+    // const fetchCart = async () => {
+    //   try {
+    //     const res = await axios.get(`${API_URL}/api/cart`, {
+    //       headers: {
+    //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+    //       },
+    //     });
+    //     console.log("RES->> ",res.data);
+
+    //     const mapped = res.data.map((item) => ({
+    //       id: item.id,
+    //       name: item.product.name,
+    //       discountedPrice: item.discountedPrice,
+    //       description: item.product.description,
+    //       discount: item.product.discount,
+    //       rating: item.product.ratings,
+    //       finalPrice: Math.floor(
+    //         item.product.price * (1 - item.product.discount / 100)
+    //       ),
+    //       price: item.product.price,
+    //       quantity: item.quantity,
+    //       image: item.product.images?.[0],
+    //       sellerName: item.product.seller.name,
+    //     }));
+
+    //     console.log(mapped);
+    //     setCartItems(mapped);
+    //   } catch (err) {
+    //     console.error("Error fetching cart items:", err);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
     const fetchCart = async () => {
       try {
         const res = await axios.get(`${API_URL}/api/cart`, {
@@ -24,24 +57,48 @@ export default function MyCart() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+        console.log("Res: ",res);
+       
 
-        const mapped = res.data.map((item) => ({
-          id: item.id,
-          name: item.product.name,
-          discountedPrice: item.discountedPrice,
-          description: item.product.description,
-          discount: item.product.discount,
-          rating: item.product.ratings,
-          finalPrice: Math.floor(
-            item.product.price * (1 - item.product.discount / 100)
-          ),
-          price: item.product.price,
-          quantity: item.quantity,
-          image: item.product.images?.[0],
-          sellerName: item.product.seller.name,
-        }));
+        // const mapped = res.data.map((item) => (
+        //   {
+        //   id: item.id,
+        //   productId: item.productId,
+        //   name: item.product.name,
+        //   discountedPrice: parseFloat(item.finalPrice.toFixed(2)),
+        //   description: item.product.description,
+        //   // discount: item.productDiscountPercent ,
+        //   discount: displayDiscount,
+        //   rating: item.product.ratings,
+        //   referralApplied: item.referralApplied,
+        //   referralPercent: item.referralPercent,
+        //   price: parseFloat(item.originalPrice.toFixed(2)),
+        //   quantity: item.quantity,
+        //   image: item.product.images?.[0],
+        //   sellerName: item.product.seller?.name,
+        // }));
 
-        console.log(mapped);
+        const mapped = res.data.map((item) => {
+      const referralPercent = item.referralPercent || 0;
+      const displayDiscount = (item.productDiscountPercent || 0) + referralPercent;
+
+      return {
+        id: item.id,
+        productId: item.productId,
+        name: item.product.name,
+        discountedPrice: parseFloat(item.finalPrice.toFixed(2)), // already calculated
+        description: item.product.description,
+        discount: displayDiscount, 
+        rating: item.product.ratings,
+        referralApplied: item.referralApplied,
+        referralPercent: referralPercent,
+        price: parseFloat(item.originalPrice.toFixed(2)),
+        quantity: item.quantity,
+        image: item.product.images?.[0],
+        sellerName: item.product.seller?.name,
+      };
+    });
+
         setCartItems(mapped);
       } catch (err) {
         console.error("Error fetching cart items:", err);
@@ -96,10 +153,12 @@ export default function MyCart() {
     });
   };
 
-  const subtotal = cartItems.reduce(
-    (total, item) => total + item.discountedPrice * item.quantity,
-    0
+  const subtotal = parseFloat(
+    cartItems
+      .reduce((total, item) => total + item.discountedPrice * item.quantity, 0)
+      .toFixed(2)
   );
+
   const totalItems = cartItems.reduce(
     (total, item) => total + item.quantity,
     0
@@ -110,6 +169,8 @@ export default function MyCart() {
   if (cartItems.length === 0) {
     return <EmptyCart />;
   }
+  // console.log("MY CART: ",cartItems);
+  
 
   return (
     <div className="container mb-18 lg:p-4 mx-auto">

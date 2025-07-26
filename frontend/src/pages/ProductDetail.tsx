@@ -29,9 +29,11 @@ const ProductDetail = () => {
   const [reviews, setReviews] = useState([]);
   useEffect(() => {
     const fetchProduct = async () => {
+      
       try {
         const res = await axios.get(`${API_URL}/api/product/get-by-id/${id}`);
-
+        console.log("Res: ",res);
+        
         const found = res.data;
         const userData = res.data.seller;
 
@@ -63,7 +65,7 @@ const ProductDetail = () => {
           `${API_URL}/api/review/product/${id}`
         );
         const reviewsData = reviewRes.data;
-        console.log("review: ", reviewsData);
+        // console.log("review: ", reviewsData);
 
         if (!reviewsData.length) {
           setReviews([]);
@@ -268,11 +270,11 @@ const handleReferralButtonClick = async () => {
   } else if (referralStep === "apply") {
   try {
     setLoading(true);
-    console.log(" Sending referral APPLY request with:", {
-      code,
-      productId: id,
-      userId: user?.id ?? "",
-    });
+    // console.log(" Sending referral APPLY request with:", {
+    //   code,
+    //   productId: id,
+    //   userId: user?.id ?? "",
+    // });
 
     const res = await axios.post(
       `${API_URL}/api/referral/apply`,
@@ -288,7 +290,7 @@ const handleReferralButtonClick = async () => {
       }
     );
 
-    console.log("APPLY Response:", res.data);
+    // console.log("APPLY Response:", res.data);
 
     if (res.status === 200) {
       const discount = parseInt(code.split("-")[1]);
@@ -365,7 +367,7 @@ const handleReferralButtonClick = async () => {
         {
           productId: id,
           quantity: 1,
-          discountPrice: calculateFinalPrice().toFixed(0)
+          referralCode
         },
         {
           headers: {
@@ -373,6 +375,8 @@ const handleReferralButtonClick = async () => {
           },
         }
       );
+      console.log("Submit: ",res);
+      
       if (res.status === 201) {
         setCart(true);
         setDisable(false);

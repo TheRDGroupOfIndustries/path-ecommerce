@@ -213,18 +213,19 @@ model Order {
 
 
 model CartItem {
-  id        String   @id @default(cuid())
-  userId    String
-  productId String
-  quantity  Int      @default(1)
-  discountedPrice Float?
-  referralCode       String?     //changes by muskan
-  referralPercentage Float?      //changes by muskan
-  createdAt DateTime @default(now())
+  id               String   @id @default(cuid())
+  userId           String
+  productId        String
+  quantity         Int      @default(1)
+  discountedPrice  Float?
+  referralCode     String?   
+  referralPercent  Float?    // Added this
+  createdAt        DateTime @default(now())
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   product   Products @relation("ProductCartItems", fields: [productId], references: [id], onDelete: Cascade)
 }
+
 
 
 

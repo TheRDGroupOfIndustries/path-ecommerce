@@ -183,38 +183,42 @@ const ProfilePage = () => {
   const tabs = roleTabs[user?.role] || [];
 
   return (
-    <div className="w-full  mx-auto flex flex-col mb-16 ">
+    <div className="w-full  mx-auto flex flex-col sm:mb-16 ">
       {/* Profile Header */}
       <ChevronLeft
         className=" absolute top-5 left-5  text-white cursor-pointer"
         onClick={handleGoBack}
         size={32}
       />
-      <div className="bg-neutral-900 text-white flex flex-col items-center p-8 sm:p-4">
+      <div className="bg-neutral-900 text-white flex flex-col items-center p-8 sm:p-4 gap-2">
         <img
           src={user?.imageUrl || PROIFLE_IMAGE}
           alt="Profile"
           className="w-32 h-32   rounded-full object-cover"
         />
         <div className="items-center text-center">
-          <h2 className="text-lg font-semibold">{user?.name}</h2>
-          <p className="text-sm">{user?.role}</p>
+          <h2 className="text-lg  sm:text-2xl font-semibold">{user?.name}</h2>
+          <p className="text-sm sm:text-xl">{user?.role}</p>
         </div>
       </div>
 
-      <div className="p-4 space-y-4 rounded-t-3xl bg-white py-8 sm:py-4">
+   
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 sm:gap-4 p-4 space-y-4 rounded-t-3xl bg-white py-8 sm:py-4">
         {tabs.map((tab) =>
           tab.path.startsWith("https://") ? (
             <a
               key={tab.label}
               href={tab.path}
-              className="bg-gray-100 p-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200 no-underline"
+              className="bg-gray-100 p-3 sm:p-4 lg:p-6 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200 no-underline"
+              style={{ height: "auto", minHeight: "4.5rem" }}
             >
               <div className="flex items-center space-x-5">
                 {tab.icon}
                 <div>
-                  <h3 className="text-lg text-black">{tab.label}</h3>
-                  <p className="text-xs text-muted-foreground font-light">
+                  <h3 className="text-lg sm:text-xl lg:text-2xl text-black">
+                    {tab.label}
+                  </h3>
+                  <p className="text-xs sm:text-sm lg:text-base text-muted-foreground font-light">
                     {tab.desc}
                   </p>
                 </div>
@@ -226,14 +230,17 @@ const ProfilePage = () => {
           ) : (
             <div
               key={tab.label}
-              className="bg-gray-100 p-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200"
+              className="bg-gray-100 p-3 sm:p-4 lg:p-6 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200"
               onClick={() => navigate(tab.path)}
+              style={{ height: "auto", minHeight: "4.5rem" }}
             >
               <div className="flex items-center space-x-5">
                 {tab.icon}
                 <div>
-                  <h3 className="text-lg text-black">{tab.label}</h3>
-                  <p className="text-xs text-muted-foreground font-light">
+                  <h3 className="text-lg sm:text-xl lg:text-2xl text-black">
+                    {tab.label}
+                  </h3>
+                  <p className="text-xs sm:text-sm lg:text-base text-muted-foreground font-light">
                     {tab.desc}
                   </p>
                 </div>
@@ -244,27 +251,29 @@ const ProfilePage = () => {
             </div>
           )
         )}
+
+        {/* Logout dialog trigger */}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <div
-              className="bg-gray-100 py-6 px-3 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200"
+              className="bg-gray-100 p-3 sm:p-4 lg:p-6 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-200 lg:h-26 h-18"
               onClick={() => setOpen(true)}
             >
               <div className="flex items-center space-x-5 text-red-800">
                 <LogOut />
-                <h3 className="text-lg">Log Out</h3>
+                <h3 className="text-lg sm:text-xl lg:text-2xl">Log Out</h3>
               </div>
             </div>
           </DialogTrigger>
 
-          <DialogContent className="sm:max-w-md ">
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Are you sure you want to log out?</DialogTitle>
               <DialogDescription>
                 This action will end your current session.
               </DialogDescription>
             </DialogHeader>
-            <DialogFooter className="flex flex-row justify-center space-x-7 ">
+            <DialogFooter className="flex flex-row justify-center space-x-7">
               <Button
                 variant="default"
                 onClick={() => setOpen(false)}

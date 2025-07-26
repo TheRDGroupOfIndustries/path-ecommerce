@@ -125,7 +125,7 @@ function BuyNow() {
         // console.log(res);
         if (res.status === 201) {
           navigate("/thanks");
-        setBuying(false);
+          setBuying(false);
         }
       } catch (error) {
         toast.error("Cart Order failed");
@@ -155,7 +155,7 @@ function BuyNow() {
 
         if (res.status === 201) {
           navigate("/thanks");
-        setBuying(false);
+          setBuying(false);
         }
       } catch (error) {
         toast.error("Order failed");
@@ -220,21 +220,23 @@ function BuyNow() {
     }
   }, [data, loading]);
 
-
   if (loading) {
     return <Loader />;
   }
 
   return (
-    <div className="min-h-screen h-auto w-screen relative mb-16">
-      <div className="flex items-center justify-center gap-0 h-14  text-black mb-2 px-6 border-2 border-neutral-200">
-        <ChevronLeft
-          className="w-8 h-8 cursor-pointer"
-          onClick={() => navigate(-1)}
-        />
-        <h2 className="flex-1 text-2xl font-sans text-center font-semibold">
-          Proceed To Buy
-        </h2>
+    <div className=" min-h-screen h-auto w-screen relative mb-16 p-4 container mx-auto">
+      <div className="px-6 mb-2">
+        <div className="flex items-center justify-center h-14 text-black">
+          <ChevronLeft
+            className="w-8 h-8 cursor-pointer"
+            onClick={() => navigate(-1)}
+          />
+          <h2 className="flex-1 text-2xl font-sans text-center font-semibold">
+            Proceed To Buy
+          </h2>
+        </div>
+        <div className="w-full h-px bg-neutral-400 rounded"></div>
       </div>
       {/* Selected address */}
       <div className="px-4 py-2 pb-6 border-b-2 border-gray-300">
@@ -313,8 +315,11 @@ function BuyNow() {
         )}
       </div>
 
-      <div className="fixed bottom-4 w-full px-4">
-        <ShadeBtn title={`${buying ? "Processing..." : "Place Order"}`} action={buying ? () => {} : () => placeOrder()} />
+      <div className="fixed bottom-4  max-w-xl flex justify-center px-4">
+        <ShadeBtn
+          title={`${buying ? "Processing..." : "Place Order"}`}
+          action={buying ? () => {} : () => placeOrder()}
+        />
       </div>
     </div>
   );

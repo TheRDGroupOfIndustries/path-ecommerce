@@ -3,11 +3,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { MdStar } from "react-icons/md";
+import { MdStar, MdStarBorder } from "react-icons/md";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/authContext";
 import { API_URL } from "@/lib/api.env";
 import Loader from "@/components/Loader/Loader";
+import { Card, CardContent } from "@/components/ui/card";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -24,9 +25,8 @@ const ProductDetail = () => {
   const [isCart, setCart] = useState(false);
   const [userRating, setUserRating] = useState(0);
   const [userReview, setUserReview] = useState("");
-
   const [loading, setLoading] = useState(false);
-
+  const [reviews, setReviews] = useState([]);
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -53,6 +53,43 @@ const ProductDetail = () => {
 
     fetchProduct();
   }, [id, isCart]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchReviews = async () => {
+      try {
+        const reviewRes = await axios.get(
+          `${API_URL}/api/review/product/${id}`
+        );
+        const reviewsData = reviewRes.data;
+        console.log("review: ", reviewsData);
+
+        if (!reviewsData.length) {
+          setReviews([]);
+          return;
+        }
+
+        // const totalRating = reviewsData.reduce((sum, r) => sum + r.rating, 0);
+        // const avgRating = totalRating / reviewsData.length;
+        // setAverageRating(avgRating);
+
+        setReviews(reviewsData);
+      } catch (err) {
+        console.error("Failed to fetch reviews", err);
+      }
+    };
+
+    fetchReviews();
+  }, [id]);
+  const renderUserStars = (rating) =>
+    [...Array(5)].map((_, i) =>
+      i < Math.floor(rating) ? (
+        <MdStar key={i} className="w-4 h-4 text-yellow-400" />
+      ) : (
+        <MdStarBorder key={i} className="w-4 h-4 text-yellow-400" />
+      )
+    );
 
   const checkPriceValidity = (additionalDiscount) => {
     if (!product) return false;
@@ -368,7 +405,7 @@ const handleReferralButtonClick = async () => {
       {/* Header */}
       <div className="flex items-center justify-between p-4 bg-white">
         <ChevronLeft
-          className="w-6 h-6 text-gray-600 cursor-pointer"
+          className="w-8 h-8 text-gray-600 cursor-pointer"
           onClick={() => navigate(-1)}
         />
         <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-medium">
@@ -376,63 +413,90 @@ const handleReferralButtonClick = async () => {
         </span>
       </div>
 
-      {/* Main Image */}
-      <div className="px-4 mb-4">
-        <img
-          src={product.images?.[mainImageIndex]}
-          alt="Main Product"
-          className="w-full h-64 sm:h-72 md:h-80 lg:h-[28rem] object-cover rounded-lg border-1 border-cyan-400"
-        />
-      </div>
-
-      {/* Thumbnails */}
-      <div className="flex gap-2 px-4 mb-6 overflow-x-auto">
-        {product.images?.map((img, idx) => (
+      {/* Container for image and product info side by side on desktop */}
+      <div className="px-4 mb-4 flex flex-col md:flex-row gap-6">
+        {/* Image section: full width on mobile, 4/5 width desktop */}
+        <div className="w-full md:w-2/3">
           <img
-            key={idx}
-            src={img}
-            alt={`Thumb ${idx + 1}`}
-            className={`w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg cursor-pointer border-2 ${
-              mainImageIndex === idx ? "border-cyan-400" : "border-transparent"
-            }`}
-            onClick={() => setMainImageIndex(idx)}
+            src={product.images?.[mainImageIndex]}
+            alt="Main Product"
+            className="w-full h-64 sm:h-72 md:h-80 lg:h-[28rem] object-cover rounded-lg border border-cyan-400"
           />
-        ))}
-      </div>
-
-      {/* Product Info */}
-      <div className="px-4 mb-4 flex flex-col gap-2">
-        <p className="text-cyan-400 text-sm  underline underline-offset-2">
-          {seller?.name}
-        </p>
-
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900">
-          {product.name}
-        </h1>
-        <div className="flex items-center gap-1 bg-gray-200 w-fit px-2 ">
-          <span className="text-lg text-black">{product.ratings}</span>
-          <div className="h-4 w-px bg-black mx-2" />
-          <Star className="w-4 h-4 fill-current text-cyan-400" />
+          {/* Thumbnails below image, full width */}
+          <div className="flex gap-2 mt-4 overflow-x-auto">
+            {product.images?.map((img, idx) => (
+              <img
+                key={idx}
+                src={img}
+                alt={`Thumb ${idx + 1}`}
+                className={`w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg cursor-pointer border-2 ${
+                  mainImageIndex === idx
+                    ? "border-cyan-400"
+                    : "border-transparent"
+                }`}
+                onClick={() => setMainImageIndex(idx)}
+              />
+            ))}
+          </div>
         </div>
-        <p className="text-gray-600 text-sm mb-2">{product.description}</p>
 
-        <div className="mt-2 text-lg sm:text-xl md:text-2xl font-semibold text-cyan-700">
-          ₹ {calculateFinalPrice().toFixed(0)}
-          <span className="text-sm text-gray-500 line-through ml-2">
-            ₹ {product.price}
-          </span>
-          <span className="ml-2 text-sm text-red-600 font-medium">
-            (
-            {product.discount +
-              (referralStep === "applied" ? referralDiscount : 0)}
-            % OFF)
-          </span>
+        {/* Info section: full width on mobile, 1/5 width on desktop */}
+        <div className="w-full md:w-1/3 flex flex-col justify-start gap-2">
+          <div className="flex flex-col gap-3">
+            <p className="text-cyan-400 text-sm underline underline-offset-2">
+              {seller?.name}
+            </p>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900">
+              {product.name}
+            </h1>
+            <div className="flex items-center gap-1 bg-gray-200 w-fit px-2 rounded">
+              <span className="text-lg text-black">{product.ratings}</span>
+              <div className="h-4 w-px bg-black mx-2" />
+              <Star className="w-4 h-4 fill-current text-cyan-400" />
+            </div>
+            <p className="text-gray-600 text-sm mb-2">{product.description}</p>
+
+            <div className="mt-2 text-lg sm:text-xl md:text-2xl font-semibold text-cyan-700">
+              ₹ {calculateFinalPrice().toFixed(0)}
+              <span className="text-sm text-gray-500 line-through ml-2">
+                ₹ {product.price}
+              </span>
+              <span className="ml-2 text-sm text-red-600 font-medium">
+                (
+                {product.discount +
+                  (referralStep === "applied" ? referralDiscount : 0)}
+                % OFF)
+              </span>
+            </div>
+          </div>
+
+          {/* Buttons shown here on desktop */}
+          <div className="hidden flex-col gap-3  md:flex">
+            <Button
+              onClick={() =>
+                navigate(`/buy-now/${product.id}/${btoa(referralCode)}`)
+              }
+              // className="w-full bg-white cursor-pointer text-black px-4 py-3 rounded-full text-base font-medium hover:bg-white/80 shadow transition-all"
+              className="w-full bg-blue-500 text-black px-4 py-5 rounded-full text-lg font-medium  border-2 transition-all hover:text-black hover:bg-white"
+            >
+              Buy Now
+            </Button>
+            <Button
+              disabled={disable}
+              onClick={isCart ? () => navigate("/my-cart") : handleAddToCart}
+              className={`w-full cursor-pointer bg-black px-4 py-5 text-white hover:bg-white hover:text-black rounded-full text-lg font-medium  ${
+                isCart ? "border-2" : "border-2"
+              }`}
+            >
+              {isCart ? "View in cart" : "Add to Cart"}
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Referral Code Field */}
       <div className="px-4 mb-4">
-        <label className="block text-xl font-semibold mb-1 text-gray-800">
+        <label className="block text-md font-semibold mb-1 text-gray-800">
           Referral Code
         </label>
         <div className="flex gap-2">
@@ -475,7 +539,6 @@ const handleReferralButtonClick = async () => {
             off.
           </p>
         )}
-
         {referralStep === "applied" && (
           <p className="text-blue-700 text-sm mt-1 font-medium">
             Referral applied! You've got an additional {referralDiscount}%
@@ -496,7 +559,7 @@ const handleReferralButtonClick = async () => {
                 key={idx}
                 src={img}
                 alt={`Highlight ${idx + 1}`}
-                className="w-full h-full object-cover rounded-md border-1 border-black"
+                className="w-full h-full object-cover rounded-md border border-black"
               />
             ))}
           </div>
@@ -521,7 +584,7 @@ const handleReferralButtonClick = async () => {
       )}
 
       {/* Review Section */}
-      <div className="px-4 mb-6">
+      <div className="px-4 mb-3">
         <h2 className="text-md font-semibold mb-2 text-gray-800">
           Add a Review
         </h2>
@@ -561,6 +624,31 @@ const handleReferralButtonClick = async () => {
         </div>
       </div>
 
+      {/* Reviews */}
+      <div className="-space-y-4">
+        {reviews.length === 0 ? (
+          <div className="text-gray-500 text-center text-sm  sm:text-xl md:text-xl py-4">
+            No reviews found.
+          </div>
+        ) : (
+          reviews.map((review) => (
+            <Card key={review.id} className="border-none shadow-none ">
+              <CardContent className="space-y-1 ">
+                <div className="flex items-center">
+                  {renderUserStars(review.rating)}
+                </div>
+                <h4 className="text-sm font-semibold text-black">
+                  {review.user.name}
+                </h4>
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  {review.comment}
+                </p>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
+
       {/* Inside the Box */}
       {product.insideBox?.length > 0 && (
         <div className="px-4 mb-4">
@@ -580,9 +668,8 @@ const handleReferralButtonClick = async () => {
         </div>
       )}
 
-      {/* Bottom Bar */}
-
-      <div className="fixed bottom-0 left-0 right-0 z-50 w-full">
+      {/* Bottom Bar for Mobile: only visible on smaller screens */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 w-full md:hidden">
         <div className="flex gap-2 w-full relative bg-black text-white py-5 px-4 shadow-lg items-center justify-between primary-bg-dark">
           <Button
             onClick={() =>

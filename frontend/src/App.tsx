@@ -71,46 +71,236 @@ function App() {
             },
           }}
         />
+        {!hideNavbar && <BottomNavBar />}
 
         {/* 3️⃣ Suspense fallback for lazy loading */}
-        <Suspense fallback={<div className="text-center mt-10">Loading...</div>}>
+        <Suspense
+          fallback={<div className="text-center mt-10">Loading...</div>}
+        >
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/google-success" element={<GoogleSuccess />} />
-            <Route path="/" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-            <Route path="/all-service" element={<ProtectedRoute><AllService /></ProtectedRoute>} />
-            <Route path="/houses-plots" element={<ProtectedRoute><HousesPlots /></ProtectedRoute>} />
-            <Route path="/enquire/:type/:id" element={<ProtectedRoute><Enquire /></ProtectedRoute>} />
-            <Route path="/product-detail/:id" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
-            <Route path="/product-list" element={<ProtectedRoute><ProductsList /></ProtectedRoute>} />
-            <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
-            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-            <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
-            <Route path="/track-orders" element={<ProtectedRoute><TrackOrders /></ProtectedRoute>} />
-            <Route path="/reviews/:type/:id" element={<ProtectedRoute><ReviewsPage /></ProtectedRoute>} />
-            <Route path="/all-enquires" element={<ProtectedRoute><AllEnqueries /></ProtectedRoute>} />
-            <Route path="/enquiry-detail/:id" element={<ProtectedRoute><EnquiryDetail /></ProtectedRoute>} />
-            <Route path="/announcements" element={<ProtectedRoute><Announcements /></ProtectedRoute>} />
-            <Route path="/my-reviews" element={<ProtectedRoute><ReviewsList /></ProtectedRoute>} />
-            <Route path="/change-email" element={<ProtectedRoute><ChangeEmail /></ProtectedRoute>} />
-            <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
-            <Route path="/my-referrals" element={<ProtectedRoute><MyReferrals /></ProtectedRoute>} />
-            <Route path="/search/:type" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Shop />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/all-service"
+              element={
+                <ProtectedRoute>
+                  <AllService />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/houses-plots"
+              element={
+                <ProtectedRoute>
+                  <HousesPlots />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/enquire/:type/:id"
+              element={
+                <ProtectedRoute>
+                  <Enquire />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/product-detail/:id"
+              element={
+                <ProtectedRoute>
+                  <ProductDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/product-list"
+              element={
+                <ProtectedRoute>
+                  <ProductsList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-orders"
+              element={
+                <ProtectedRoute>
+                  <MyOrders />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit-profile"
+              element={
+                <ProtectedRoute>
+                  <EditProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/track-orders"
+              element={
+                <ProtectedRoute>
+                  <TrackOrders />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reviews/:type/:id"
+              element={
+                <ProtectedRoute>
+                  <ReviewsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/all-enquires"
+              element={
+                <ProtectedRoute>
+                  <AllEnqueries />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/enquiry-detail/:id"
+              element={
+                <ProtectedRoute>
+                  <EnquiryDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/announcements"
+              element={
+                <ProtectedRoute>
+                  <Announcements />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-reviews"
+              element={
+                <ProtectedRoute>
+                  <ReviewsList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/change-email"
+              element={
+                <ProtectedRoute>
+                  <ChangeEmail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/change-password"
+              element={
+                <ProtectedRoute>
+                  <ChangePassword />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-referrals"
+              element={
+                <ProtectedRoute>
+                  <MyReferrals />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/search/:type"
+              element={
+                <ProtectedRoute>
+                  <SearchPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/forgot-password" element={<ForgetPass />} />
-            <Route path="/my-cart" element={<ProtectedRoute><MyCart /></ProtectedRoute>} />
-            <Route path="/thanks" element={<ProtectedRoute><Thanks /></ProtectedRoute>} />
-            <Route path="/buy-now" element={<ProtectedRoute><BuyNow /></ProtectedRoute>} />
-            <Route path="/buy-now/:id/:code?" element={<ProtectedRoute><BuyNow /></ProtectedRoute>} />
-            <Route path="/change-address/:address" element={<ProtectedRoute><ChangeAddress /></ProtectedRoute>} />
-            <Route path="/my-enquiries" element={<ProtectedRoute><MyEnquiries /></ProtectedRoute>} />
-            <Route path="/help-desk" element={<ProtectedRoute><HelpDesk /></ProtectedRoute>} />
+            <Route
+              path="/my-cart"
+              element={
+                <ProtectedRoute>
+                  <MyCart />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/thanks"
+              element={
+                <ProtectedRoute>
+                  <Thanks />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/buy-now"
+              element={
+                <ProtectedRoute>
+                  <BuyNow />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/buy-now/:id/:code?"
+              element={
+                <ProtectedRoute>
+                  <BuyNow />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/change-address/:address"
+              element={
+                <ProtectedRoute>
+                  <ChangeAddress />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-enquiries"
+              element={
+                <ProtectedRoute>
+                  <MyEnquiries />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/help-desk"
+              element={
+                <ProtectedRoute>
+                  <HelpDesk />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
-
-        {!hideNavbar && <BottomNavBar />}
       </div>
     </AuthProvider>
   );

@@ -9,7 +9,7 @@ import MyEnquiries from "./pages/MyEnquiries";
 import HelpDesk from "./pages/HelpDesk";
 import SupportResponse from "./pages/SupportResponse";
 
-// 1️⃣ Lazy load pages for better performance
+// 1️ Lazy load pages for better performance
 const Login = lazy(() => import("./Auth/Login"));
 const SignUp = lazy(() => import("./Auth/Signup"));
 const GoogleSuccess = lazy(() => import("./pages/GoogleSuccess"));

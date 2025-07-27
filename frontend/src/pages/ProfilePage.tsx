@@ -222,7 +222,7 @@ const ProfilePage = () => {
               <div className="flex items-center space-x-5">
                 {tab.icon}
                 <div>
-                  <h3 className="text-lg sm:text-xl lg:text-2xl text-black">
+                  <h3 className="text-lg sm:text-xl lg:text-lg text-black">
                     {tab.label}
                   </h3>
                   <p className="text-xs sm:text-sm lg:text-base text-muted-foreground font-light">
@@ -244,7 +244,7 @@ const ProfilePage = () => {
               <div className="flex items-center space-x-5">
                 {tab.icon}
                 <div>
-                  <h3 className="text-lg sm:text-xl lg:text-2xl text-black">
+                  <h3 className="text-lg sm:text-xl lg:text-lg text-black">
                     {tab.label}
                   </h3>
                   <p className="text-xs sm:text-sm lg:text-base text-muted-foreground font-light">

@@ -52,7 +52,7 @@ const BottomNavBar = () => {
       </nav>
 
       {/* Desktop View Footer */}
-      <footer className="hidden md:block bg-gray-900 text-white py-10 px-16 fixed bottom-0 left-0 right-0 z-50 w-full">
+      <footer className="hidden md:block bg-gray-900 text-white py-10 px-16 z-50 w-full">
         <div className="max-w-[1200px] mx-auto grid grid-cols-4 gap-8">
           {/* About */}
           <div>

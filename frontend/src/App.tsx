@@ -73,7 +73,6 @@ function App() {
             },
           }}
         />
-        {!hideNavbar && <BottomNavBar />}
 
         {/* 3️⃣ Suspense fallback for lazy loading */}
         <Suspense
@@ -236,7 +235,7 @@ function App() {
               }
             />
             <Route
-              path="/search/:type"
+              path="/search/:type/:parseInput?"
               element={
                 <ProtectedRoute>
                   <SearchPage />
@@ -312,6 +311,7 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
+        {!hideNavbar && <BottomNavBar />}
       </div>
     </AuthProvider>
   );

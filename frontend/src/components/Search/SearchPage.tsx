@@ -16,6 +16,7 @@ function SearchPage() {
   const [dynamicUrl, setDynamicUrl] = useState("");
   const params = useParams();
   const type = params.type;
+  const parseInput = params.parseInput
    const inputRef = useRef(null);
 
    const router = useNavigate()
@@ -37,32 +38,44 @@ function SearchPage() {
         break;
     }
   }, [type]);
+
    useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
   }, []);
 
-  const handleChange = async () => {
-    try {
-      setLoading(true);
-      const req = await axios.get(`${dynamicUrl}/${input}`);
-      if (req.status === 201) {
-        setData(req.data);
-        // console.log(req.data);
-        
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-      setSearched(true);
-    }
-  };
+const handleChange = async (parseInput?: string) => {
+  try {
+    setLoading(true);
+    const url = `${dynamicUrl}/${parseInput || input}`;
+    console.log("Calling:", url);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     handleChange();
-  //   }, 3000);
-  // }, [input]);
+    const req = await axios.get(url);
+    console.log("Response status:", req.status);
+    if (req.status === 201) { 
+      setData(req.data);
+      console.log(req.data);
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("API Error:", error.response?.status, error.response?.data);
+    } else {
+      console.error("Unknown error:", error);
+    }
+  } finally {
+    setLoading(false);
+    setSearched(true);
+  }
+};
+
+
+useEffect(() => {
+  if (dynamicUrl && parseInput) {
+    console.log(dynamicUrl);
+    
+    setInput(parseInput);
+    handleChange(parseInput);
+  }
+}, [parseInput, dynamicUrl]);
 
   if (loading) {
     return <SearchLoader />;

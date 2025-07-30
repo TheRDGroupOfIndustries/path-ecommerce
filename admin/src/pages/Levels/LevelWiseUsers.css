@@ -1,0 +1,338 @@
+/* Visually hidden class for screen readers */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.associate-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1.5rem 2rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #1e293b;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+}
+
+.page-header p {
+  font-size: 1.125rem;
+  color: #64748b;
+  margin: 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Table container */
+.table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+  /* Ensure container is always visible */
+  width: 100%;
+  min-width: 0;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  outline: none;
+  /* Ensure wrapper maintains scroll on mobile */
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+/* Main table */
+.associate-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 1rem;
+  color: #314151;
+  border-radius: 12px;
+  overflow: hidden;
+  /* Ensure minimum width to prevent disappearing */
+  min-width: 600px;
+}
+
+.associate-table thead {
+  background: #eef2ff;
+  color: #667eea;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.associate-table th,
+.associate-table td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+  font-weight: 500;
+  /* Prevent cells from collapsing */
+  white-space: nowrap;
+}
+
+.associate-table th {
+  user-select: none;
+  font-size: 0.875rem;
+}
+
+.center-col {
+  text-align: center;
+  width: 60px;
+}
+
+/* Main row */
+.main-row {
+  transition: background-color 0.3s ease;
+}
+
+.main-row:hover,
+.main-row:focus-visible {
+  background-color: #dbeafe;
+  outline: none;
+}
+
+/* Expand/Caret icon styling */
+.expand-icon svg {
+  color: #667eea;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+
+/* Expanded row */
+.expanded-row td {
+  background-color: #f9fafb;
+  padding: 0;
+  border: none;
+}
+
+/* Nested table */
+.nested-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+  border-radius: 0 0 12px 12px;
+  overflow: hidden;
+  /* Ensure nested table doesn't collapse */
+  min-width: 500px;
+}
+
+.nested-table th,
+.nested-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #d1d1d6;
+  text-align: left;
+  font-weight: 400;
+  color: #475569;
+  white-space: nowrap;
+}
+
+.nested-table th {
+  background-color: #f1f5ff;
+  font-weight: 600;
+}
+
+.nested-table td {
+  vertical-align: middle;
+}
+
+.nested-table .center-col {
+  width: 50px;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Message when no nested users */
+.no-nested-users {
+  padding: 1.5rem;
+  text-align: center;
+  font-style: italic;
+  color: #94a3b8;
+  font-weight: 500;
+  background-color: #f9fafb;
+}
+
+/* Accessibility focus */
+.main-row:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Loading indicator */
+.loading {
+  font-size: 1.25rem;
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #64748b;
+}
+
+/* Responsive Design - Mobile First Approach */
+
+/* Tablets and small desktops */
+@media (max-width: 768px) {
+  .associate-container {
+    padding: 1rem;
+    margin: 1rem auto;
+  }
+
+  .associate-table {
+    min-width: 550px; /* Slightly smaller for tablets */
+  }
+
+  .nested-table {
+    min-width: 450px;
+  }
+
+  .associate-table th,
+  .associate-table td,
+  .nested-table th,
+  .nested-table td {
+    padding: 0.75rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .page-header p {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+}
+
+/* Mobile devices - This covers your 600px breakpoint issue */
+@media (max-width: 600px) {
+  .associate-container {
+    padding: 0.75rem;
+    margin: 0.5rem auto;
+  }
+
+  .associate-table {
+    min-width: 500px; /* Maintain minimum width */
+    font-size: 0.85rem;
+  }
+
+  .nested-table {
+    min-width: 400px;
+    font-size: 0.8rem;
+  }
+
+  .associate-table th,
+  .associate-table td {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .nested-table th,
+  .nested-table td {
+    padding: 0.5rem 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .page-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .page-header p {
+    font-size: 0.95rem;
+    padding: 0 0.5rem;
+  }
+
+  /* Make sure table container has proper scrolling */
+  .table-wrapper {
+    border-radius: 8px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .associate-container {
+    padding: 0.5rem;
+    margin: 0.25rem auto;
+  }
+
+  .associate-table {
+    min-width: 450px; /* Ensure table doesn't disappear */
+    font-size: 0.8rem;
+  }
+
+  .nested-table {
+    min-width: 350px;
+    font-size: 0.75rem;
+  }
+
+  .associate-table th,
+  .associate-table td {
+    padding: 0.5rem 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .nested-table th,
+  .nested-table td {
+    padding: 0.4rem 0.3rem;
+    font-size: 0.75rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .page-header p {
+    font-size: 0.9rem;
+    padding: 0 0.25rem;
+  }
+
+  .center-col {
+    width: 50px; /* Slightly smaller on mobile */
+  }
+
+  .nested-table .center-col {
+    width: 40px;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  .associate-table {
+    min-width: 400px; /* Absolute minimum */
+  }
+
+  .nested-table {
+    min-width: 320px;
+  }
+
+  .associate-table th,
+  .associate-table td,
+  .nested-table th,
+  .nested-table td {
+    padding: 0.4rem 0.25rem;
+    font-size: 0.75rem;
+  }
+}

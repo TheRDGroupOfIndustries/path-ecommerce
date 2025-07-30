@@ -17,7 +17,8 @@ export default function EditModal({
   rating,
   setRating,
   setFormRating,
-  handleFileUpload 
+  handleFileUpload ,
+  loading
 }) {
   if (!show) return null;
 
@@ -174,7 +175,15 @@ export default function EditModal({
             </div>
           </div>
 
-          <button type="submit" className="btn-save">Save Changes</button>
+          <button type="submit" className="btn-save" disabled={loading}>
+              {loading ? (
+              <>
+                <span className="spinner" /> Saving...
+              </>
+            ) : (
+              "Save →"
+            )}
+          </button>
         </form>
       </div>
     </div>

@@ -78,22 +78,22 @@ const AddProduct = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true); 
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    try {
+  try {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-   if (!user?.id || typeof user.id !== "string") {
-  context.setAlertBox({
-    open: true,
-    msg: "Invalid user ID. Please log in again.",
-    error: true,
-  });
-  setLoading(false);
-  return;
-}
+    if (!user?.id || typeof user.id !== "string") {
+      context.setAlertBox({
+        open: true,
+        msg: "Invalid user ID. Please log in again.",
+        error: true,
+      });
+      setLoading(false);
+      return;
+    }
 
     const productData = {
       ...formData,
@@ -101,43 +101,43 @@ const AddProduct = () => {
       createdById: user.id,
     };
 
-    postData("/product/create-product", productData).then(() => {
-      context.setAlertBox({
-        open: true,
-        msg: "Product added successfully!",
-        error: false,
-      });
+    await postData("/product/create-product", productData); 
 
-      setFormData({
-        name: "",
-        description: "",
-        images: [],
-        price: "",
-        discount: "",
-        ratings: "",
-        features: [],
-        highlights: [],
-        insideBox: [],
-        category: "",
-        sellerId: "",
-        isTrendy: null,
-      });
-
-      setTimeout(() => {
-        window.location.href = "/viewproduct";
-      }, 1000);
+    context.setAlertBox({
+      open: true,
+      msg: "Product added successfully!",
+      error: false,
     });
-  }catch(error){
+
+    setFormData({
+      name: "",
+      description: "",
+      images: [],
+      price: "",
+      discount: "",
+      ratings: "",
+      features: [],
+      highlights: [],
+      insideBox: [],
+      category: "",
+      sellerId: "",
+      isTrendy: null,
+    });
+
+    setTimeout(() => {
+      window.location.href = "/viewproduct";
+    }, 1000);
+  } catch (error) {
     console.error("Error updating item:", error);
     context.setAlertBox({
-        open: true,
-        msg: "Error adding product",
-        error: true,
-      });
+      open: true,
+      msg: "Error adding product",
+      error: true,
+    });
   } finally {
     setLoading(false); 
   }
-  };
+};
 
 
   return (
@@ -279,7 +279,7 @@ const AddProduct = () => {
 
           {/* Submit */}
           <div className="form-actions">
-            <button type="submit" className="submit-btn">
+            <button type="submit" className="submit-btn" disabled={loading}>
                 {loading ? (
               <>
                 <span className="spinner" /> Adding...

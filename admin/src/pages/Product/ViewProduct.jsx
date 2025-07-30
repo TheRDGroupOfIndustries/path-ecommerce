@@ -4,10 +4,11 @@ import "./Product.css"
 import { useContext } from "react"
 import { myContext } from "../../App"
 import EditModal from "./EditModal";
-import { Star,Eye, Pencil, Trash2, ChevronDown } from "lucide-react";
+import { Star,Eye, Pencil, Trash2, ChevronDown,Search } from "lucide-react";
 
 const ViewProduct = () => {
   const context = useContext(myContext);
+  const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false);
@@ -16,6 +17,10 @@ const ViewProduct = () => {
   const [filterCategory, setFilterCategory] = useState("all");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [allProducts, setAllProducts] = useState([]);
+  const [availableCategories, setAvailableCategories] = useState(["All"]);
+
   const PRODUCTS_PER_PAGE = 4;
   
    const [editFormData, setEditFormData] = useState({
@@ -62,16 +67,22 @@ const ViewProduct = () => {
 }, [filterCategory]);
 
 
-  const filteredProducts = products.filter((product) => {
+  const filteredProducts = allProducts.filter((product) => {
   const ratingMatch =
     filterRating === "all" ||
     product.ratings === Number.parseInt(filterRating);
+
   const categoryMatch =
     filterCategory === "all" ||
     product.category.toLowerCase() === filterCategory.toLowerCase();
 
-  return ratingMatch && categoryMatch;
+  const searchMatch =
+    !searchQuery ||
+    product.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+  return ratingMatch && categoryMatch && searchMatch;
 });
+
 
   useEffect(() => {
     setCurrentPage(1);
@@ -86,14 +97,18 @@ const ViewProduct = () => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
   
-    const fetchingProduct = () => {
-      fetchDataFromApi("/product/by-role")
-        .then((res) => {
-          // console.log("Fetched products:", res);
-          setProducts(res.products);
-        })
-        .catch((error) => console.error("Error fetching Products:", error));
-    };
+const fetchingProduct = () => {
+  fetchDataFromApi("/product/by-role")
+    .then((res) => {
+      setAllProducts(res.products);
+      setProducts(res.products); // products will be filtered view
+      const unique = Array.from(new Set(res.products.map(item => item.category))).filter(Boolean);
+      setAvailableCategories(["all", ...unique]);
+    })
+    .catch((error) => console.error("Error fetching Products:", error));
+};
+
+
   
     const handleEdit = (product) => {
       setSelectedProduct(product);
@@ -164,35 +179,40 @@ const ViewProduct = () => {
         [field]: prev[field].filter((_, i) => i !== index),
       }));
     };
-  
-    const handleEditSubmit = (e) => {
-      e.preventDefault();
-      const updatedData = { 
-      ...editFormData, 
+ const handleEditSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+
+  try {
+    const updatedData = {
+      ...editFormData,
       ratings: ratingValue,
       isTrendy: editFormData.isTrendy === "true",
       discount: parseInt(editFormData.discount) || 0,
     };
 
-      editData(`/product/update-product/${selectedProduct.id}`, updatedData)
-        .then(() => {
-          context.setAlertBox({
-            open: true,
-            msg: "Product updated successfully!",
-            error: false,
-          });
-          setShowEditModal(false);
-          fetchingProduct();
-        })
-        .catch(() => {
-          context.setAlertBox({
-            open: true,
-            msg: "Error updating product",
-            error: true,
-          });
-        });
-    };
-  
+    await editData(`/product/update-product/${selectedProduct.id}`, updatedData);
+
+    context.setAlertBox({
+      open: true,
+      msg: "Product updated successfully!",
+      error: false,
+    });
+
+    await fetchingProduct(); 
+    setShowEditModal(false); 
+  } catch (error) {
+    console.error("Error updating product:", error);
+    context.setAlertBox({
+      open: true,
+      msg: "Error updating product",
+      error: true,
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
     const handleDelete = (id) => {
       if (window.confirm("Are you sure you want to delete this product?")) {
         deleteData(`/product/delete-product/${id}`)
@@ -229,13 +249,36 @@ const ViewProduct = () => {
   reader.readAsDataURL(file);
 };
 
-    
-  
     useEffect(() => {
       const handleResize = () => setIsMobile(window.innerWidth <= 600);
       window.addEventListener('resize', handleResize);
       return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+
+   useEffect(() => {
+  if (searchQuery.length >= 2) {
+    handleSearch();
+  } else if (searchQuery.length === 0) {
+    fetchingProduct(); 
+  }
+}, [searchQuery]);
+
+
+  const handleSearch = async () => {
+  if (!searchQuery.trim()) {
+    fetchingProduct();
+    return;
+  }
+  try {
+    const res = await fetchDataFromApi(`/product/search/${searchQuery}`);
+    setProducts(res);
+    setFilterCategory("all"); 
+  } catch (err) {
+    console.error("Error during search:", err);
+  }
+};
+
 
   return (
     <div className="product-container">
@@ -244,25 +287,45 @@ const ViewProduct = () => {
         <div className="user-header-main">
           <h1>View Products</h1>
           <div className="custom-select-wrapper" style={{ position: 'relative' }}>
-            <select
+           <select
               id="categoryFilter"
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
               className="role-filter"
             >
-              <option value="all">All Categories</option>
-              <option value="Electronics">Electronics</option>
-              <option value="cloth">Cloth</option>
-              <option value="Books">Books</option>
-              <option value="Furniture">Furniture</option>
-              <option value="Accessories">Accessories</option>
-              <option value="Foot Wear">Foot Wear</option>
+              {availableCategories.map((cat, index) => (
+                <option key={index} value={cat}>
+                  {cat}
+                </option>
+              ))}
             </select>
+
             <span className="custom-arrow" style={{ position: 'absolute', right: 18, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#fff', fontSize: '1.2rem', zIndex: 3, display: 'flex', alignItems: 'center' }}>
               <ChevronDown size={20} />
             </span>
           </div>
+       <div className="search-section">
+          <div className="search-container">
+           <input
+          type="text"
+          placeholder="Search..."
+          className="search-input"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+           onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearch();
+            }
+          }}
+        />
+        <button className="search-button" onClick={handleSearch}>
+          <Search size={18} />
+        </button>
+          </div>
         </div>
+
+        </div>
+        
         <div className="user-stats">
           <span>Total Products: {products.length}</span><br />
           <span>Current Shown: {filteredProducts.length}</span>
@@ -419,7 +482,7 @@ const ViewProduct = () => {
                   setFormRating={(val) =>
                     setEditFormData((prev) => ({ ...prev, ratings: val }))
                   }
-                  
+                  loading={loading}
                 />
               </div>
             </div>

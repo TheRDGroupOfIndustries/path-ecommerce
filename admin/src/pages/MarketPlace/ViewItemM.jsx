@@ -319,7 +319,7 @@ useEffect(() => {
         />
 
             <div className="modal-actions">
-              <button onClick={handleSaveEdit}>
+              <button onClick={handleSaveEdit} disabled={loading}>
                  {loading ? (
               <>
                 <span className="spinner" /> Saving...

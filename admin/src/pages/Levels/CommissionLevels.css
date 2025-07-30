@@ -1,0 +1,155 @@
+/* Container and Layout */
+.commission-container {
+  max-width: 1400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #1e293b;
+}
+
+/* Heading */
+.commission-container h2 {
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* Table styling */
+.commission-table {
+  width: 80%; /* or a fixed width like 700px */
+  max-width: 700px; /* optional max width */
+  margin: 0 auto; 
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.commission-table thead {
+  background: whitesmoke;
+  color: rgb(143 142 142);
+}
+
+.commission-table th {
+  padding: 1.25rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.commission-table td {
+  padding: 1.25rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Input Styling */
+.commission-input {
+  width: 120px;
+  padding: 8px 10px;
+  font-size: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  text-align: center;
+  transition: border-color 0.2s ease;
+}
+
+.commission-input:focus {
+  border-color: #667eea;
+  outline: none;
+  box-shadow: 0 0 6px #667eea;
+}
+
+/* Save Button */
+.save-button {
+  margin-top: 2rem;
+  display: block;
+  width: 240px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 12px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.5);
+}
+
+.save-button:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+.save-button:active {
+  background-color: #4c35a0;
+}
+
+.save-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .commission-container {
+    padding: 1rem;
+  }
+
+  .commission-table th,
+  .commission-table td {
+    padding: 0.9rem 0.5rem;
+  }
+
+  .commission-input {
+    width: 90px;
+    padding: 6px 8px;
+    font-size: 0.9rem;
+  }
+
+  .save-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .commission-table {
+    font-size: 0.875rem;
+  }
+
+  .commission-input {
+    width: 80px;
+    padding: 5px 7px;
+    font-size: 0.85rem;
+  }
+}
+.page-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  margin-top: 2rem;
+}
+
+.page-header p {
+  font-size: 1.1rem;
+  color: #64748b;
+  margin: 0;
+}
+

@@ -15,6 +15,7 @@ import {
   CircleUser,
   X,
   HandHelping,
+  BadgePercent,
 } from "lucide-react"
 
 import "./Sidebar.css"
@@ -43,6 +44,7 @@ const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {
       submenu: [
         { title: "View Members", link: "/users" },
         { title: "Referral Users", link: "/ref-user" },
+        { title: "Add User", link: "/add-user" },
       ],
     },
     {
@@ -86,6 +88,15 @@ const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {
         { title: "View associate", link: "/viewAssociate" },
       ],
     },
+    {
+    name: "Commission",
+    icon: BadgePercent ,
+    hasSubmenu: true,
+    submenu: [
+      { title: "Commission Levels", link: "/level-commissions" },
+      { title: "Level-wise Users", link: "/level-users" },
+    ],
+  },
     {
       name: "Announcements",
       icon: Podcast,

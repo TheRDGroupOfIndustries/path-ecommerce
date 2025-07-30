@@ -25,6 +25,9 @@ import ViewAssociate from "./pages/Associate/ViewAssociate";
 import Support from "./pages/Support/Support";
 import SupportDetails from "./pages/Support/SupportDetail";
 import RefUser from "./pages/UserManagement/RefUser";
+import CommissionLevels from "./pages/Levels/CommissionLevels";
+import LevelWiseUsers from "./pages/Levels/LevelWiseUsers";
+import AddUser from "./pages/UserManagement/AddUser";
 
 // Global Context
 export const myContext = createContext();
@@ -62,6 +65,9 @@ function AppLayout({ darkMode, toggleDarkMode, sidebarOpen, toggleSidebar }) {
           <Route path="/support" element={<Support/>} />
           <Route path="/supportDetails" element={<SupportDetails/>} />
           <Route path="/ref-user" element={<RefUser/>} />
+          <Route path="/level-commissions" element={<CommissionLevels/>} />
+          <Route path="/level-users" element={<LevelWiseUsers/>} />
+          <Route path="/add-user" element={<AddUser />} />
         </Routes>
       </div>
     </>

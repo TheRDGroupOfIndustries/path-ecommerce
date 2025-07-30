@@ -243,7 +243,7 @@ const fetchingProduct = () => {
   reader.onloadend = () => {
     setEditFormData((prev) => ({
       ...prev,
-      [field]: [...(prev[field] || []), reader.result], // add base64 string to array
+      [field]: [...(prev[field] || []), reader.result], 
     }));
   };
   reader.readAsDataURL(file);

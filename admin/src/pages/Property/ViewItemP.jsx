@@ -116,7 +116,9 @@ const ViewitemP = () => {
         msg: "Error updating product",
         error: true,
       });
-    }
+    }finally {
+    setLoading(false); 
+  }
   };
 
   const handleDelete = async (userId) => {
@@ -136,7 +138,7 @@ const ViewitemP = () => {
           msg: "Failed to delete item.",
           error: true,
         });
-      }
+      } 
     }
   };
 
@@ -303,7 +305,7 @@ const ViewitemP = () => {
         />
 
             <div className="modal-actions">
-              <button onClick={handleSaveEdit}>
+              <button onClick={handleSaveEdit} disabled={loading}>
                 {loading ? (
               <>
                 <span className="spinner" /> Saving...

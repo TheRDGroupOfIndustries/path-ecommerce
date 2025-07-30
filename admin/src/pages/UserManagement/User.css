@@ -96,6 +96,7 @@
   margin: 0;
   position: relative;
   z-index: 2;
+  text-transform:capitalize;
 }
 
 .role-filter:focus,
@@ -572,4 +573,68 @@ width: 100% !important;
 
 .header.dark .search-button:hover {
   background: #63b3ed;
+}
+
+/* //res-header */
+
+@media (max-width: 900px) {
+  .user-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .user-header-main {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .search-section {
+    max-width: 100%;
+    margin: 0;
+    justify-content: flex-start;
+  }
+
+  .search-container {
+    max-width: 100%;
+  }
+
+  .search-input {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .custom-select-wrapper {
+    width: 100%;
+  }
+
+  .role-filter {
+    width: 100%;
+  }
+
+  .user-stats {
+    text-align: left;
+    padding-left: 4px;
+  }
+}
+
+@media (max-width: 600px) {
+  .user-header {
+    padding: 12px 8px;
+    margin-top: 16px;
+  }
+
+  .user-header h1 {
+    font-size: 1.3rem;
+    margin-bottom: 4px;
+  }
+
+  .custom-arrow {
+    right: 12px;
+  }
+
+  .search-button {
+    right: 6px;
+  }
 }

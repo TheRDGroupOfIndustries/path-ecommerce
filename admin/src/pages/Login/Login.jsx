@@ -8,6 +8,7 @@ import "./Login.css";
 
 const Login = () => {
   const context = useContext(myContext);
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -24,6 +25,7 @@ const Login = () => {
 
 const handleSubmit = async (e) => {
   e.preventDefault();
+  setLoading(true); 
 
   try {
     const response = await postData("/users/login", formData);
@@ -101,6 +103,8 @@ const handleSubmit = async (e) => {
       msg: "Login Failed!",
       error: true,
     });
+  }finally {
+    setLoading(false); 
   }
 };
 
@@ -150,7 +154,17 @@ const handleSubmit = async (e) => {
                 {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
               </span>
             </div>
-            <button type="submit" className="login-btn">Login →</button>
+           <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? (
+              <>
+                <span className="spinner" /> Logging...
+              </>
+            ) : (
+              "Login →"
+            )}
+
+          </button>
+
           </form>
         </div>
       </div>

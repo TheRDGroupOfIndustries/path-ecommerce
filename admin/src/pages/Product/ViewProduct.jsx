@@ -352,7 +352,7 @@ const ViewProduct = () => {
                         "No Image"
                       )}
                     </td>
-                    <td>{product.name}</td>
+                    <td style={{width:'17%'}}>{product.name}</td>
                     <td><div className="description-clamp">{product.description}</div></td>
                     <td>{product.category}</td>
                     <td><span className="price-badge">₹{product.price}</span></td>

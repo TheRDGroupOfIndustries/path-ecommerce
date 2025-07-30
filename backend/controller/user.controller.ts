@@ -353,6 +353,31 @@ export const getUsersWithReferralDetails = async (req: Request, res: Response) =
   }
 };
 
+// search
+export const searchUsersByName = async (req: Request, res: Response) => {
+  const { q } = req.query;
+
+  try {
+    const users = await db.user.findMany({
+      where: {
+        name: {
+          contains: q as string,
+          mode: "insensitive",
+        },
+      },
+    });
+
+    return res.json({ users });
+  } catch (err) {
+    console.error("Search failed", err);
+    return res.status(500).json({ msg: "Search failed", error: err });
+  }
+};
+
+
+
+
+
 
 
 // export const createUser = async (req: Request, res: Response) => {

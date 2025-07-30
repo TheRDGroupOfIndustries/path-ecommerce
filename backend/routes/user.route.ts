@@ -5,6 +5,7 @@ import { upload } from "../middlewares/multer.js";
 import passport from "../utils/passport.js";
 import { generateTokens, verifyTokenFromHeader } from "../utils/jwt.js";
 import * as userModel from "../model/user.model.js";
+import { searchUsersByName } from "../controller/user.controller.js";
 const route = Router();
 
 // Get all users
@@ -120,6 +121,10 @@ route.get(
 route.get("/signup-referral", async (req: Request, res: Response) => {
   await userController.getUsersWithReferralDetails (req, res);
 });
+
+
+// search
+route.get("/search", searchUsersByName);
 
 
 

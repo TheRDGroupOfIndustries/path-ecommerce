@@ -45,10 +45,6 @@
   background: #4a5568;
 }
 
-.search-section {
-  display: none !important;
-}
-
 .header-actions {
   display: flex;
   align-items: center;

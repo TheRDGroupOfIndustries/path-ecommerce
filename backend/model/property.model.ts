@@ -18,6 +18,16 @@ export const propertyByCat = async (category: PropertyCategory) =>
 export const propertyById = async (id: string) =>
   db.property.findUnique({ where: { id } });
 
+export const searchPropertyByName = async (value: string) => {
+  return db.property.findMany({
+    where: {
+      name: {
+        contains: value,
+        mode: "insensitive", 
+      },
+    },
+  });
+};
 
 export const getSearchResults = async (query: string) => {
     return await db.marketplace.findMany({

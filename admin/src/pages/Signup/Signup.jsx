@@ -3,10 +3,11 @@ import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { postData } from "../../utils/api";
 import { myContext } from "../../App";
 import "./Signup.css";
-import { UsersRound, Mails, PhoneCall, BookUser, KeyRound } from "lucide-react";
+import { UsersRound, Mails, PhoneCall, KeyRound } from "lucide-react";
 
 const Signup = () => {
   const context = useContext(myContext);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -35,6 +36,7 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); 
     const data = new FormData();
 
     if (
@@ -95,7 +97,9 @@ const Signup = () => {
         msg: "SignUp Failed!",
         error: true,
       });
-    }
+    }finally {
+    setLoading(false); 
+  }
   };
 
   return (
@@ -248,8 +252,15 @@ const Signup = () => {
                 </div>
               )}
 
-              <button type="submit" className="signup-btn">
-                Sign Up →
+              <button type="submit" className="signup-btn" disabled={loading}>
+               
+              {loading ? (
+              <>
+                <span className="spinner" />Signing...
+              </>
+            ) : (
+              "Sign Up →"
+            )}
               </button>
             </div>
           </form>
@@ -260,6 +271,11 @@ const Signup = () => {
 };
 
 export default Signup;
+
+
+
+
+
 
 //               <div className="input-wrapper">
 //                 <label className="input-label">Role</label>

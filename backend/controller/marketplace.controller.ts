@@ -122,3 +122,21 @@ export const marketDataByUserRole = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+//search 
+export const searchMarketplacesByName = async (req: Request, res: Response) => {
+  const { value } = req.params;
+
+  try {
+    const marketplaces = await marketPlaceModel.searchMarketplacesByName(value);
+
+    if (!marketplaces || marketplaces.length === 0) {
+      return res.status(404).json({ message: "No marketplaces found matching your search" });
+    }
+
+    return res.status(200).json({ marketplaces });
+  } catch (error) {
+    console.error("Error searching marketplaces:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};

@@ -51,5 +51,7 @@ route.get("/by-role", isAuthenticated, async (req, res) => {
   }
 });
 
+route.get("/search-marketplaces/:value", marketPlaceController.searchMarketplacesByName);
+
 
 export default route;

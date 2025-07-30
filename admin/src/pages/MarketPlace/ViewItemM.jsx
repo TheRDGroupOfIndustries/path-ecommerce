@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from "react";
 import { fetchDataFromApi, editData, deleteData } from "../../utils/api";
-import { ChevronDown, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, Pencil, Trash2,Search } from "lucide-react";
 import './AddItemM.css';
 import { myContext } from "../../App";
 
 const ViewitemM = () => {
   const context = useContext(myContext);
+  const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [filteredItem, setFilteredItem] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -15,6 +16,7 @@ const ViewitemM = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const ITEMS_PER_PAGE = 5;
 
   useEffect(() => {
@@ -28,19 +30,44 @@ const ViewitemM = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const fetchItems = async () => {
-    const res = await fetchDataFromApi("/marketplace/by-role");
-    if (res && Array.isArray(res.data)) {
-      setUsers(res.data);
+  // const fetchItems = async () => {
+  //   const res = await fetchDataFromApi("/marketplace/by-role");
+  //   if (res && Array.isArray(res.data)) {
+  //     setUsers(res.data);
 
-      // Dynamically extract unique categories
-      const unique = Array.from(new Set(res.data.map(item => item.category))).filter(Boolean);
-      setAvailableCategories(["All", ...unique]);
-    } else {
-      console.error("Unexpected API response:", res);
-      setUsers([]);
-    }
-  };
+  //     // Dynamically extract unique categories
+  //     const unique = Array.from(new Set(res.data.map(item => item.category))).filter(Boolean);
+  //     setAvailableCategories(["All", ...unique]);
+  //   } else {
+  //     console.error("Unexpected API response:", res);
+  //     setUsers([]);
+  //   }
+  // };
+
+  const fetchItems = async () => {
+  const res = await fetchDataFromApi("/marketplace/by-role");
+  if (res && Array.isArray(res.data)) {
+    setUsers(res.data);
+
+    // Get unique categories in lowercase, keeping first occurrence
+    const seen = new Set();
+    const unique = res.data
+      .map((item) => item.category?.trim())
+      .filter(Boolean)
+      .filter((cat) => {
+        const lower = cat.toLowerCase();
+        if (seen.has(lower)) return false;
+        seen.add(lower);
+        return true;
+      });
+
+    setAvailableCategories(["All", ...unique]);
+  } else {
+    console.error("Unexpected API response:", res);
+    setUsers([]);
+  }
+};
+
 
   useEffect(() => {
     const filtered = selectedCategory === "All"
@@ -70,6 +97,7 @@ const ViewitemM = () => {
   };
 
   const handleSaveEdit = async () => {
+    setLoading(true); 
     const { name, description, imageUrl, category, createdById } = editForm;
     try {
       const payload = {
@@ -100,6 +128,9 @@ const ViewitemM = () => {
         error: true,
       });
     }
+    finally {
+    setLoading(false); 
+  }
   };
 
   const handleDelete = async (userId) => {
@@ -159,6 +190,38 @@ const ViewitemM = () => {
   reader.readAsDataURL(file);
 };
 
+useEffect(() => {
+  if (searchQuery.length >= 2) {
+    handleSearch();
+  } else if (searchQuery.length === 0) {
+    const filtered = selectedCategory === "All"
+      ? users
+      : users.filter(user => user.category?.toLowerCase() === selectedCategory.toLowerCase());
+    setFilteredItem(filtered);
+  }
+}, [searchQuery]);
+
+
+    const handleSearch = async () => {
+      if (searchQuery.trim().length < 2) return;
+
+      try {
+        const response = await fetchDataFromApi(`/marketplace/search-marketplaces/${searchQuery.trim()}`);
+        if (response && Array.isArray(response)) {
+          setFilteredItem(response);
+        } else if (response?.marketplaces && Array.isArray(response.marketplaces)) {
+          setFilteredItem(response.marketplaces);
+        } else {
+          console.warn("Unexpected search response format:", response);
+          setFilteredItem([]);
+        }
+
+        setCurrentPage(1);
+      } catch (error) {
+        console.error("Search error:", error);
+        setFilteredItem([]);
+      }
+    };
 
   return (
     <div className="user-container">
@@ -256,7 +319,15 @@ const ViewitemM = () => {
         />
 
             <div className="modal-actions">
-              <button onClick={handleSaveEdit}>Save</button>
+              <button onClick={handleSaveEdit}>
+                 {loading ? (
+              <>
+                <span className="spinner" /> Saving...
+              </>
+            ) : (
+              "Save →"
+            )}
+              </button>
               <button onClick={() => setIsModalOpen(false)}>Cancel</button>
             </div>
           </div>
@@ -281,7 +352,30 @@ const ViewitemM = () => {
             </select>
             <span className="custom-arrow"><ChevronDown size={20} /></span>
           </div>
+
+          <div className="search-section">
+          <div className="search-container">
+           <input
+          type="text"
+          placeholder="Search..."
+          className="search-input"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+           onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearch();
+            }
+          }}
+        />
+        <button className="search-button" onClick={handleSearch}>
+          <Search size={18} />
+        </button>
+          </div>
         </div>
+
+        </div>
+
+
         <div className="user-stats">
           <span>Total Items: {users.length}</span><br />
           <span>Current Filtered: {filteredItem.length}</span>

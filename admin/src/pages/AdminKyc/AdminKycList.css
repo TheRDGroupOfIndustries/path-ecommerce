@@ -47,12 +47,14 @@
     border-radius: 5px;
     display: inline-block;
     text-align: center;
+    margin-top:6px;
   }
   
  .admin-kyc-wrapper .status.pending {
     background-color: #fff8e1;
     color: #ff9800;
     width:100%;
+    
   }
   
 .admin-kyc-wrapper  .status.approved {

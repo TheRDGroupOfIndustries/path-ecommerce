@@ -2,11 +2,12 @@ import { useState, useEffect, useContext } from "react";
 import "./User.css";
 import { fetchDataFromApi, editData, deleteData } from "../../utils/api";
 import { myContext } from "../../App";
-import { ChevronDown, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, Pencil, Trash2,Search } from "lucide-react";
 
 const ViewUser = () => {
   const context = useContext(myContext);
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedRole, setSelectedRole] = useState("All");
   const [editingUser, setEditingUser] = useState(null);
@@ -14,6 +15,8 @@ const ViewUser = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const USERS_PER_PAGE = 5;
@@ -73,6 +76,7 @@ const ViewUser = () => {
 
 
  const handleSaveEdit = async () => {
+   setLoading(true); 
   try {
     const { name, email, phone, password, role, createdById, imageFile, originalEmail } = editForm;
     let payload;
@@ -111,6 +115,9 @@ const ViewUser = () => {
     console.error("Error updating user:", error);
     context.setAlertBox({ open: true, msg: "Failed to update user!", error: true });
   }
+  finally {
+    setLoading(false); 
+  }
 };
 
 
@@ -138,6 +145,45 @@ const ViewUser = () => {
     setEditForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  //search
+useEffect(() => {
+  if (searchQuery.length >= 2) {
+    handleSearch(); // auto search after 2 characters
+  }
+}, [searchQuery]);
+
+useEffect(() => {
+  if (searchQuery.length >= 2) {
+    handleSearch();
+  } else if (searchQuery.length === 0) {
+    const filtered = selectedRole === "All"
+      ? users
+      : users.filter(user => user.role?.toLowerCase() === selectedRole.toLowerCase());
+    setFilteredUsers(filtered);
+  }
+}, [searchQuery]);
+
+  const handleSearch = async () => {
+  if (!searchQuery.trim()) {
+    await fetchUsers();
+    return;
+  }
+  try {
+    const res = await fetchDataFromApi(`/users/search?q=${encodeURIComponent(searchQuery)}`);
+    if (res && Array.isArray(res.users)) {
+      setFilteredUsers(res.users);
+    } else {
+      console.error("Unexpected search response:", res);
+      setFilteredUsers([]);
+    }
+    setCurrentPage(1);
+  } catch (err) {
+    console.error("Search failed:", err);
+    context.setAlertBox({ open: true, msg: "Failed to search!", error: true });
+  }
+};
+
+
   return (
     <div className="user-container">
       <div className="user-header">
@@ -157,6 +203,27 @@ const ViewUser = () => {
             </select>
             <span className="custom-arrow"><ChevronDown size={20} /></span>
           </div>
+
+        <div className="search-section">
+          <div className="search-container">
+           <input
+          type="text"
+          placeholder="Search..."
+          className="search-input"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+         onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearch();
+            }
+          }}
+        />
+        <button className="search-button" onClick={handleSearch}>
+          <Search size={18} />
+        </button>
+          </div>
+        </div>
+
         </div>
         <div className="user-stats">
           <span>Total members: {users.length}</span><br />
@@ -305,7 +372,15 @@ const ViewUser = () => {
             )}
 
             <div className="modal-actions" style={{ marginTop: 20, display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={handleSaveEdit} className="save-btn">Save</button>
+              <button onClick={handleSaveEdit} className="save-btn" disabled={loading}>
+                 {loading ? (
+              <>
+                <span className="spinner" /> Saving...
+              </>
+            ) : (
+              "Save →"
+            )}
+              </button>
               <button onClick={handleCancelEdit} className="cancel-btn">Cancel</button>
             </div>
           </div>

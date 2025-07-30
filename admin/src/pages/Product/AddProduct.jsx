@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 const AddProduct = () => {
   const context = useContext(myContext);
-
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -80,12 +80,20 @@ const AddProduct = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true); 
+
+    try {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-    if (!user?.id || typeof user.id !== "string") {
-      alert("Invalid user ID. Please log in again.");
-      return;
-    }
+   if (!user?.id || typeof user.id !== "string") {
+  context.setAlertBox({
+    open: true,
+    msg: "Invalid user ID. Please log in again.",
+    error: true,
+  });
+  setLoading(false);
+  return;
+}
 
     const productData = {
       ...formData,
@@ -119,7 +127,18 @@ const AddProduct = () => {
         window.location.href = "/viewproduct";
       }, 1000);
     });
+  }catch(error){
+    console.error("Error updating item:", error);
+    context.setAlertBox({
+        open: true,
+        msg: "Error adding product",
+        error: true,
+      });
+  } finally {
+    setLoading(false); 
+  }
   };
+
 
   return (
     <div className="product-container">
@@ -260,7 +279,15 @@ const AddProduct = () => {
 
           {/* Submit */}
           <div className="form-actions">
-            <button type="submit" className="submit-btn">Add Product</button>
+            <button type="submit" className="submit-btn">
+                {loading ? (
+              <>
+                <span className="spinner" /> Adding...
+              </>
+            ) : (
+              "Add Product →"
+            )}
+            </button>
           </div>
         </form>
       </div>

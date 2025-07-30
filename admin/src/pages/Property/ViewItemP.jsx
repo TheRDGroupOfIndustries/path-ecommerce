@@ -1,10 +1,12 @@
 import { useState, useEffect, useContext } from "react";
 import { fetchDataFromApi, editData, deleteData } from "../../utils/api";
-import { ChevronDown, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, Pencil, Trash2,Search } from "lucide-react";
 import { myContext } from "../../App";
 
 const ViewitemP = () => {
   const context = useContext(myContext);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [users, setUsers] = useState([]);
   const [filteredItem, setFilteredItem] = useState([]);
   const [availableCategories, setAvailableCategories] = useState(["All"]);
@@ -28,19 +30,29 @@ const ViewitemP = () => {
   }, []);
 
   const fetchItems = async () => {
-    const res = await fetchDataFromApi("/property/by-role");
-    if (res && Array.isArray(res.data)) {
-      setUsers(res.data);
+  const res = await fetchDataFromApi("/property/by-role");
+  if (res && Array.isArray(res.data)) {
+    setUsers(res.data);
 
-      const uniqueCategories = Array.from(
-        new Set(res.data.map((item) => item.category).filter(Boolean))
-      );
-      setAvailableCategories(["All", ...uniqueCategories]);
-    } else {
-      console.error("Unexpected API response:", res);
-      setUsers([]);
-    }
-  };
+    // Get unique categories in lowercase, keeping first occurrence
+    const seen = new Set();
+    const unique = res.data
+      .map((item) => item.category?.trim())
+      .filter(Boolean)
+      .filter((cat) => {
+        const lower = cat.toLowerCase();
+        if (seen.has(lower)) return false;
+        seen.add(lower);
+        return true;
+      });
+
+    setAvailableCategories(["All", ...unique]);
+  } else {
+    console.error("Unexpected API response:", res);
+    setUsers([]);
+  }
+};
+
 
   useEffect(() => {
     const filtered =
@@ -74,6 +86,7 @@ const ViewitemP = () => {
   };
 
   const handleSaveEdit = async () => {
+    setLoading(true); 
     const { name, description, imageUrl, category, createdById } = editForm;
     try {
       const payload = {
@@ -163,6 +176,39 @@ const ViewitemP = () => {
   reader.readAsDataURL(file);
 };
 
+ useEffect(() => {
+  if (searchQuery.length >= 2) {
+    handleSearch();
+  } else if (searchQuery.length === 0) {
+    const filtered = selectedCategory === "All"
+      ? users
+      : users.filter(user => user.category?.toLowerCase() === selectedCategory.toLowerCase());
+    setFilteredItem(filtered);
+  }
+}, [searchQuery]);
+
+
+    const handleSearch = async () => {
+      if (searchQuery.trim().length < 2) return;
+
+      try {
+        const response = await fetchDataFromApi(`/property/search-property/${searchQuery.trim()}`);
+        if (response && Array.isArray(response)) {
+          setFilteredItem(response);
+        } else if (response?.propertyy && Array.isArray(response.propertyy)) {
+          setFilteredItem(response.propertyy);
+        } else {
+          console.warn("Unexpected search response format:", response);
+          setFilteredItem([]);
+        }
+
+        setCurrentPage(1);
+      } catch (error) {
+        console.error("Search error:", error);
+        setFilteredItem([]);
+      }
+    };
+
   return (
     <div className="user-container">
       {isModalOpen && (
@@ -237,7 +283,7 @@ const ViewitemP = () => {
                 </div>
               ))}
             </div>
-            {/* Add via URL */}
+      
         <input
           name="newImage"
           value={editForm.newImage || ""}
@@ -257,7 +303,15 @@ const ViewitemP = () => {
         />
 
             <div className="modal-actions">
-              <button onClick={handleSaveEdit}>Save</button>
+              <button onClick={handleSaveEdit}>
+                {loading ? (
+              <>
+                <span className="spinner" /> Saving...
+              </>
+            ) : (
+              "Save →"
+            )}
+              </button>
               <button onClick={() => setIsModalOpen(false)}>Cancel</button>
             </div>
           </div>
@@ -287,7 +341,29 @@ const ViewitemP = () => {
               <ChevronDown size={20} />
             </span>
           </div>
+
+            <div className="search-section">
+          <div className="search-container">
+           <input
+          type="text"
+          placeholder="Search..."
+          className="search-input"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+           onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearch();
+            }
+          }}
+        />
+        <button className="search-button" onClick={handleSearch}>
+          <Search size={18} />
+        </button>
+          </div>
         </div>
+
+        </div>
+
         <div className="user-stats">
           <span>Total Items: {users.length}</span>
           <br />

@@ -54,4 +54,7 @@ route.get("/by-role", isAuthenticated, async (req, res) => {
 });
 
 
+route.get("/search-property/:value", propertyController.searchPropertyByName);
+
+
 export default route;

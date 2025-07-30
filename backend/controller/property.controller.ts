@@ -123,3 +123,21 @@ export const propertyDataByUserRole = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
+//search 
+export const searchPropertyByName = async (req: Request, res: Response) => {
+  const { value } = req.params;
+
+  try {
+    const propertyy = await property.searchPropertyByName(value);
+
+    if (!propertyy || propertyy.length === 0) {
+      return res.status(404).json({ message: "No property found matching your search" });
+    }
+    return res.status(200).json({ propertyy });
+  } catch (error) {
+    console.error("Error searching property:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};

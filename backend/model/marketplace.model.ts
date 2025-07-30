@@ -19,6 +19,18 @@ export const marketplaceById = async (id: string) =>
   db.marketplace.findUnique({ where: { id } });
 
 
+export const searchMarketplacesByName = async (value: string) => {
+  return db.marketplace.findMany({
+    where: {
+      name: {
+        contains: value,
+        mode: "insensitive", 
+      },
+    },
+  });
+};
+
+
 export const getSearchResults = async (query: string) => {
     return await db.marketplace.findMany({
         where: {

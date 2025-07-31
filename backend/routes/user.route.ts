@@ -26,6 +26,14 @@ route.get(
   }
 );
 
+//  Create a new user
+route.post(
+  "/create-user",
+  upload.single("image"),
+  async (req: Request, res: Response) => {
+    await userController.createUserController(req, res);
+  }
+);
 route.put(
   "/update-auth-user",
   isAuthenticated,
@@ -41,15 +49,6 @@ route.get("/get-by-email/:email", async (req: Request, res: Response) => {
 route.put("/update-password/:email", async (req: Request, res: Response) => {
   await userController.updatePassword(req, res);
 });
-
-//  Create a new user
-route.post(
-  "/create-user",
-  upload.single("image"),
-  async (req: Request, res: Response) => {
-    await userController.createUserController(req, res);
-  }
-);
 
 //  Update user
 route.put(

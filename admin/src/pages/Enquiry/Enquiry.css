@@ -78,3 +78,17 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.filter-select {
+  padding: 4px 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}

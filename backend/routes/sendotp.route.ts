@@ -6,6 +6,7 @@ const router = express.Router();
 
 
 router.post("/send-otp", async (req: Request, res: Response): Promise<void> => {
+    console.log("Received OTP request:", req.body);
   const { email, otp } = req.body;
 
   if (!email || !otp) {
@@ -19,7 +20,7 @@ router.post("/send-otp", async (req: Request, res: Response): Promise<void> => {
     if (result) {
       res.status(200).json({ success: "OTP sent successfully!" });
     } else {
-      res.status(401).json({ error: "Failed to send OTP" });
+      res.status(500).json({ error: "Failed to send OTP" });
     }
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });

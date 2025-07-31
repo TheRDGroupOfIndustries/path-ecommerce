@@ -7,6 +7,8 @@ const Enquiry = () => {
   const [users, setUsers] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
   const [modalData, setModalData] = useState(null);
+  const [filterType, setFilterType] = useState("All");
+
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -68,22 +70,46 @@ const Enquiry = () => {
 
   const closeModal = () => setModalData(null);
 
+  const filteredUsers = users.filter((user) => {
+  if (filterType === "All") return true;
+  if (filterType === "Marketplace") return !!user.marketplaceId;
+  if (filterType === "Property") return !!user.propertyId;
+  return true;
+});
+
+
   return (
     <div className="user-container">
       <div className="user-header">
         <h1>View Enquiries</h1>
+
+  <div className="filter-container">
+  <label htmlFor="filterType">Filter by Type:</label>
+  <select
+    id="filterType"
+    value={filterType}
+    onChange={(e) => setFilterType(e.target.value)}
+    className="filter-select"
+  >
+    <option value="All">All</option>
+    <option value="Marketplace">Marketplace</option>
+    <option value="Property">Property</option>
+  </select>
+</div>
+
+
         <div className="user-stats">
           <span>Total Enquiry: {users.length}</span>
         </div>
       </div>
 
-      {users.length === 0 ? (
+      {filteredUsers.length === 0 ? (
         <div className="no-products">
           <p>No Item found.</p>
         </div>
       ) : isMobile ? (
         <div className="user-list">
-          {users.map((user) => (
+          {filteredUsers.map((user) => (
             <div className="user-card" key={user.id}>
               <div style={{ flex: 1 }}>
                 <div className="user-name"><strong>{user.name}</strong></div>
@@ -116,7 +142,7 @@ const Enquiry = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map((user, index) => (
+              {filteredUsers.map((user, index) => (
                 <tr key={user.id}>
                   <td>{index + 1}</td>
                   <td>{user.name}</td>

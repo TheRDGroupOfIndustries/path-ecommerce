@@ -7,7 +7,6 @@ import {
 
 const AddAssociate = () => {
   const [users, setUsers] = useState([]);
-  const [commissionLevels, setCommissionLevels] = useState([]);
   const [formData, setFormData] = useState({
     users: "",
     level: "",
@@ -23,16 +22,6 @@ const AddAssociate = () => {
     fetchUsers();
   }, []);
 
-  useEffect(() => {
-  const fetchLevels = async () => {
-    const res = await fetchDataFromApi("/level");
-    if (res) {
-      setCommissionLevels(res);
-    }
-  };
-  fetchLevels();
-}, []);
-
   const fetchUsers = async () => {
     const res = await fetchDataFromApi("/users/get-all");
     if (res && Array.isArray(res.users)) {
@@ -44,30 +33,14 @@ const AddAssociate = () => {
 
   const levels = Array.from({ length: 13 }, (_, i) => i); //till 12
 
-const handleInputChange = (e) => {
-  const { name, value } = e.target;
-
-  if (name === "level") {
-    const selectedLevel = parseInt(value);
-    const matchedLevel = commissionLevels.find((l) => l.level === selectedLevel);
-    if (matchedLevel) {
-      setFormData((prev) => ({
-        ...prev,
-        level: value,
-        percent: matchedLevel.percent.toString(),
-      }));
-    } else {
-      setFormData((prev) => ({ ...prev, level: value, percent: "" }));
-    }
-  } else {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  }
 
-  if (errors[name]) {
-    setErrors((prev) => ({ ...prev, [name]: "" }));
-  }
-};
-
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -202,20 +175,20 @@ const handleInputChange = (e) => {
             <label htmlFor="level" className="form-label">
               Level <span className="required">*</span>
             </label>
-           <select
-                id="level"
-                name="level"
-                value={formData.level}
-                onChange={handleInputChange}
-                className={`form-select ${errors.level ? "input-error" : ""}`}
-              >
-                <option value="">Select Level</option>
-                {commissionLevels.map((level) => (
-                  <option key={level.level} value={level.level}>
-                    {level.level}
-                  </option>
-                ))}
-              </select>
+            <select
+              id="level"
+              name="level"
+              value={formData.level}
+              onChange={handleInputChange}
+              className={`form-select ${errors.level ? "input-error" : ""}`}
+            >
+              <option value="">Select Level</option>
+              {levels.map((level) => (
+                <option key={level} value={level}>
+                  {level}
+                </option>
+              ))}
+            </select>
             {errors.level && <span className="error-text">{errors.level}</span>}
           </div>
 
@@ -224,16 +197,24 @@ const handleInputChange = (e) => {
             <label htmlFor="percent" className="form-label">
               Percent <span className="required">*</span>
             </label>
-           <input
-          type="number"
-          id="percent"
-          name="percent"
-          value={formData.percent}
-          onChange={handleInputChange}
-          className={`form-input ${errors.percent ? "input-error" : ""}`}
-          disabled // prevents manual editing
-          placeholder="Auto-selected"
-        />
+            <select
+              id="percent"
+              name="percent"
+              value={formData.percent}
+              onChange={handleInputChange}
+              className={`form-input ${errors.percent ? "input-error" : ""}`}
+            >
+              <option value="" disabled selected>
+                Select Percent
+              </option>
+              {percentageList.length > 0 &&
+                percentageList.map((level) => (
+                  <option key={level} value={level}>
+                    {level}
+                  </option>
+                ))}
+            </select>
+
             {errors.percent && (
               <span className="error-text">{errors.percent}</span>
             )}
@@ -279,6 +260,9 @@ export default AddAssociate;
 
 
 
+
+
+
 // import React, { useState, useEffect } from "react";
 // import {
 //   fetchDataFromApi,
@@ -288,6 +272,7 @@ export default AddAssociate;
 
 // const AddAssociate = () => {
 //   const [users, setUsers] = useState([]);
+//   const [commissionLevels, setCommissionLevels] = useState([]);
 //   const [formData, setFormData] = useState({
 //     users: "",
 //     level: "",
@@ -303,6 +288,16 @@ export default AddAssociate;
 //     fetchUsers();
 //   }, []);
 
+//   useEffect(() => {
+//   const fetchLevels = async () => {
+//     const res = await fetchDataFromApi("/level");
+//     if (res) {
+//       setCommissionLevels(res);
+//     }
+//   };
+//   fetchLevels();
+// }, []);
+
 //   const fetchUsers = async () => {
 //     const res = await fetchDataFromApi("/users/get-all");
 //     if (res && Array.isArray(res.users)) {
@@ -314,14 +309,30 @@ export default AddAssociate;
 
 //   const levels = Array.from({ length: 13 }, (_, i) => i); //till 12
 
-//   const handleInputChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormData((prev) => ({ ...prev, [name]: value }));
+// const handleInputChange = (e) => {
+//   const { name, value } = e.target;
 
-//     if (errors[name]) {
-//       setErrors((prev) => ({ ...prev, [name]: "" }));
+//   if (name === "level") {
+//     const selectedLevel = parseInt(value);
+//     const matchedLevel = commissionLevels.find((l) => l.level === selectedLevel);
+//     if (matchedLevel) {
+//       setFormData((prev) => ({
+//         ...prev,
+//         level: value,
+//         percent: matchedLevel.percent.toString(),
+//       }));
+//     } else {
+//       setFormData((prev) => ({ ...prev, level: value, percent: "" }));
 //     }
-//   };
+//   } else {
+//     setFormData((prev) => ({ ...prev, [name]: value }));
+//   }
+
+//   if (errors[name]) {
+//     setErrors((prev) => ({ ...prev, [name]: "" }));
+//   }
+// };
+
 
 //   const validateForm = () => {
 //     const newErrors = {};
@@ -456,20 +467,20 @@ export default AddAssociate;
 //             <label htmlFor="level" className="form-label">
 //               Level <span className="required">*</span>
 //             </label>
-//             <select
-//               id="level"
-//               name="level"
-//               value={formData.level}
-//               onChange={handleInputChange}
-//               className={`form-select ${errors.level ? "input-error" : ""}`}
-//             >
-//               <option value="">Select Level</option>
-//               {levels.map((level) => (
-//                 <option key={level} value={level}>
-//                   {level}
-//                 </option>
-//               ))}
-//             </select>
+//            <select
+//                 id="level"
+//                 name="level"
+//                 value={formData.level}
+//                 onChange={handleInputChange}
+//                 className={`form-select ${errors.level ? "input-error" : ""}`}
+//               >
+//                 <option value="">Select Level</option>
+//                 {commissionLevels.map((level) => (
+//                   <option key={level.level} value={level.level}>
+//                     {level.level}
+//                   </option>
+//                 ))}
+//               </select>
 //             {errors.level && <span className="error-text">{errors.level}</span>}
 //           </div>
 
@@ -478,24 +489,16 @@ export default AddAssociate;
 //             <label htmlFor="percent" className="form-label">
 //               Percent <span className="required">*</span>
 //             </label>
-//             <select
-//               id="percent"
-//               name="percent"
-//               value={formData.percent}
-//               onChange={handleInputChange}
-//               className={`form-input ${errors.percent ? "input-error" : ""}`}
-//             >
-//               <option value="" disabled selected>
-//                 Select Percent
-//               </option>
-//               {percentageList.length > 0 &&
-//                 percentageList.map((level) => (
-//                   <option key={level} value={level}>
-//                     {level}
-//                   </option>
-//                 ))}
-//             </select>
-
+//            <input
+//           type="number"
+//           id="percent"
+//           name="percent"
+//           value={formData.percent}
+//           onChange={handleInputChange}
+//           className={`form-input ${errors.percent ? "input-error" : ""}`}
+//           disabled // prevents manual editing
+//           placeholder="Auto-selected"
+//         />
 //             {errors.percent && (
 //               <span className="error-text">{errors.percent}</span>
 //             )}
@@ -535,3 +538,7 @@ export default AddAssociate;
 // };
 
 // export default AddAssociate;
+
+
+
+

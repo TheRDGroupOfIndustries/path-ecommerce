@@ -129,14 +129,15 @@ const ViewAssociate = () => {
     }
   }
 
-  const fetchReferrals = async () => {
-    try {
-      const data = await fetchDataFromApi("/referral/all")
-      setReferrals(data)
-    } catch (error) {
-      console.error("Failed to fetch referrals:", error)
-    }
+const fetchReferrals = async () => {
+  try {
+    const data = await fetchDataFromApi("/referral/all")
+    setReferrals(data.referrals || []) 
+  } catch (error) {
+    console.error("Failed to fetch referrals:", error)
   }
+}
+
 
   const getReferralDetails = (associateId) => {
     return referrals
@@ -159,10 +160,14 @@ const ViewAssociate = () => {
       })
   }
 
-  const getTotalCommission = (id) => {
-    const total = referrals.filter((r) => r.createdFor.id === id).reduce((sum, r) => sum + (r.totalRevenue || 0), 0)
-    return total.toFixed(2)
-  }
+ const getTotalCommission = (id) => {
+  if (!Array.isArray(referrals)) return "0.00"
+  const total = referrals
+    .filter((r) => r.createdFor.id === id)
+    .reduce((sum, r) => sum + (r.totalRevenue || 0), 0)
+  return total.toFixed(2)
+}
+
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this associate?")) {

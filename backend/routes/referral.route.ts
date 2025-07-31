@@ -59,10 +59,10 @@ router.get("/all", async (req, res) => {
     const referrals = await db.referral.findMany({
       include: {
         createdFor: {
-          select: { id: true, name: true, email: true }
+          select: { id: true, name: true, email: true },
         },
         usedByUsers: {
-          select: { id: true, name: true, email: true, createdAt: true }
+          select: { id: true, name: true, email: true, createdAt: true },
         },
         transactions: {
           select: {
@@ -70,17 +70,17 @@ router.get("/all", async (req, res) => {
             commission: true,
             userId: true,
             user: {
-              select: { id: true, name: true, email: true }
+              select: { id: true, name: true, email: true },
             },
           },
         },
       },
     });
 
-    // Fetch all Enquiries with referralCode
+    // Fetch all enquiries with referralCode
     const enquiries = await db.enquire.findMany({
       where: {
-        referralCode: { not: null }
+        referralCode: { not: null },
       },
       select: {
         referralCode: true,
@@ -89,54 +89,61 @@ router.get("/all", async (req, res) => {
         phone: true,
         message: true,
         createdAt: true,
-      }
+      },
     });
 
+    // Format referrals
     const formatted = referrals.map((ref) => {
-      // Unique users for purchase tracking
-      const seenUsers = new Set();
-      const uniqueTransactions = ref.transactions.filter(tx => {
-        if (!tx.userId || seenUsers.has(tx.userId)) return false;
-        seenUsers.add(tx.userId);
+      // Unique userId per referral
+      const seenPairs = new Set<string>();
+      const uniqueTransactions = ref.transactions.filter((tx) => {
+        const key = `${ref.id}_${tx.userId}`;
+        if (!tx.userId || seenPairs.has(key)) return false;
+        seenPairs.add(key);
         return true;
       });
 
       const totalRevenue = uniqueTransactions.reduce((sum, tx) => sum + tx.commission, 0);
 
       // Get enquiries matching this referral code
-      const matchingEnquiries = enquiries.filter(eq => eq.referralCode === ref.referral);
+      const matchingEnquiries = enquiries.filter(
+        (eq) => eq.referralCode === ref.referral
+      );
 
       return {
         id: ref.id,
         referralCode: ref.referral,
         createdFor: ref.createdFor,
 
-        // Users referral in signup
+   
         usedAtSignupUsers: ref.usedByUsers,
 
-        // Users who used referral in purchase
-        usedAtPurchaseUsers: uniqueTransactions.map(tx => tx.user),
+       
+        usedAtPurchaseUsers: uniqueTransactions.map((tx) => tx.user),
 
-        // Enquiry submissions using this referral
         usedInEnquiries: matchingEnquiries,
 
-       
         totalRevenue,
         totalUsedBy: {
           signup: ref.usedByUsers.length,
-          purchase: seenUsers.size,
-          enquiry: matchingEnquiries.length
-        }
+          purchase: seenPairs.size,
+          enquiry: matchingEnquiries.length,
+        },
       };
     });
 
-    res.status(200).json(formatted);
+    const totalRevenue = formatted.reduce((sum, r) => sum + r.totalRevenue, 0);
+
+    res.status(200).json({
+      totalReferralCodes: referrals.length,
+      totalRevenue,
+      data: formatted,
+    });
   } catch (err) {
     console.error("Error fetching referrals:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 
 router.post("/apply",isAuthenticated, async (req,res) => {

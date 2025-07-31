@@ -274,3 +274,12 @@ model Support {
   user         User     @relation("SupportUser", fields: [userId], references: [id], onDelete: Cascade)
   seller       User?     @relation("SupportSeller", fields: [sellerId], references: [id], onDelete: Cascade)
 }
+
+
+model CommissionLevel {
+  id        String   @id @default(cuid())
+  level     Int      @unique
+  percent   Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

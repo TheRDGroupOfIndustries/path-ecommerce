@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import db from "../client/connect"; 
+import db from "../client/connect.js"; 
 
 export const saveOrUpdateCommissionLevels = async (req: Request, res: Response) => {
   const levels = req.body; 

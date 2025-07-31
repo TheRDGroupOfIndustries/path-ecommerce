@@ -22,6 +22,7 @@ import cartRoute from "./routes/cart.route.js"
 import orderRoute from "./routes/order.route.js"
 import supportRoute from "./routes/support.route.js"
 import levelRoute from "./routes/commision.route.js"
+import treeRoute from "./routes/tree.route.js"
 
 //chetan added
 import session from "express-session";
@@ -89,6 +90,7 @@ app.use("/api/order",orderRoute);
 app.use("/api/manage-associate", mangageAssociate)
 app.use("/api/support", supportRoute)
 app.use("/api/level",levelRoute)
+app.use("/api/tree",treeRoute)
 
 import type { Request, Response, NextFunction } from 'express';
 

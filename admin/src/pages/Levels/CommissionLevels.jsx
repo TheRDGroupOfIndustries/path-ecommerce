@@ -63,7 +63,7 @@ const handleSave = async () => {
   } catch (err) {
        context.setAlertBox({
         open: true,
-        msg: "Failed to save commission levels.",
+        msg: "Failed to save commission Percent.",
         error: true,
       });
     console.error(err);

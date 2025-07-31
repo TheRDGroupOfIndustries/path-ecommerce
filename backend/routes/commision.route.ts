@@ -1,5 +1,5 @@
 import express from "express";
-import { saveOrUpdateCommissionLevels,getCommissionLevels } from "../controller/commisionLevel.controller";
+import { saveOrUpdateCommissionLevels,getCommissionLevels } from "../controller/commisionLevel.controller.js";
 
 const router = express.Router();
 

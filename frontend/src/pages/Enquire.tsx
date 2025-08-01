@@ -122,7 +122,7 @@ const Enquire = () => {
   if (!property || !seller) return <Loader />;
 
   return (
-    <div className="w-full mx-auto bg-white container p-4 relative mb-16 md:mb-0">
+    <div className="w-full mx-auto bg-white container p-2 relative mb-16 md:mb-0">
 
       {/* Header */}
       <div className="flex items-center justify-between p-4 bg-white">

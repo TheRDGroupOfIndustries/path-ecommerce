@@ -16,7 +16,7 @@ interface FormData {
   password: string;
   confirmPassword: string;
   referralCode?: string;
-  image?:File;
+  image?: File;
 }
 
 const SignUp = () => {
@@ -25,7 +25,9 @@ const SignUp = () => {
 
   const navigate = useNavigate();
 
-  const [referralStatus, setReferralStatus] = useState<null | "valid" | "invalid">(null);
+  const [referralStatus, setReferralStatus] = useState<
+    null | "valid" | "invalid"
+  >(null);
   const [referralMessage, setReferralMessage] = useState("");
 
   const [showReferralInput, setShowReferralInput] = useState(false);
@@ -41,34 +43,35 @@ const SignUp = () => {
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
- const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const { name, value } = e.target;
-  setFormData((prev) => ({
-    ...prev,
-    [name]: value,
-  }));
-};
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-const validateReferralCode = async () => {
-  if (!formData.referralCode.trim()) return;
+  const validateReferralCode = async () => {
+    if (!formData.referralCode.trim()) return;
 
-  try {
-    const res = await fetch(`${API_URL}/api/referral/validate/${formData.referralCode}`);
-    const data = await res.json();
+    try {
+      const res = await fetch(
+        `${API_URL}/api/referral/validate/${formData.referralCode}`
+      );
+      const data = await res.json();
 
-    if (data.valid) {
-      setReferralStatus("valid");
-      setReferralMessage("Referral code is valid ✅");
-    } else {
+      if (data.valid) {
+        setReferralStatus("valid");
+        setReferralMessage("Referral code is valid ✅");
+      } else {
+        setReferralStatus("invalid");
+        setReferralMessage("Invalid referral code ❌");
+      }
+    } catch (err) {
       setReferralStatus("invalid");
-      setReferralMessage("Invalid referral code ❌");
+      setReferralMessage("Error validating referral code ❌");
     }
-  } catch (err) {
-    setReferralStatus("invalid");
-    setReferralMessage("Error validating referral code ❌");
-  }
-};
-
+  };
 
   const validateForm = (): boolean => {
     if (!formData.name.trim()) {
@@ -137,10 +140,15 @@ const validateReferralCode = async () => {
 
   function VerifyOTP(e: React.FormEvent) {
     e.preventDefault();
+    setError("");
+    setLoading(true);
     const inp = Number(otpValue);
     if (inp === otp) {
       setStep(2);
-    }
+    }else {
+    setError("Invalid OTP. Please try again.");
+  }
+   setLoading(false);
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -149,14 +157,10 @@ const validateReferralCode = async () => {
 
     if (!validateForm()) return;
 
-    if (
-  formData.referralCode?.trim() &&
-      referralStatus === "invalid"
-    ) {
+    if (formData.referralCode?.trim() && referralStatus === "invalid") {
       setError("Please enter a valid referral code.");
       return;
     }
-
 
     setIsLoading(true);
 
@@ -171,15 +175,11 @@ const validateReferralCode = async () => {
 
       navigate("/login");
     } catch (err: any) {
-      setError(
-          "Ops, Its not you, Its us, Please try again a bit later."
-      );
+      setError("Ops, Its not you, Its us, Please try again a bit later.");
     } finally {
       setIsLoading(false);
     }
   };
-
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4">
@@ -224,7 +224,6 @@ const validateReferralCode = async () => {
               required
               className="py-6"
             />
-
 
             {step === 0 ? (
               <></>
@@ -283,61 +282,67 @@ const validateReferralCode = async () => {
                 </div>
 
                 {/*  Referral Toggle */}
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="referralToggle"
-                checked={showReferralInput}
-                onChange={() => setShowReferralInput(!showReferralInput)}
-              />
-              <label htmlFor="referralToggle" className="text-sm">
-                I have a referral code
-              </label>
-            </div>
-
-            {/* Referral Input (conditionally shown) */}
-            {showReferralInput && (
-              <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <Input
-                    type="text"
-                    placeholder="Referral Code"
-                    name="referralCode"
-                    value={formData.referralCode}
-                    onChange={handleChange}
-                    className="py-6 flex-1"
+                  <input
+                    type="checkbox"
+                    id="referralToggle"
+                    checked={showReferralInput}
+                    onChange={() => setShowReferralInput(!showReferralInput)}
                   />
-                  <button
-                    type="button"
-                    onClick={validateReferralCode}
-                    className="bg-blue-600 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-700 transition"
-                  >
-                    Check
-                  </button>
+                  <label htmlFor="referralToggle" className="text-sm">
+                    I have a referral code
+                  </label>
                 </div>
 
-                {referralStatus && (
-                  <p className={`text-sm ${referralStatus === "valid" ? "text-green-600" : "text-red-600"}`}>
-                    {referralMessage}
-                  </p>
+                {/* Referral Input (conditionally shown) */}
+                {showReferralInput && (
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="text"
+                        placeholder="Referral Code"
+                        name="referralCode"
+                        value={formData.referralCode}
+                        onChange={handleChange}
+                        className="py-6 flex-1"
+                      />
+                      <button
+                        type="button"
+                        onClick={validateReferralCode}
+                        className="bg-blue-600 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                      >
+                        Check
+                      </button>
+                    </div>
+
+                    {referralStatus && (
+                      <p
+                        className={`text-sm ${
+                          referralStatus === "valid"
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }`}
+                      >
+                        {referralMessage}
+                      </p>
+                    )}
+                  </div>
                 )}
-              </div>
-            )}
-
-
               </>
             )}
 
             <Button
               type="submit"
               className="w-full bg-black text-white hover:bg-gray-900 py-7 text-xl primary-bg cursor-pointer"
-              disabled={loading}
+              disabled={loading || isLoading}
             >
-            {
-              loading && step === 0 ? "Generating OTP..." :
-              loading && step === 1 ? "Verifying OTP..." :
-              loading && step === 2 ? "Signing up..." :
-                step === 0
+              {loading && step === 0
+                ? "Generating OTP..."
+                : loading && step === 1
+                ? "Verifying OTP..."
+                : isLoading && step === 2
+                ? "Signing up..."
+                : step === 0
                 ? "Send OTP"
                 : step === 1
                 ? "Verify"
@@ -346,8 +351,7 @@ const validateReferralCode = async () => {
             </Button>
           </form>
 
-{
-  /*
+          {/*
           <div className="flex flex-col items-center mt-8">
             <Button
               type="button"
@@ -363,8 +367,7 @@ const validateReferralCode = async () => {
               Google
             </span>
           </div>
-  */
-}
+  */}
           <div className="flex items-center my-4">
             <div className="flex-grow border-t-2" />
           </div>
@@ -381,5 +384,3 @@ const validateReferralCode = async () => {
 };
 
 export default SignUp;
-
-

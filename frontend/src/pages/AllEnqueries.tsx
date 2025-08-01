@@ -63,12 +63,7 @@ export default function AllEnqueries() {
     if (user?.id) fetchEnquiries();
   }, [user?.id]);
   if (enquiries === undefined) return <Loader />;
-if (enquiries.length === 0)
-  return (
-    <div className="flex items-center justify-center h-screen text-center">
-      <h2 className="text-3xl font-semibold text-gray-800">No enquiries available</h2>
-    </div>
-  );
+
   return (
     <div className="container mx-auto p-4 mb-18">
       {/* Header */}
@@ -82,7 +77,14 @@ if (enquiries.length === 0)
         </h2>
       </div>
       {/* Enqueries List */}
-      <div className="space-y-4">
+
+      {
+        enquiries.length === 0 ?
+        (<div className="flex items-center justify-center h-60 text-center">
+        <h2 className="text-2xl font-semibold text-gray-800">
+          No enquiries available
+        </h2>
+      </div>):( <div className="space-y-4">
         {enquiries.map((enquiry) => (
           <Card
             key={enquiry.id}
@@ -118,7 +120,9 @@ if (enquiries.length === 0)
             </CardContent>
           </Card>
         ))}
-      </div>
+      </div>)
+      }
+     
     </div>
   );
 }

@@ -220,12 +220,14 @@ export default function MyOrders() {
     return <EmptyCart />;
 
   return (
-    <div className="container mx-auto p-4 mb-16">
+    // <div className="container mx-auto p-4 mb-16">
+    <div className="container mx-auto p-4   md:mb-44 mb-16">
+
       <div className="flex justify-between  p-2 items-center mb-4 text-black">
         <ChevronLeft
           className="w-8 h-8  cursor-pointer"
           onClick={() => {
-            navigate("/profile");
+            navigate("/");
           }}
         />
 

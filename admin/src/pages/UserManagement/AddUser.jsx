@@ -1,19 +1,22 @@
-import { useState } from "react";
-// import { postData } from "../../utils/api"; // Adjust based on your utils/api location
-// import "./AddUser.css"; // Uncomment and create CSS accordingly
-
-const roles = ["USER", "ASSOCIATE", "ADMIN"]; // Adjust available roles if needed
+import { useState,useContext } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { postData } from "../../utils/api";
+import { myContext } from "../../App";
 
 const AddUser = () => {
+  const context = useContext(myContext);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    role: "",
+    role: "USER",
     password: "",
+    confirmPassword: "",
     phone: "",
     address: "",
-    image: null, // store File object
+    image: null,
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -41,14 +44,18 @@ const AddUser = () => {
     ) {
       newErrors.email = "Invalid email address";
     }
-    if (!formData.role) newErrors.role = "Role is required";
     if (!formData.password.trim()) newErrors.password = "Password is required";
+    if (!formData.confirmPassword.trim())
+      newErrors.confirmPassword = "Confirm password is required";
+    if (formData.password !== formData.confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match";
+
     if (formData.phone && !/^\+?\d{7,15}$/.test(formData.phone)) {
-      // Basic phone validation
       newErrors.phone = "Phone number is invalid";
     }
     if (!formData.address.trim()) newErrors.address = "Address is required";
     if (!formData.image) newErrors.image = "Image is required";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -57,8 +64,9 @@ const AddUser = () => {
     setFormData({
       name: "",
       email: "",
-      role: "",
+      role: "USER",
       password: "",
+      confirmPassword: "",
       phone: "",
       address: "",
       image: null,
@@ -76,8 +84,7 @@ const AddUser = () => {
     setSubmitError("");
 
     try {
-      // Prepare FormData for image upload
-      const payload = new FormData();
+     const payload = new FormData();
       payload.append("name", formData.name);
       payload.append("email", formData.email);
       payload.append("role", formData.role);
@@ -85,13 +92,14 @@ const AddUser = () => {
       payload.append("phone", formData.phone);
       payload.append("address", formData.address);
       if (formData.image) payload.append("image", formData.image);
+      payload.append("confirmPassword", formData.confirmPassword);
 
-      // Use your API helper to POST with multipart/form-data
-    //   await postData("/users/add", payload, {
-    //     headers: { "Content-Type": "multipart/form-data" },
-    //   });
+
+      await postData("/users/create-user", payload, true);
 
       setSubmitSuccess(true);
+      context.setAlertBox({ open: true, msg: "User added Successfully!", error: false });
+
       handleReset();
       setTimeout(() => setSubmitSuccess(false), 3000);
     } catch (error) {
@@ -117,12 +125,10 @@ const AddUser = () => {
           <span className="success-icon">✅</span> User added successfully!
         </div>
       )}
-
       {submitError && <div className="error-message">{submitError}</div>}
 
       <form onSubmit={handleSubmit} className="add-item-form" noValidate>
         <div className="form-grid">
-
           {/* Name */}
           <div className="input-group1">
             <label htmlFor="name" className="form-label">
@@ -135,7 +141,6 @@ const AddUser = () => {
               value={formData.name}
               onChange={handleInputChange}
               className={`form-input ${errors.name ? "input-error" : ""}`}
-              autoComplete="off"
               disabled={isSubmitting}
             />
             {errors.name && <span className="error-text">{errors.name}</span>}
@@ -153,7 +158,6 @@ const AddUser = () => {
               value={formData.email}
               onChange={handleInputChange}
               className={`form-input ${errors.email ? "input-error" : ""}`}
-              autoComplete="off"
               disabled={isSubmitting}
             />
             {errors.email && <span className="error-text">{errors.email}</span>}
@@ -162,45 +166,85 @@ const AddUser = () => {
           {/* Role */}
           <div className="input-group1">
             <label htmlFor="role" className="form-label">
-              Role <span className="required">*</span>
+              Role
             </label>
-            <select
+            <input
               id="role"
+              type="text"
               name="role"
               value={formData.role}
-              onChange={handleInputChange}
-              className={`form-select ${errors.role ? "input-error" : ""}`}
-              disabled={isSubmitting}
-            >
-              <option value="">Select Role</option>
-              {roles.map((role) => (
-                <option value={role} key={role}>
-                  {role}
-                </option>
-              ))}
-            </select>
-            {errors.role && <span className="error-text">{errors.role}</span>}
+              readOnly
+              className="form-input"
+            />
           </div>
 
           {/* Password */}
+         <div className="input-group1">
+        <label htmlFor="password" className="form-label">
+          Password <span className="required">*</span>
+        </label>
+        <div className="password-wrapper" style={{ position: "relative" }}>
+          <input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            name="password"
+            value={formData.password}
+            onChange={handleInputChange}
+            className={`form-input ${errors.password ? "input-error" : ""}`}
+            disabled={isSubmitting}
+          />
+          <span
+            onClick={() => setShowPassword((prev) => !prev)}
+            style={{
+              position: "absolute",
+              top: "50%",
+              right: "10px",
+              transform: "translateY(-50%)",
+              cursor: "pointer",
+              color: "#888",
+            }}
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </span>
+        </div>
+        {errors.password && <span className="error-text">{errors.password}</span>}
+      </div>
+
+
+          {/* Confirm Password */}
           <div className="input-group1">
-            <label htmlFor="password" className="form-label">
-              Password <span className="required">*</span>
-            </label>
+          <label htmlFor="confirmPassword" className="form-label">
+            Confirm Password <span className="required">*</span>
+          </label>
+          <div className="password-wrapper" style={{ position: "relative" }}>
             <input
-              id="password"
-              type="password"
-              name="password"
-              value={formData.password}
+              id="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              name="confirmPassword"
+              value={formData.confirmPassword}
               onChange={handleInputChange}
-              className={`form-input ${errors.password ? "input-error" : ""}`}
-              autoComplete="new-password"
+              className={`form-input ${errors.confirmPassword ? "input-error" : ""}`}
               disabled={isSubmitting}
             />
-            {errors.password && (
-              <span className="error-text">{errors.password}</span>
-            )}
+            <span
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              style={{
+                position: "absolute",
+                top: "50%",
+                right: "10px",
+                transform: "translateY(-50%)",
+                cursor: "pointer",
+                color: "#888",
+              }}
+            >
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </span>
           </div>
+          {errors.confirmPassword && (
+            <span className="error-text">{errors.confirmPassword}</span>
+          )}
+        </div>
+
 
           {/* Phone */}
           <div className="input-group1">
@@ -214,7 +258,6 @@ const AddUser = () => {
               value={formData.phone}
               onChange={handleInputChange}
               className={`form-input ${errors.phone ? "input-error" : ""}`}
-              autoComplete="tel"
               disabled={isSubmitting}
             />
             {errors.phone && <span className="error-text">{errors.phone}</span>}
@@ -243,7 +286,7 @@ const AddUser = () => {
           {/* Image */}
           <div className="input-group1">
             <label htmlFor="image" className="form-label">
-              Image 
+              Image <span className="required">*</span>
             </label>
             <input
               id="image"
@@ -256,7 +299,6 @@ const AddUser = () => {
             />
             {errors.image && <span className="error-text">{errors.image}</span>}
           </div>
-
         </div>
 
         <div className="button-group">
@@ -270,16 +312,10 @@ const AddUser = () => {
           </button>
           <button
             type="submit"
-            disabled={isSubmitting}
             className={`submit-button ${isSubmitting ? "submit-button-disabled" : ""}`}
+            disabled={isSubmitting}
           >
-            {isSubmitting ? (
-              <>
-                <span className="spinner"></span> Adding...
-              </>
-            ) : (
-              "Add User"
-            )}
+            {isSubmitting ? <span className="spinner" /> : "Add User"}
           </button>
         </div>
       </form>

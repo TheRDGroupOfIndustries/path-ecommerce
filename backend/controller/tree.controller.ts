@@ -105,7 +105,7 @@ const buildNestedLevels = (currentLevel: number): any => {
   const associates = associatesByLevel[currentLevel] || [];
   const lowerLevel = buildNestedLevels(currentLevel - 1);
 
-  //  Aggregate revenue from lower levels recursively
+  //  Aggregate revenue from lower levels recursively. kachr h ye wala 😭
   let totalLowerRevenue = 0;
   const levelWiseRevenue: Record<string, number> = {};
 
@@ -114,7 +114,7 @@ const buildNestedLevels = (currentLevel: number): any => {
       const assocLevel = assoc.level;
       const assocRevenue = assoc.revenue || 0;
 
-      // Track per-level revenue: level1Revenue, level2Revenue, ....
+      // Track per-level revenue: level1Revenue, level2Revenue, .... or jo bhi ho
       const key = `level${assocLevel}Revenue`;
       levelWiseRevenue[key] = (levelWiseRevenue[key] || 0) + assocRevenue;
 

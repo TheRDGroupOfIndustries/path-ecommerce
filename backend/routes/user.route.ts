@@ -34,6 +34,7 @@ route.post(
     await userController.createUserController(req, res);
   }
 );
+
 route.put(
   "/update-auth-user",
   isAuthenticated,

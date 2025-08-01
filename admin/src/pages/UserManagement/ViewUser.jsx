@@ -38,6 +38,7 @@ const ViewUser = () => {
     const res = await fetchDataFromApi("/users/get-all");
     if (res && Array.isArray(res.users)) {
       setUsers(res.users);
+      console.log(res.users)
     } else {
       console.error("Unexpected API response:", res);
       setUsers([]);
@@ -241,7 +242,7 @@ useEffect(() => {
               <div style={{ flex: 1 }}>
                 <div className="user-name"><strong>{user.name}</strong></div>
                 <div className="user-description">{user.email}</div>
-                <div className="user-description">{user.phone}</div>
+              <div className="user-description" >{user.phone}</div>
                 <span className={`role-badge role-${user.role?.toLowerCase()}`}>{user.role}</span>
                 <div className="actions">
                   <div className="action-buttons">
@@ -287,12 +288,12 @@ useEffect(() => {
                   <td>
                     <img
                       src={user.imageUrl || "/placeholder.svg"}
-                      alt="User"
+                      alt="profile"
                       className="user-photo"
                     />
                   </td>
                   <td>{user.name}</td>
-                  <td>{user.phone}</td>
+                  <td> {user.phone ? user.phone : "-"} </td>
                   <td>{user.email}</td>
                   <td>
                     <span className={`role-badge role-${user.role?.toLowerCase()}`}>{user.role}</span>

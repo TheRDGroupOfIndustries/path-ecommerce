@@ -12,7 +12,8 @@ export const createReferral = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "User not found or not an associate" });
     }
 
-    const firstName = user.name.split(" ")[0].toLowerCase();
+    const rawFirstName = user.name.split(" ")[0].toLowerCase();
+    const firstName = rawFirstName.replace(/[0-9]/g, ""); // Remove digits
     const referralCode = `${firstName}-${percent}`;
 
     const existingCode = await db.referral.findUnique({

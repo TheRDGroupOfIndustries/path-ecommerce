@@ -85,12 +85,7 @@ export default function MyEnquiries() {
   }, []);
 
   if (loading) return <Loader />;
-  if (!loading && enquiries.length === 0)
-    return (
-      <div className="flex items-center justify-center h-screen text-center">
-        <h2 className="text-3xl font-semibold text-gray-800">No enquiries</h2>
-      </div>
-    );
+
 
   return (
     <div className="container mx-auto p-4 mb-16">
@@ -108,11 +103,16 @@ export default function MyEnquiries() {
       {/* {enquiries.map((enquiry) => (
         <EnquiryCard key={enquiry.id} {...enquiry} />
       ))} */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
+      {
+        enquiries.length === 0?( <div className="flex items-center justify-center h-screen text-center">
+        <h2 className="text-3xl font-semibold text-gray-800">No enquiries</h2>
+      </div>):(  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
         {enquiries.map((enquiry) => (
           <EnquiryCard key={enquiry.id} {...enquiry} />
         ))}
-      </div>
+      </div>)
+      }
+    
     </div>
   );
 }

@@ -7,13 +7,12 @@ import { ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Announcements() {
-
-const [announcements, setAnnouncements] = useState();
+  const [announcements, setAnnouncements] = useState();
 
   const handleGoBack = () => {
     window.history.back();
   };
-   useEffect(() => {
+  useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
         const res = await axios.get(`${API_URL}/api/announcement/get`);
@@ -26,7 +25,7 @@ const [announcements, setAnnouncements] = useState();
     fetchAnnouncements();
   }, []);
 
-  if(!announcements)return <Loader/>
+  if (!announcements) return <Loader />;
   return (
     <div className="container mx-auto p-4 mb-18">
       {/* Header */}
@@ -42,39 +41,47 @@ const [announcements, setAnnouncements] = useState();
 
       {/* Announcements List */}
 
-      <div className=" py-4 space-y-2">
-        {announcements.map((announcement) => (
-          <div className="flex items-start gap-3 py-3" key={announcement.id}>
-            {/* Avatar */}
-            <Avatar className="w-8 h-8">
-              <AvatarFallback className="bg-blue-200 text-blue-800 text-sm">
-                A
-              </AvatarFallback>
-            </Avatar>
+      {announcements.length === 0 ? (
+        <div className="flex items-center justify-center h-64 text-center">
+          <h2 className="text-2xl font-semibold text-gray-800 ">
+            No Announcements yet
+          </h2>
+        </div>
+      ) : (
+        <div className=" py-4 space-y-2">
+          {announcements.map((announcement) => (
+            <div className="flex items-start gap-3 py-3" key={announcement.id}>
+              {/* Avatar */}
+              <Avatar className="w-8 h-8">
+                <AvatarFallback className="bg-blue-200 text-blue-800 text-sm">
+                  A
+                </AvatarFallback>
+              </Avatar>
 
-            {/* Message Content */}
-            <div>
-              <p className="text-sm font-medium text-gray-800 mb-1">
-                {/* {announcement.title} */}
-                Admin
-              </p>
-              <Card className="bg-gray-100 border-none shadow-none p-3 max-w-md rounded-tl-none">
-                <CardContent className="p-0 text-gray-700 text-sm space-y-2">
-                  <p
-                    // className={`text-sm leading-relaxed ${
-                    //   announcement.isRead ? "text-gray-600" : "text-gray-700"
-                    // }`}
-                    className="text-sm leading-relaxed text-gray-800"
-                  >
-                    {announcement?.text}
-                    {/* {announcement?.content} */}
-                  </p>
-                </CardContent>
-              </Card>
+              {/* Message Content */}
+              <div>
+                <p className="text-sm font-medium text-gray-800 mb-1">
+                  {/* {announcement.title} */}
+                  Admin
+                </p>
+                <Card className="bg-gray-100 border-none shadow-none p-3 max-w-md rounded-tl-none">
+                  <CardContent className="p-0 text-gray-700 text-sm space-y-2">
+                    <p
+                      // className={`text-sm leading-relaxed ${
+                      //   announcement.isRead ? "text-gray-600" : "text-gray-700"
+                      // }`}
+                      className="text-sm leading-relaxed text-gray-800"
+                    >
+                      {announcement?.text}
+                      {/* {announcement?.content} */}
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

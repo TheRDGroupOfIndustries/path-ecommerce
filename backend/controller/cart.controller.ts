@@ -1,85 +1,6 @@
 import { Request, Response } from "express";
 import db from "../client/connect.js";
 
-// export const addToCart = async (req: Request, res: Response) => {
-//   const userId = req.user?.id || req.body.userId;
-//   const { productId, quantity = 1, referralCode } = req.body;
-
-//   if (!userId) {
-//     return res.status(401).json({ message: "Unauthorized: userId is missing" });
-//   }
-
-//   try {
-//     const product = await db.products.findUnique({
-//       where: { id: productId },
-//     });
-
-//     if (!product) {
-//       return res.status(404).json({ message: "Product not found" });
-//     }
-
-//     const originalPrice = parseFloat(product.price);
-//     const productDiscountPercent = product.discount || 0;
-
-//     let referralPercent: number = 0;
-
-//     if (referralCode) {
-//       const match = referralCode.trim().toLowerCase().match(/^([a-zA-Z]+)-(\d+)$/);
-
-//       if (!match) {
-//         return res.status(400).json({
-//           message: "Invalid referral code format. Use like 'alisha-5'",
-//         });
-//       }
-
-//       referralPercent = parseFloat(match[2]);
-
-//       if (isNaN(referralPercent) || referralPercent <= 0 || referralPercent > 100) {
-//         return res.status(400).json({
-//           message: "Referral percent must be between 1 and 100",
-//         });
-//       }
-//     }
-
-//     const totalDiscountPercent = productDiscountPercent + referralPercent;
-//     const referralFinalPrice = parseFloat(
-//       (originalPrice - (originalPrice * totalDiscountPercent) / 100).toFixed(2)
-//     );
-
-//     const cartItem = await db.cartItem.create({
-//       data: {
-//         userId,
-//         productId,
-//         quantity,
-//         referralCode: referralCode || null,
-//         referralPercent: referralPercent || null,
-//         discountedPrice: referralFinalPrice,
-//       },
-//       include: {
-//         product: true,
-//       },
-//     });
-
-//     return res.status(201).json({
-//       message: "Product added to cart successfully",
-//       cartItem: {
-//         id: cartItem.id,
-//         product: cartItem.product,
-//         quantity: cartItem.quantity,
-//         referralCode: cartItem.referralCode,
-//         referralPercent,
-//         originalPrice,
-//         productDiscountPercent,
-//         finalPrice: referralFinalPrice,
-//         createdAt: cartItem.createdAt,
-//       },
-//     });
-//   } catch (error) {
-//     console.error("❌ Error adding to cart:", error);
-//     return res.status(500).json({ message: "Internal server error" });
-//   }
-// };
-
 export const addToCart = async (req: Request, res: Response) => {
   const userId = req.user?.id || req.body.userId;
   const { productId, quantity = 1, referralCode } = req.body;
@@ -119,7 +40,7 @@ export const addToCart = async (req: Request, res: Response) => {
     });
   }
 
-  // ✅ Check if user already used this referral code for this product
+  // Check if user already used this referral code for this product
   const alreadyUsed = await db.cartItem.findFirst({
     where: {
       userId,
@@ -134,32 +55,26 @@ export const addToCart = async (req: Request, res: Response) => {
     });
   }
 
-  // ✅ Check if user already exists in usedBy array
-  const referral = await db.referral.findFirst({
+  // Check if user already exists in usedBy array
+
+const referral = await db.referral.findFirst({
+  where: {
+    referral: referralCode,
+  },
+});
+
+if (referral) {
+  await db.referral.updateMany({
     where: {
       referral: referralCode,
-      usedBy: {
-        hasSome: [userId], // checks if userId is already in the array
-      },
     },
-  });
+    data: {
 
-  // ✅ If NOT found, update to include this user
-  if (!referral) {
-    await db.referral.updateMany({
-      where: {
-        referral: referralCode,
-      },
-      data: {
-        usedBy: {
-          push: userId, // adds the userId to the array
-        },
-      },
-    });
-  }
+     },
+  });
 }
 
-
+}
     const totalDiscountPercent = productDiscountPercent + referralPercent;
     const referralFinalPrice = parseFloat(
       (originalPrice - (originalPrice * totalDiscountPercent) / 100).toFixed(2)
@@ -198,7 +113,6 @@ export const addToCart = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 
 export const getCartItems = async (req: Request, res: Response): Promise<void> => {

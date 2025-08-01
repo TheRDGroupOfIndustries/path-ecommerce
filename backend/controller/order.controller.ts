@@ -241,8 +241,6 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
             name: true,
             price: true,
             discount: true,
-            referralPercentage: true,
-            referralBy: true,
             sellerId: true,
           },
         },
@@ -259,15 +257,13 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
     const referralUsage: any[] = [];
 
     for (const item of cartItems) {
-      const product = item.product;
-      const quantity = item.quantity || 1;
+      const { product, quantity = 1, referralCode, referralPercent } = item;
       const originalPrice = parseFloat(product.price);
       const productDiscount = product.discount || 0;
-      const priceAfterDiscount = originalPrice - (originalPrice * productDiscount) / 100;
+      let appliedReferralPercent = 0;
+      let totalDiscountPercent = productDiscount;
 
-      let finalPrice = priceAfterDiscount;
-      let referralCode = product.referralBy || null;
-
+      // If referral code is used
       if (referralCode) {
         const referral = await db.referral.findUnique({
           where: { referral: referralCode },
@@ -275,18 +271,17 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
         });
 
         if (referral) {
-          const referralPercent = product.referralPercentage ?? 0;
-          const referralDiscountAmount = (priceAfterDiscount * referralPercent) / 100;
-          finalPrice = priceAfterDiscount - referralDiscountAmount;
+          appliedReferralPercent = referralPercent ?? 0;
+          totalDiscountPercent += appliedReferralPercent;
 
           referralUsage.push({
-            referralCode: referral.referral,
+            referralCode,
             createdBy: referral.createdForId,
             usedBy: userId,
             productId: product.id,
             productName: product.name,
-            price: finalPrice,
-            commissionPercent: referralPercent,
+            price: 0, // placeholder, will be updated later
+            commissionPercent: appliedReferralPercent,
           });
 
           await db.referralTransaction.create({
@@ -296,9 +291,9 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
               userId,
               productId: product.id,
               productName: product.name,
-              price: finalPrice,
-              percent: referralPercent,
-              commission: (referralPercent / 100) * priceAfterDiscount,
+              price: 0, // will set below
+              percent: appliedReferralPercent,
+              commission: (appliedReferralPercent / 100) * originalPrice,
               sellerId: product.sellerId,
             },
           });
@@ -316,9 +311,30 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
         }
       }
 
-      // Fixed: Only one declaration of totalAmount
+      // Apply total discount on original price
+      const finalPrice = originalPrice - (originalPrice * totalDiscountPercent) / 100;
       const totalAmount = quantity * finalPrice;
 
+      // Update referral usage & transaction data with final price
+      const lastReferralIndex = referralUsage.length - 1;
+      if (lastReferralIndex >= 0 && referralCode) {
+        referralUsage[lastReferralIndex].price = finalPrice;
+
+        await db.referralTransaction.updateMany({
+          where: {
+            userId,
+            productId: product.id,
+            referralId: (await db.referral.findUnique({
+              where: { referral: referralCode },
+            }))?.id,
+          },
+          data: {
+            price: finalPrice,
+          },
+        });
+      }
+
+      // Create order
       const order = await db.order.create({
         data: {
           userId,
@@ -338,9 +354,9 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
         priceDetails: {
           originalPrice,
           productDiscount,
-          priceAfterProductDiscount: priceAfterDiscount,
-          referralDiscountPercent: referralCode ? product.referralPercentage ?? 0 : 0,
-          priceAfterReferralDiscount: finalPrice,
+          referralDiscountPercent: appliedReferralPercent,
+          totalDiscountPercent,
+          finalPrice,
           totalAmount,
         },
       });
@@ -349,6 +365,7 @@ export const buyNowFromCart = async (req: Request, res: Response) => {
       grandTotal += totalAmount;
     }
 
+    // Empty the cart after successful orders
     await db.cartItem.deleteMany({ where: { userId } });
 
     return res.status(201).json({

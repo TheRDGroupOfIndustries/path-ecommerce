@@ -93,7 +93,7 @@ const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {
     icon: BadgePercent ,
     hasSubmenu: true,
     submenu: [
-      { title: "Commission Levels", link: "/level-commissions" },
+      { title: "Levels & Percent", link: "/level-commissions" },
       { title: "Level-wise Users", link: "/level-users" },
     ],
   },

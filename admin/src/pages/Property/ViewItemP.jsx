@@ -28,28 +28,33 @@ const ViewitemP = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+const fetchItems = async () => {
+  setLoading(true); 
+  try {
+    const res = await fetchDataFromApi("/property/by-role");
+    if (res && Array.isArray(res.data)) {
+      setUsers(res.data);
 
-  const fetchItems = async () => {
-  const res = await fetchDataFromApi("/property/by-role");
-  if (res && Array.isArray(res.data)) {
-    setUsers(res.data);
+      const seen = new Set();
+      const unique = res.data
+        .map((item) => item.category?.trim())
+        .filter(Boolean)
+        .filter((cat) => {
+          const lower = cat.toLowerCase();
+          if (seen.has(lower)) return false;
+          seen.add(lower);
+          return true;
+        });
 
-    // Get unique categories in lowercase, keeping first occurrence
-    const seen = new Set();
-    const unique = res.data
-      .map((item) => item.category?.trim())
-      .filter(Boolean)
-      .filter((cat) => {
-        const lower = cat.toLowerCase();
-        if (seen.has(lower)) return false;
-        seen.add(lower);
-        return true;
-      });
-
-    setAvailableCategories(["All", ...unique]);
-  } else {
-    console.error("Unexpected API response:", res);
-    setUsers([]);
+      setAvailableCategories(["All", ...unique]);
+    } else {
+      console.error("Unexpected API response:", res);
+      setUsers([]);
+    }
+  } catch (error) {
+    console.error("Error fetching property items:", error);
+  } finally {
+    setLoading(false); 
   }
 };
 
@@ -373,11 +378,16 @@ const ViewitemP = () => {
         </div>
       </div>
 
-      {filteredItem.length === 0 ? (
-        <div className="no-products">
-          <p>No Item found.</p>
-        </div>
-      ) : isMobile ? (
+      {loading ? (
+  <div className="loading-container">
+     <p>Loading items...</p>
+    <img src="SPC.png" alt="Loading..." className="loading-logo" />
+      </div>
+    ) : filteredItem.length === 0 ? (
+      <div className="no-products">
+        <p>No Item found.</p>
+      </div>
+    ) : isMobile ? (
         <div className="user-list">
           {paginatedItems.map((user) => (
             <div className="user-card" key={user.id}>

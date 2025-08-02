@@ -8,6 +8,7 @@ const Enquiry = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
   const [modalData, setModalData] = useState(null);
   const [filterType, setFilterType] = useState("All");
+ const [loading, setLoading] = useState(true);
 
 
   useEffect(() => {
@@ -21,17 +22,24 @@ const Enquiry = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const fetchEnquiry = async () => {
+const fetchEnquiry = async () => {
+  setLoading(true); 
+  try {
     const res = await fetchDataFromApi("/enquiry/by-role");
     if (res && Array.isArray(res)) {
-      console.log(res);
-      
       setUsers(res);
     } else {
       console.error("Unexpected API response:", res);
       setUsers([]);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching enquiries:", error);
+    setUsers([]);
+  } finally {
+    setLoading(false); 
+  }
+};
+
 
   const handleDelete = async (userId) => {
     if (window.confirm("Are you sure you want to delete this Item?")) {
@@ -103,11 +111,14 @@ const Enquiry = () => {
         </div>
       </div>
 
-      {filteredUsers.length === 0 ? (
-        <div className="no-products">
-          <p>No Item found.</p>
-        </div>
-      ) : isMobile ? (
+      {loading ? (
+  <div className="loading-container">
+     <p>Loading Enquiry...</p>
+    <img src="SPC.png" alt="Loading..." className="loading-logo" />
+  </div>
+) : filteredUsers.length === 0 ? (
+  <div className="no-products"><p>No Enquiry found.</p></div>
+) : isMobile ? (
         <div className="user-list">
           {filteredUsers.map((user) => (
             <div className="user-card" key={user.id}>

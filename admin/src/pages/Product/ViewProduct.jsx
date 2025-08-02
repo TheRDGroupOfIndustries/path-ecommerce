@@ -96,16 +96,27 @@ const ViewProduct = () => {
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
-  
+
 const fetchingProduct = () => {
+  setLoading(true); 
   fetchDataFromApi("/product/by-role")
     .then((res) => {
+      if (!res || !Array.isArray(res.products)) {
+        console.error("Invalid product response:", res);
+        return;
+      }
+
       setAllProducts(res.products);
-      setProducts(res.products); // products will be filtered view
-      const unique = Array.from(new Set(res.products.map(item => item.category))).filter(Boolean);
-      setAvailableCategories(["all", ...unique]);
+      setProducts(res.products);
+
+      const uniqueCategories = Array.from(
+        new Set(res.products.map(item => item.category))
+      ).filter(Boolean);
+
+      setAvailableCategories(["all", ...uniqueCategories]);
     })
-    .catch((error) => console.error("Error fetching Products:", error));
+    .catch((error) => console.error("Error fetching Products:", error))
+    .finally(() => setLoading(false)); 
 };
 
 
@@ -332,11 +343,14 @@ const fetchingProduct = () => {
         </div>
       </div>
 
-      {filteredProducts.length === 0 ? (
-        <div className="no-products">
-          <p>No products found.</p>
-        </div>
-      ) : (
+      {loading ? (
+      <div className="loading-container">
+        <p>Loading Products...</p>
+        <img src="SPC.png" alt="Loading..." className="loading-logo" />
+      </div>
+    ) : filteredProducts.length === 0 ? (
+      <div className="no-products"><p>No Item found.</p></div>
+    ) : (
         isMobile ? (
           <div className="user-list">
             {paginatedProducts.map((product) => (

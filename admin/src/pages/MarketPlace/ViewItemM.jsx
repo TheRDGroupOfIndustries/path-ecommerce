@@ -30,41 +30,33 @@ const ViewitemM = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // const fetchItems = async () => {
-  //   const res = await fetchDataFromApi("/marketplace/by-role");
-  //   if (res && Array.isArray(res.data)) {
-  //     setUsers(res.data);
+const fetchItems = async () => {
+  setLoading(true);
+  try {
+    const res = await fetchDataFromApi("/marketplace/by-role");
+    if (res && Array.isArray(res.data)) {
+      setUsers(res.data);
 
-  //     // Dynamically extract unique categories
-  //     const unique = Array.from(new Set(res.data.map(item => item.category))).filter(Boolean);
-  //     setAvailableCategories(["All", ...unique]);
-  //   } else {
-  //     console.error("Unexpected API response:", res);
-  //     setUsers([]);
-  //   }
-  // };
+      const seen = new Set();
+      const unique = res.data
+        .map((item) => item.category?.trim())
+        .filter(Boolean)
+        .filter((cat) => {
+          const lower = cat.toLowerCase();
+          if (seen.has(lower)) return false;
+          seen.add(lower);
+          return true;
+        });
 
-  const fetchItems = async () => {
-  const res = await fetchDataFromApi("/marketplace/by-role");
-  if (res && Array.isArray(res.data)) {
-    setUsers(res.data);
-
-    // Get unique categories in lowercase, keeping first occurrence
-    const seen = new Set();
-    const unique = res.data
-      .map((item) => item.category?.trim())
-      .filter(Boolean)
-      .filter((cat) => {
-        const lower = cat.toLowerCase();
-        if (seen.has(lower)) return false;
-        seen.add(lower);
-        return true;
-      });
-
-    setAvailableCategories(["All", ...unique]);
-  } else {
-    console.error("Unexpected API response:", res);
-    setUsers([]);
+      setAvailableCategories(["All", ...unique]);
+    } else {
+      console.error("Unexpected API response:", res);
+      setUsers([]);
+    }
+  } catch (error) {
+    console.error("Error fetching items:", error);
+  } finally {
+    setLoading(false);
   }
 };
 
@@ -383,9 +375,14 @@ useEffect(() => {
       </div>
 
       {/* Items Display */}
-      {filteredItem.length === 0 ? (
-        <div className="no-products"><p>No Item found.</p></div>
-      ) : (
+      {loading ? (
+      <div className="loading-container">
+         <p>Loading items...</p>
+        <img src="SPC.png" alt="Loading..." className="loading-logo" />
+      </div>
+    ) : filteredItem.length === 0 ? (
+      <div className="no-products"><p>No Item found.</p></div>
+    ) : (
         isMobile ? (
           <div className="user-list">
             {paginatedItems.map((user) => (

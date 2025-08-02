@@ -120,7 +120,7 @@
  .lwuser-details-container {
   padding: 1rem;
   margin: 0.5rem 0;
-  background-color: #ffffff;
+  background-color: #fbf9f9;
 
   border: 1px solid   #4e59bc;; /* left indicator bar */
   border-radius: 8px;
@@ -218,4 +218,34 @@
   max-height: 1000px;
   opacity: 1;
   transform: translateY(0);
+}
+
+.dark .lwuser-container{
+  background-color:#181C2F;
+  color: white;
+}
+
+.dark .lwuser-table-container{
+  background-color: #1e293b;
+  color: white;
+}
+.dark .lwuser-page-header h1{
+  color: whitesmoke;
+}
+.dark .lwuser-table thead{
+  background-color: #181C2F;
+  color: whitesmoke;
+}
+.dark .lwuser-table tbody tr.lwuser-main-row:hover{
+  background-color: #263449;
+  color: whitesmoke;
+}
+.dark .lwuser-details-container {
+  background-color: #191d31;
+}
+.dark .lwuser-details-container{
+  margin:0 0;
+}
+.dark .lwuser-nested-heading{
+  background-color: #181C2F;
 }

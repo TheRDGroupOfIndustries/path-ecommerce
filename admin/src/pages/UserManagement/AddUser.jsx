@@ -12,8 +12,6 @@ const AddUser = () => {
     password: "",
     confirmPassword: "",
     phone: "",
-    address: "",
-    image: null,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -53,8 +51,6 @@ const AddUser = () => {
     if (formData.phone && !/^\+?\d{7,15}$/.test(formData.phone)) {
       newErrors.phone = "Phone number is invalid";
     }
-    if (!formData.address.trim()) newErrors.address = "Address is required";
-    if (!formData.image) newErrors.image = "Image is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -68,8 +64,6 @@ const AddUser = () => {
       password: "",
       confirmPassword: "",
       phone: "",
-      address: "",
-      image: null,
     });
     setErrors({});
     setSubmitSuccess(false);
@@ -90,8 +84,6 @@ const AddUser = () => {
       payload.append("role", formData.role);
       payload.append("password", formData.password);
       payload.append("phone", formData.phone);
-      payload.append("address", formData.address);
-      if (formData.image) payload.append("image", formData.image);
       payload.append("confirmPassword", formData.confirmPassword);
 
 
@@ -261,44 +253,7 @@ const AddUser = () => {
               disabled={isSubmitting}
             />
             {errors.phone && <span className="error-text">{errors.phone}</span>}
-          </div>
-
-          {/* Address */}
-          <div className="input-group1" style={{ gridColumn: "1 / span 3" }}>
-            <label htmlFor="address" className="form-label">
-              Address <span className="required">*</span>
-            </label>
-            <textarea
-              id="address"
-              name="address"
-              value={formData.address}
-              onChange={handleInputChange}
-              className={`form-textarea ${errors.address ? "input-error" : ""}`}
-              rows={3}
-              disabled={isSubmitting}
-              style={{ resize: "vertical" }}
-            />
-            {errors.address && (
-              <span className="error-text">{errors.address}</span>
-            )}
-          </div>
-
-          {/* Image */}
-          <div className="input-group1">
-            <label htmlFor="image" className="form-label">
-              Image <span className="required">*</span>
-            </label>
-            <input
-              id="image"
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={handleInputChange}
-              className={`form-input ${errors.image ? "input-error" : ""}`}
-              disabled={isSubmitting}
-            />
-            {errors.image && <span className="error-text">{errors.image}</span>}
-          </div>
+          </div>  
         </div>
 
         <div className="button-group">

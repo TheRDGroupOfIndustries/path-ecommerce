@@ -108,6 +108,7 @@ function EditAssociate({ closeModal, id, level, percentageInt }) {
 
 const ViewAssociate = () => {
   const [associates, setAssociates] = useState([])
+  const [loading, setLoading] = useState(true);
   const [referrals, setReferrals] = useState([])
   const [expanded, setExpanded] = useState(null)
   const [model, setModel] = useState(false)
@@ -115,28 +116,31 @@ const ViewAssociate = () => {
   const [percentageInt, setPercentageInt] = useState(0)
   const [id, setId] = useState("")
 
-  useEffect(() => {
-    fetchAssociates()
-    fetchReferrals()
-  }, [])
+useEffect(() => {
+  fetchAllData();
+}, []);
 
-  const fetchAssociates = async () => {
-    try {
-      const data = await fetchDataFromApi("/users/all-associates")
-      setAssociates(data.associates)
-    } catch (error) {
-      console.error("Failed to fetch associates:", error)
-    }
-  }
-
-const fetchReferrals = async () => {
+const fetchAllData = async () => {
   try {
-    const data = await fetchDataFromApi("/referral/all");
-    setReferrals(data.data || []);
-  } catch (error) {
-    console.error("Failed to fetch referrals:", error);
+    setLoading(true);
+    await Promise.all([fetchAssociates(), fetchReferrals()]);
+  } catch (err) {
+    console.error("Error fetching data:", err);
+  } finally {
+    setLoading(false);
   }
 };
+
+const fetchAssociates = async () => {
+  const data = await fetchDataFromApi("/users/all-associates");
+  setAssociates(data.associates);
+};
+
+const fetchReferrals = async () => {
+  const data = await fetchDataFromApi("/referral/all");
+  setReferrals(data.data || []);
+};
+
 
   const getReferralDetails = (associateId) => {
     return referrals
@@ -168,37 +172,6 @@ const fetchReferrals = async () => {
   return total.toFixed(2)
 }
 
-// const getReferralDetails = (associateId) => {
-//   return referrals
-//     .filter((r) => r.createdFor && String(r.createdFor.id) === String(associateId))
-//     .map((r) => {
-//       const percent = r.transactions?.[0]?.percent ?? "N/A";
-//       const commission = r.totalRevenue?.toFixed(2) || "0.00";
-//       const signupUsers = r.usedAtSignupUsers || [];
-//       const purchaseUsers = r.usedAtPurchaseUsers || [];
-//       const enquiryUsers = r.usedInEnquiries || [];
-//       return {
-//         code: r.referralCode,
-//         percent,
-//         commission,
-//         signupUsers,
-//         purchaseUsers,
-//         enquiryUsers,
-//         userCount:
-//           signupUsers.length + purchaseUsers.length + enquiryUsers.length,
-//       };
-//     });
-// };
-
-// const getTotalCommission = (associateId) => {
-//   if (!Array.isArray(referrals)) return "0.00";
-//   const total = referrals
-//     .filter((r) => r.createdFor && String(r.createdFor.id) === String(associateId))
-//     .reduce((sum, r) => sum + (r.totalRevenue || 0), 0);
-//   return total.toFixed(2);
-// };
-
-
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this associate?")) {
       try {
@@ -216,6 +189,12 @@ const fetchReferrals = async () => {
         <EditAssociate closeModal={() => setModel(false)} id={id} level={level} percentageInt={percentageInt} />
       )}
 
+       {loading ? (
+      <div className="loading-container">
+        <p>Loading associates and referrals...</p>
+         <img src="SPC.png" alt="Loading..." className="loading-logo" />
+      </div>
+    ) : (
       <div className="associate-container">
         <div className="page-header">
           <h1>Associate Commission Tracker</h1>
@@ -408,6 +387,7 @@ const fetchReferrals = async () => {
           </div>
         </div>
       </div>
+    )}
     </>
   )
 }

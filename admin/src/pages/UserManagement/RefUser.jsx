@@ -6,6 +6,7 @@ import { fetchDataFromApi } from "../../utils/api"; // Adjust the path if needed
 const RefUser = () => {
   const context = useContext(myContext);
   const [referredUsers, setReferredUsers] = useState([]);
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     fetchAndMergeData();
@@ -13,6 +14,7 @@ const RefUser = () => {
 
   const fetchAndMergeData = async () => {
     try {
+      setLoading(true); 
       const allUsersRes = await fetchDataFromApi("/users/get-all");
       const referralDetailsRes = await fetchDataFromApi("/users/signup-referral");
 
@@ -40,6 +42,8 @@ const RefUser = () => {
         msg: "Failed to load referred users",
         error: true,
       });
+    } finally {
+      setLoading(false); // Hide loader
     }
   };
 
@@ -47,11 +51,18 @@ const RefUser = () => {
     <div className="user-container">
       <div className="user-header">
         <h1>Users with Referral</h1>
-        <p>Total: {referredUsers.length}</p> {/* ✅ Fixed variable name */}
+        <p>Total: {referredUsers.length}</p>
       </div>
 
-      {referredUsers.length === 0 ? (
-        <div className="no-products"><p>No referred users found.</p></div>
+      {loading ? (
+        <div className="loading-container">
+          <p>Loading User...</p>
+          <img src="SPC.png" alt="Loading..." className="loading-logo" />
+        </div>
+      ) : referredUsers.length === 0 ? (
+        <div className="no-products">
+          <p>No referred users found.</p>
+        </div>
       ) : (
         <div className="table-container">
           <table className="user-table">
@@ -80,7 +91,6 @@ const RefUser = () => {
                   <td>{user.name}</td>
                   <td>{user.email}</td>
                   <td>{user.phone || "-"}</td>
-        
                   <td>{user.usedReferralCode}</td>
                   <td>{user.usedReferralOwner}</td>
                   <td>{user.associateLevel}</td>

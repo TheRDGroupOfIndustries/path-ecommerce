@@ -160,8 +160,9 @@ export default function LevelWiseUsers() {
 
   if (loading)
     return (
-      <div className="lwuser-no-nested-users" role="status" aria-live="polite">
-        Loading...
+       <div className="loading-container">
+        <p>Loading Level-wise Users...</p>
+         <img src="SPC.png" alt="Loading..." className="loading-logo" />
       </div>
     );
 
@@ -208,7 +209,7 @@ export default function LevelWiseUsers() {
               ) : (
                 <tr>
                   <td colSpan={5} className="lwuser-no-nested-users">
-                    No users found.
+                    No associates found.
                   </td>
                 </tr>
               )}

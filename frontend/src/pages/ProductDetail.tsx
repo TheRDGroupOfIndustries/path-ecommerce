@@ -32,7 +32,7 @@ const ProductDetail = () => {
       
       try {
         const res = await axios.get(`${API_URL}/api/product/get-by-id/${id}`);
-        console.log("Res: ",res);
+        // console.log("Res: ",res);
         
         const found = res.data;
         const userData = res.data.seller;
@@ -375,7 +375,7 @@ const handleReferralButtonClick = async () => {
           },
         }
       );
-      console.log("Submit: ",res);
+      // console.log("Submit: ",res);
       
       if (res.status === 201) {
         setCart(true);

@@ -1,9 +1,11 @@
 /* Container and Layout */
+.page-container{
+    background-color: #f8fafc;
+}
 .commission-container {
   max-width: 1400px;
   margin: 2rem auto;
   padding: 2rem;
-  background-color: #f8fafc;
   min-height: 100vh;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #1e293b;

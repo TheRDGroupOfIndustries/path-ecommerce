@@ -1,128 +1,138 @@
-import { useEffect, useState } from "react"
-import { fetchDataFromApi, deleteData } from "../../utils/api"
-import { Trash2, MessageSquareReply } from "lucide-react"
-import "./Support.css"
-import axios from "axios"
-
+import { useEffect, useState } from "react";
+import { fetchDataFromApi, deleteData } from "../../utils/api";
+import { Trash2, MessageSquareReply } from "lucide-react";
+import "./Support.css";
+import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:8000/api";
 
-
 const Support = () => {
-  const [messages, setMessages] = useState([])
-  const [filteredMessages, setFilteredMessages] = useState([])
-  const [activeFilter, setActiveFilter] = useState("All")
-  const [loading, setLoading] = useState(true)
-  const [showModal, setShowModal] = useState(false)
+  const [messages, setMessages] = useState([]);
+  const [filteredMessages, setFilteredMessages] = useState([]);
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
-  const [selectedMessage, setSelectedMessage] = useState(null)
-  const [replySubject, setReplySubject] = useState("")
-  const [replyMessage, setReplyMessage] = useState("")
-  const [helpMessage, setHelpMessage] = useState("")
-
+  const [selectedMessage, setSelectedMessage] = useState(null);
+  const [replySubject, setReplySubject] = useState("");
+  const [replyMessage, setReplyMessage] = useState("");
+  const [helpMessage, setHelpMessage] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
+  const storedUser = localStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : null;
+  const sellerId = user?.id;
+  const isAdmin = user?.role === "ADMIN";
 
-  const storedUser = localStorage.getItem("user")
-  const user = storedUser ? JSON.parse(storedUser) : null
-  const sellerId = user?.id
-  const isAdmin = user?.role === "ADMIN"
-
-  const filterOptions = isAdmin ? ["All", "Order", "Enquiry", "Other"] : ["All", "Order", "Enquiry"]
+  const filterOptions = isAdmin
+    ? ["All", "Order", "Enquiry", "Other"]
+    : ["All", "Order", "Enquiry"];
 
   useEffect(() => {
     const getSupportMessages = async () => {
-      if (!sellerId && !isAdmin) return
+      if (!sellerId && !isAdmin) return;
 
       try {
-        setLoading(true)
+        setLoading(true);
         const res = await fetchDataFromApi(
           isAdmin ? "/support/admin" : `/support/${sellerId}`
-        )
-        setMessages(res)
-        setFilteredMessages(res)
+        );
+        setMessages(res);
+        setFilteredMessages(res);
         // console.log(res);
-        
       } catch (err) {
-        console.error("Failed to load messages", err)
+        console.error("Failed to load messages", err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    getSupportMessages()
-  }, [sellerId, isAdmin])
+    getSupportMessages();
+  }, [sellerId, isAdmin]);
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this message?")
-    if (!confirmDelete) return
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this message?"
+    );
+    if (!confirmDelete) return;
 
     try {
-      await deleteData(`/support/delete/${id}`)
-      const updated = messages.filter((msg) => msg.id !== id)
-      setMessages(updated)
+      await deleteData(`/support/delete/${id}`);
+      const updated = messages.filter((msg) => msg.id !== id);
+      setMessages(updated);
 
-      const filtered = activeFilter === "All"
-        ? updated
-        : updated.filter((msg) => msg.subject?.toLowerCase() === activeFilter.toLowerCase())
-      setFilteredMessages(filtered)
+      const filtered =
+        activeFilter === "All"
+          ? updated
+          : updated.filter(
+              (msg) => msg.subject?.toLowerCase() === activeFilter.toLowerCase()
+            );
+      setFilteredMessages(filtered);
     } catch (error) {
-      console.error("Failed to delete message", error)
+      console.error("Failed to delete message", error);
     }
-  }
+  };
 
   const handleFilterChange = (filter) => {
-    setActiveFilter(filter)
+    setActiveFilter(filter);
     setCurrentPage(1);
 
     if (filter === "All") {
-      setFilteredMessages(messages)
+      setFilteredMessages(messages);
     } else {
       const filtered = messages.filter(
         (msg) => msg.subject?.toLowerCase() === filter.toLowerCase()
-      )
-      setFilteredMessages(filtered)
+      );
+      setFilteredMessages(filtered);
     }
-  }
+  };
 
   const handleViewDetails = (msg) => {
-    setSelectedMessage(msg)
-    setReplySubject(msg.subject || "")
-    setHelpMessage(msg.message || "")
-    setReplyMessage(msg.replyMessage || "")
-    setShowModal(true)
-  }
+    setSelectedMessage(msg);
+    setReplySubject(msg.subject || "");
+    setHelpMessage(msg.message || "");
+    setReplyMessage(msg.replyMessage || "");
+    setShowModal(true);
+  };
 
   const closeModal = () => {
-    setShowModal(false)
-    setSelectedMessage(null)
-    setReplySubject("")
-    setHelpMessage("")
-    setReplyMessage("")
-  }
+    setShowModal(false);
+    setSelectedMessage(null);
+    setReplySubject("");
+    setHelpMessage("");
+    setReplyMessage("");
+  };
 
-  const [updating, setUpdating] = useState(false)
+  const [updating, setUpdating] = useState(false);
   const handleReplySubmit = async (id) => {
-    setUpdating(true)
+    setUpdating(true);
     const req = await axios.put(`${BASE_URL}/support/update/${id}`, {
-      replyMessage: replyMessage
-    })
+      replyMessage: replyMessage,
+    });
     if (req.status === 200) {
-      setUpdating(false)
-      closeModal()
+      setUpdating(false);
+      closeModal();
     }
-  }
+  };
 
   if (loading) {
-    return <div className="support-loading">Loading support messages...</div>
+    return (
+      <div className="loading-container">
+        <p>Loading support messages..</p>
+        <img src="SPC.png" alt="Loading..." className="loading-logo" />
+      </div>
+    );
   }
 
-    // Pagination logic
+  // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentMessages = filteredMessages.slice(indexOfFirstItem, indexOfLastItem);
+  const currentMessages = filteredMessages.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
   const totalPages = Math.ceil(filteredMessages.length / itemsPerPage);
 
   const handlePageChange = (newPage) => {
@@ -134,8 +144,12 @@ const Support = () => {
   return (
     <div className="support-container">
       <div className="support-header">
-        <h3 className="support-title">{isAdmin ? "Admin" : "Seller"} Help Messages</h3>
-        <div className="support-count">Total Message: {filteredMessages.length}</div>
+        <h3 className="support-title">
+          {isAdmin ? "Admin" : "Seller"} Help Messages
+        </h3>
+        <div className="support-count">
+          Total Message: {filteredMessages.length}
+        </div>
       </div>
 
       <div className="filter-pills">
@@ -156,74 +170,84 @@ const Support = () => {
         </div>
       ) : (
         <>
-        <div className="support-table-container">
-          <table className="support-table">
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Email</th>
-                <th>Message</th>
-                <th>Sub Subject</th>
-                <th>Submitted At</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentMessages.map((msg) => (
-                <tr key={msg.id}>
-                  <td>
-                    <div className="user-info">
-                      <img
-                        src={msg.user?.imageUrl || "/placeholder.svg?height=32&width=32"}
-                        alt={msg.user?.name || "User"}
-                        className="user-avatar"
-                      />
-                      <span className="user-name">{msg.user?.name || "Unknown User"}</span>
-                    </div>
-                  </td>
-                  <td>{msg.user?.email || "No email"}</td>
-                  <td className="message-cell">
-                    <div className="message-content">{msg.message}</div>
-                  </td>
-                  <td>
-                    <span className="sub-subject-badge">{msg.subSubject || msg.subject}</span>
-                  </td>
-                  {/* <td>{msg.subject}</td> */}
-                  <td className="date-cell">
-                    {new Date(msg.createdAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </td>
-                  <td>
-                    <div className="action-buttons">
-                      <button
-                        className="action-btn view-btn"
-                        title="View Details"
-                        onClick={() => handleViewDetails(msg)}
-                      >
-                        <MessageSquareReply size={13} />
-                      </button>
-                      <button
-                        className="action-btn delete-btn"
-                        title="Delete Message"
-                        onClick={() => handleDelete(msg.id)}
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-                  </td>
+          <div className="support-table-container">
+            <table className="support-table">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Email</th>
+                  <th>Message</th>
+                  <th>Sub Subject</th>
+                  <th>Submitted At</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {currentMessages.map((msg) => (
+                  <tr key={msg.id}>
+                    <td>
+                      <div className="user-info">
+                        <img
+                          src={
+                            msg.user?.imageUrl ||
+                            "/placeholder.svg?height=32&width=32"
+                          }
+                          alt={msg.user?.name || "User"}
+                          className="user-avatar"
+                        />
+                        <span className="user-name">
+                          {msg.user?.name || "Unknown User"}
+                        </span>
+                      </div>
+                    </td>
+                    <td>{msg.user?.email || "No email"}</td>
+                    <td className="message-cell">
+                      <div className="message-content">{msg.message}</div>
+                    </td>
+                    <td>
+                      <span className="sub-subject-badge">
+                        {msg.subSubject || msg.subject}
+                      </span>
+                    </td>
+                    {/* <td>{msg.subject}</td> */}
+                    <td className="date-cell">
+                      {new Date(msg.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </td>
+                    <td>
+                      <div className="action-buttons">
+                        <button
+                          className="action-btn view-btn"
+                          title="View Details"
+                          onClick={() => handleViewDetails(msg)}
+                        >
+                          <MessageSquareReply size={13} />
+                        </button>
+                        <button
+                          className="action-btn delete-btn"
+                          title="Delete Message"
+                          onClick={() => handleDelete(msg.id)}
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-       <div className="pagination">
-            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+          <div className="pagination">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
               Prev
             </button>
             {Array.from({ length: totalPages }, (_, i) => (
@@ -242,13 +266,16 @@ const Support = () => {
               Next
             </button>
           </div>
-</>
-
+        </>
       )}
 
       {/* Reply Modal */}
       {showModal && selectedMessage && (
-        <div className="modal-overlay" style={{ zIndex: 2001 }} onClick={closeModal}>
+        <div
+          className="modal-overlay"
+          style={{ zIndex: 2001 }}
+          onClick={closeModal}
+        >
           <div
             className="modal-content"
             style={{ zIndex: 2002 }}
@@ -256,7 +283,11 @@ const Support = () => {
           >
             <div className="modal-header">
               <h3>Reply Form</h3>
-              <button className="modal-close" onClick={closeModal} title="Close">
+              <button
+                className="modal-close"
+                onClick={closeModal}
+                title="Close"
+              >
                 &times;
               </button>
             </div>
@@ -284,7 +315,10 @@ const Support = () => {
                     />
                   </div>
 
-                  <div className="detail-item full-width" style={{ marginTop: "12px" }}>
+                  <div
+                    className="detail-item full-width"
+                    style={{ marginTop: "12px" }}
+                  >
                     <label>
                       <strong>Message:</strong>
                     </label>
@@ -303,7 +337,10 @@ const Support = () => {
                     ></textarea>
                   </div>
 
-                   <div className="detail-item full-width" style={{ marginTop: "12px" }}>
+                  <div
+                    className="detail-item full-width"
+                    style={{ marginTop: "12px" }}
+                  >
                     <label>
                       <strong>Reply:</strong>
                     </label>
@@ -323,7 +360,7 @@ const Support = () => {
 
                   <div style={{ marginTop: "16px", textAlign: "left" }}>
                     <button
-                    disabled={updating}
+                      disabled={updating}
                       onClick={() => handleReplySubmit(selectedMessage.id)}
                       style={{
                         backgroundColor: "#3b82f6",
@@ -333,12 +370,9 @@ const Support = () => {
                         border: "none",
                         cursor: "pointer",
                         fontWeight: "bold",
-                        
                       }}
                     >
-                      {
-                        updating ? "Updating..." : "Submit"
-                      }
+                      {updating ? "Updating..." : "Submit"}
                     </button>
                   </div>
                 </div>
@@ -348,25 +382,7 @@ const Support = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Support
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export default Support;

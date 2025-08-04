@@ -117,10 +117,10 @@ const Support = () => {
     }
   };
 
-  if (loading) {
+   if (loading) {
     return (
       <div className="loading-container">
-        <p>Loading support messages..</p>
+        <p>Loading Messages...</p>
         <img src="SPC.png" alt="Loading..." className="loading-logo" />
       </div>
     );

@@ -1,5 +1,5 @@
-import { useEffect, useState,useRef } from "react";
-import { fetchDataFromApi, patchData,deleteData } from "../../utils/api";
+import { useEffect, useState } from "react";
+import { fetchDataFromApi, patchData, deleteData } from "../../utils/api";
 import "./AdminKycList.css";
 import { Trash2 } from "lucide-react";
 
@@ -7,6 +7,7 @@ const AdminKYCList = () => {
   const [kycs, setKycs] = useState([]);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 700);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     const fetchKycs = async () => {
@@ -15,6 +16,8 @@ const AdminKYCList = () => {
         setKycs(data);
       } catch (err) {
         console.error("Failed to fetch KYC data:", err);
+      } finally {
+        setLoading(false); //  Stop loading after fetch attempt
       }
     };
     fetchKycs();
@@ -47,17 +50,27 @@ const AdminKYCList = () => {
   };
 
   const handleDelete = async (id) => {
-  const confirmDelete = window.confirm("Are you sure you want to delete this KYC?");
-  if (!confirmDelete) return;
+    const confirmDelete = window.confirm("Are you sure you want to delete this KYC?");
+    if (!confirmDelete) return;
 
-  try {
-    await deleteData(`/kyc/delete/${id}`);
-    setKycs((prev) => prev.filter((k) => k.id !== id));
-  } catch (err) {
-    console.error("Failed to delete KYC:", err);
-    alert("Error deleting KYC.");
+    try {
+      await deleteData(`/kyc/delete/${id}`);
+      setKycs((prev) => prev.filter((k) => k.id !== id));
+    } catch (err) {
+      console.error("Failed to delete KYC:", err);
+      alert("Error deleting KYC.");
+    }
+  };
+
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <p>Loading KYC data...</p>
+        <img src="SPC.png" alt="Loading..." className="loading-logo" />
+      </div>
+    );
   }
-};
 
 
   return (

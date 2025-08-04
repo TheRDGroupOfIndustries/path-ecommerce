@@ -158,13 +158,14 @@ export default function LevelWiseUsers() {
     );
   };
 
-  if (loading)
+  if (loading) {
     return (
-       <div className="loading-container">
-        <p>Loading Level-wise Users...</p>
-         <img src="SPC.png" alt="Loading..." className="loading-logo" />
+     <div className="loading-container">
+        <p>Loading users...</p>
+        <img src="SPC.png" alt="Loading..." className="loading-logo" />
       </div>
     );
+  }
 
   return (
     <div className="lwuser-container" role="main">

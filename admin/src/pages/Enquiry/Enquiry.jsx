@@ -105,7 +105,6 @@ const fetchEnquiry = async () => {
   </select>
 </div>
 
-
         <div className="user-stats">
           <span>Total Enquiry: {users.length}</span>
         </div>
@@ -113,7 +112,7 @@ const fetchEnquiry = async () => {
 
       {loading ? (
   <div className="loading-container">
-     <p>Loading Enquiry...</p>
+     <p>Loading Enquiries...</p>
     <img src="SPC.png" alt="Loading..." className="loading-logo" />
   </div>
 ) : filteredUsers.length === 0 ? (

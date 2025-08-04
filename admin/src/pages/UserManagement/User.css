@@ -639,14 +639,12 @@ width: 100% !important;
   }
 }
 
-
-
 .loading-container {
   display: flex;
   flex-direction: row;
   gap: 20px;
-  align-items: center;   /* Horizontal center */
-  justify-content: center; /* Vertical center */
+  align-items: center;  
+  justify-content: center; 
   height: 300px;
   text-align: center;
   margin: auto;
@@ -656,11 +654,11 @@ width: 100% !important;
   width: 60px;
   height: auto;
   border-radius:50px;
-  animation: spin 2s linear infinite;
+  /* animation: spin 2s linear infinite; */
 }
 
-@keyframes spin {
+/* @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
+} */
 

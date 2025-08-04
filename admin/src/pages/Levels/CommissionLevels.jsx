@@ -1,13 +1,13 @@
-import { useEffect, useState ,useContext} from "react";
+import { useEffect, useState, useContext } from "react";
 import "./CommissionLevels.css";
-import { patchData,fetchDataFromApi } from "../../utils/api"; 
+import { patchData, fetchDataFromApi } from "../../utils/api";
 import { myContext } from "../../App";
 
 export default function CommissionLevels() {
   const context = useContext(myContext);
   const [levels, setLevels] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false); 
+  const [saving, setSaving] = useState(false);
 
   const mockLevels = Array.from({ length: 12 }).map((_, i) => ({
     level: i + 1,
@@ -23,9 +23,8 @@ export default function CommissionLevels() {
   }, []);
 
   useEffect(() => {
-  fetchLevels();
-}, []);
-
+    fetchLevels();
+  }, []);
 
   const handleChange = (index, value) => {
     const updated = [...levels];
@@ -33,47 +32,51 @@ export default function CommissionLevels() {
     setLevels(updated);
   };
 
-
-    const fetchLevels = async () => {
-      try {
-        const res = await fetchDataFromApi("/level");
-        if (Array.isArray(res)) {
-          setLevels(res);
-        } else {
-          console.warn("Unexpected response format:", res);
-        }
-
-      } catch (error) {
-        console.error("Failed to fetch levels:", error);
-      } finally {
-        setLoading(false);
+  const fetchLevels = async () => {
+    try {
+      const res = await fetchDataFromApi("/level");
+      if (Array.isArray(res)) {
+        setLevels(res);
+      } else {
+        console.warn("Unexpected response format:", res);
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch levels:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const handleSave = async () => {
-  setSaving(true);
-  try {
-    await patchData("/level/save", levels);
-    context.setAlertBox({
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await patchData("/level/save", levels);
+      context.setAlertBox({
         open: true,
         msg: "Commission Percent saved successfully!",
         error: false,
       });
-    await fetchLevels(); 
-  } catch (err) {
-       context.setAlertBox({
+      await fetchLevels();
+    } catch (err) {
+      context.setAlertBox({
         open: true,
         msg: "Failed to save commission Percent.",
         error: true,
       });
-    console.error(err);
-  } finally {
-    setSaving(false);
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <p>Loading Levels...</p>
+        <img src="SPC.png" alt="Loading..." className="loading-logo" />
+      </div>
+    );
   }
-};
-
-
-  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="page-container">
@@ -124,4 +127,3 @@ const handleSave = async () => {
     </div>
   );
 }
-

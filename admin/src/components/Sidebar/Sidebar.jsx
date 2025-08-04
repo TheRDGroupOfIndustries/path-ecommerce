@@ -94,7 +94,7 @@ const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {
     hasSubmenu: true,
     submenu: [
       { title: "Levels & Percent", link: "/level-commissions" },
-      { title: "Level-wise Users", link: "/level-users" },
+      { title: "Level-Wise Users", link: "/level-users" },
     ],
   },
     {

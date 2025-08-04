@@ -196,10 +196,20 @@ const buildNestedLevels = (currentLevel: number, parentId: string | null = null)
   const updatedAssociates = associates.map((a) => {
     const fullRevenue = a.revenue + totalLowerRevenue;
     const isTopLevel = parentId === null; // Top-level flag
-    const commissionPercent = isTopLevel ? levelData.percent : null;
 
-    const totalCommissionInRupee = parseFloat(((levelData.percent / 100) * fullRevenue).toFixed(2));
-    const totalCommissionInPercent = parseFloat(((totalCommissionInRupee / fullRevenue) * 100).toFixed(2));
+const commissionPercent = isTopLevel
+  ? getOverriddenCommissionPercent(currentLevel) ?? levelData.percent
+  : levelData.percent;
+
+
+    const totalCommissionInRupee = parseFloat(
+  ((commissionPercent / 100) * fullRevenue).toFixed(2)
+);
+
+const totalCommissionInPercent = parseFloat(
+  ((totalCommissionInRupee / fullRevenue) * 100).toFixed(2)
+);
+
 
     const result: any = {
       ...a,
@@ -211,9 +221,10 @@ const buildNestedLevels = (currentLevel: number, parentId: string | null = null)
     };
 
     // Only top-level should show editable commission percent
-    if (isTopLevel) {
-      result.commissionPercent = commissionPercent;
-    }
+   if (isTopLevel) {
+  result.commissionPercent = commissionPercent;
+  result.totalCommissionInPercent = commissionPercent;
+}
 
     return result;
   });
@@ -250,3 +261,22 @@ const buildNestedLevels = (currentLevel: number, parentId: string | null = null)
   }
 };
 
+
+
+const overriddenCommissions: Record<number, number> = {}; // key: level, value: new percent
+
+export const updateTopLevelCommissionPercent = (req: Request, res: Response) => {
+  const { level, newPercent } = req.body;
+
+  if (typeof level !== 'number' || typeof newPercent !== 'number') {
+    return res.status(400).json({ success: false, message: "Invalid input" });
+  }
+
+  overriddenCommissions[level] = newPercent;
+
+  return res.status(200).json({ success: true, message: `Commission updated for level ${level}` });
+};
+
+export const getOverriddenCommissionPercent = (level: number): number | undefined => {
+  return overriddenCommissions[level];
+};

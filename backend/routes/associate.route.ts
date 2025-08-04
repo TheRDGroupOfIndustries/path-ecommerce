@@ -34,4 +34,5 @@ router.delete("/delete/:id", async (req, res) => {
     return deleteAssociateController(req, res)
 });
 
+
 export default router;

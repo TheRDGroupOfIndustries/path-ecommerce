@@ -15,45 +15,6 @@ router.post("/check", isAuthenticated, async (req, res) => {
    await checkReferralCode(req, res);
 });
 
-
-// router.get("/all", async (req, res) => {
-//   try {
-//     const referrals = await db.referral.findMany({
-//       include: {
-//         transactions: {
-//           select: {
-//             percent: true,
-//             commission: true,
-//             userId: true, 
-//           }
-//         }
-//       }
-//     });
-
-//     const filteredReferrals = referrals.map(ref => {
-//       const seenUsers = new Set();
-//       const uniqueTransactions = ref.transactions.filter(tx => {
-//         if (!tx.userId || seenUsers.has(tx.userId)) return false;
-//         seenUsers.add(tx.userId);
-//         return true;
-//       });
-
-//       const totalRevenue = uniqueTransactions.reduce((sum, tx) => sum + tx.commission, 0);
-
-//       return {
-//         ...ref,
-//         transactions: uniqueTransactions,
-//         totalRevenue, 
-//       };
-//     });
-
-//     res.status(200).json(filteredReferrals);
-//   } catch (err) {
-//     console.error("Error fetching referrals:", err);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
 router.get("/all", async (req, res) => {
   try {
     const referrals = await db.referral.findMany({
@@ -163,6 +124,53 @@ router.get("/detail/:id", async (req, res) => {
 
 
 router.get("/validate/:code", validateReferralCode);
+
+
+// In referral.routes.js
+
+router.get("/search-associate", async (req, res) => {
+  const { name } = req.query;
+
+  if (!name || name.trim() === "") {
+    return res.status(400).json({ error: "Name query parameter is required." });
+  }
+
+  try {
+    const associates = await db.user.findMany({
+      where: {
+        role: "ASSOCIATE",
+        name: {
+          contains: name,
+          mode: "insensitive",
+        },
+        associate: {
+          isNot: null,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        createdAt: true,
+        associate: {
+          select: {
+            id: true,
+            level: true,
+            percent: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    res.status(200).json({ results: associates });
+  } catch (error) {
+    console.error("Error in search-associate route:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 
 export default router;

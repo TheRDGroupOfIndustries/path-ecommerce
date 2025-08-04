@@ -76,7 +76,7 @@ const handleSave = async () => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <>
+    <div className="page-container">
       <div className="page-header">
         <h1>Commission Levels</h1>
         <p>Configure commission percentages for each referral level</p>
@@ -121,7 +121,7 @@ const handleSave = async () => {
           )}
         </button>
       </div>
-    </>
+    </div>
   );
 }
 

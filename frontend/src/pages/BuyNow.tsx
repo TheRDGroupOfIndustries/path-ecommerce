@@ -118,7 +118,6 @@ function BuyNow() {
           `${API_URL}/api/order/buynow/cart`,
           {
             paymentMode: "COD",
-            referralCode: code || null,
           },
           {
             headers: {
@@ -126,7 +125,7 @@ function BuyNow() {
             },
           }
         );
-            console.log("buynow/cart:",res);
+        console.log("buynow/cart:",res);
         // console.log(res);
         if (res.status === 201) {
           navigate("/thanks");
@@ -157,7 +156,7 @@ function BuyNow() {
             },
           }
         );
-        console.log("buynow:",res);
+        console.log("buy now:",res);
         
 
         if (res.status === 201) {

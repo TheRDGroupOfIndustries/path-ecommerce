@@ -86,13 +86,14 @@ export default function MyCart() {
         id: item.id,
         productId: item.productId,
         name: item.product.name,
-        discountedPrice: parseFloat(item.finalPrice.toFixed(2)), // already calculated
+        discountedPrice: parseInt(item.finalPrice), // already calculated
         description: item.product.description,
         discount: displayDiscount, 
         rating: item.product.ratings,
         referralApplied: item.referralApplied,
         referralPercent: referralPercent,
-        price: parseFloat(item.originalPrice.toFixed(2)),
+        referralCode:item.referralCode,
+        price: parseInt(item.originalPrice),
         quantity: item.quantity,
         image: item.product.images?.[0],
         sellerName: item.product.seller?.name,

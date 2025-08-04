@@ -95,17 +95,82 @@ export const getHighLevelAssociates = async (req: Request, res: Response) => {
         createdAt: assoc.createdAt,
         usedByUsers: usage,
         revenue: totalRevenue,
-        commissionEarned: parseFloat(commissionEarned.toFixed(2)),
+        referralPercent: parseFloat(commissionEarned.toFixed(2)),
       });
     }
-const buildNestedLevels = (currentLevel: number): any => {
+// const buildNestedLevels = (currentLevel: number): any => {
+//   const levelData = levels.find((lvl) => lvl.level === currentLevel);
+//   if (!levelData) return null;
+
+//   const associates = associatesByLevel[currentLevel] || [];
+//   const lowerLevel = buildNestedLevels(currentLevel - 1);
+
+//   //  Aggregate revenue from lower levels recursively. kachr h ye wala 😭
+//   let totalLowerRevenue = 0;
+//   const levelWiseRevenue: Record<string, number> = {};
+
+//   if (lowerLevel?.associates?.length) {
+//     for (const assoc of lowerLevel.associates) {
+//       const assocLevel = assoc.level;
+//       const assocRevenue = assoc.revenue || 0;
+
+//       // Track per-level revenue: level1Revenue, level2Revenue, .... or jo bhi ho
+//       const key = `level${assocLevel}Revenue`;
+//       levelWiseRevenue[key] = (levelWiseRevenue[key] || 0) + assocRevenue;
+
+//       totalLowerRevenue += assocRevenue;
+
+//       // Add any nested lower-level revenue fields from the associate
+//       for (const k in assoc) {
+//         if (k.startsWith("level") && k.endsWith("Revenue")) {
+//           levelWiseRevenue[k] = (levelWiseRevenue[k] || 0) + assoc[k];
+//           totalLowerRevenue += assoc[k];
+//         }
+//       }
+//     }
+//   }
+
+//   // Prepare associates with combined revenue and commission
+//   const updatedAssociates = associates.map((a) => {
+//    const fullRevenue = a.revenue + totalLowerRevenue;
+//     const totalCommissionInRupee = parseFloat(((levelData.percent / 100) * fullRevenue).toFixed(2));
+//     const totalCommissionInPercent = parseFloat(((totalCommissionInRupee / fullRevenue) * 100).toFixed(2));
+
+//       return {
+//       ...a,
+//       ...levelWiseRevenue,
+//       revenueFromLowerLevels: totalLowerRevenue,
+//       finalRevenue: fullRevenue,
+//       totalCommissionInRupee,
+//       totalCommissionInPercent,
+//     };
+
+//   });
+
+//   const result: any = {
+//     level: currentLevel,
+//     percent: levelData.percent,
+//     associates: updatedAssociates,
+//   };
+
+//   if (lowerLevel) {
+//     result.lowerLevels = [lowerLevel];
+//     result.revenueShared = totalLowerRevenue;
+//     result.commissionDistributed = {
+//       [`level_${currentLevel}`]: parseFloat(((levelData.percent / 100) * totalLowerRevenue).toFixed(2)),
+//     };
+//   }
+
+//   return result;
+// };
+
+const buildNestedLevels = (currentLevel: number, parentId: string | null = null): any => {
   const levelData = levels.find((lvl) => lvl.level === currentLevel);
   if (!levelData) return null;
 
   const associates = associatesByLevel[currentLevel] || [];
-  const lowerLevel = buildNestedLevels(currentLevel - 1);
+  const lowerLevel = buildNestedLevels(currentLevel - 1, "nested");
 
-  //  Aggregate revenue from lower levels recursively. kachr h ye wala 😭
   let totalLowerRevenue = 0;
   const levelWiseRevenue: Record<string, number> = {};
 
@@ -114,13 +179,10 @@ const buildNestedLevels = (currentLevel: number): any => {
       const assocLevel = assoc.level;
       const assocRevenue = assoc.revenue || 0;
 
-      // Track per-level revenue: level1Revenue, level2Revenue, .... or jo bhi ho
       const key = `level${assocLevel}Revenue`;
       levelWiseRevenue[key] = (levelWiseRevenue[key] || 0) + assocRevenue;
-
       totalLowerRevenue += assocRevenue;
 
-      // Add any nested lower-level revenue fields from the associate
       for (const k in assoc) {
         if (k.startsWith("level") && k.endsWith("Revenue")) {
           levelWiseRevenue[k] = (levelWiseRevenue[k] || 0) + assoc[k];
@@ -130,13 +192,16 @@ const buildNestedLevels = (currentLevel: number): any => {
     }
   }
 
-  // Prepare associates with combined revenue and commission
+  // Prepare associates with full revenue + commission
   const updatedAssociates = associates.map((a) => {
-   const fullRevenue = a.revenue + totalLowerRevenue;
+    const fullRevenue = a.revenue + totalLowerRevenue;
+    const isTopLevel = parentId === null; // Top-level flag
+    const commissionPercent = isTopLevel ? levelData.percent : null;
+
     const totalCommissionInRupee = parseFloat(((levelData.percent / 100) * fullRevenue).toFixed(2));
     const totalCommissionInPercent = parseFloat(((totalCommissionInRupee / fullRevenue) * 100).toFixed(2));
 
-      return {
+    const result: any = {
       ...a,
       ...levelWiseRevenue,
       revenueFromLowerLevels: totalLowerRevenue,
@@ -145,6 +210,12 @@ const buildNestedLevels = (currentLevel: number): any => {
       totalCommissionInPercent,
     };
 
+    // Only top-level should show editable commission percent
+    if (isTopLevel) {
+      result.commissionPercent = commissionPercent;
+    }
+
+    return result;
   });
 
   const result: any = {
@@ -163,6 +234,7 @@ const buildNestedLevels = (currentLevel: number): any => {
 
   return result;
 };
+
 
     const topLevels = levels
       .filter((lvl) => lvl.level >= 2)

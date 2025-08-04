@@ -47,7 +47,7 @@ function LevelRow({ levelData, expandedRows, toggleExpand, depth = 0 }) {
               <td>{user.associaateEmail}</td>
               <td style={{ textAlign: "center" }}>
                 <span className="lwuser-commission-amount">
-                  ₹{formatCurrency(user.totalCommission)}
+                  %{formatCurrency(user.totalCommissionInPercent)}
                 </span>
               </td>
               <td style={{ textAlign: "center" }}>
@@ -87,7 +87,7 @@ function LevelRow({ levelData, expandedRows, toggleExpand, depth = 0 }) {
                                 <th>Level</th>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Commission (₹)</th>
+                                <th>Commission (%)</th>
                                 <th>Details</th>
                               </tr>
                             </thead>
@@ -103,9 +103,9 @@ function LevelRow({ levelData, expandedRows, toggleExpand, depth = 0 }) {
                                   <td>{nestedUser.associaateEmail}</td>
                                   <td style={{ textAlign: "center" }}>
                                     <span className="lwuser-commission-amount">
-                                      ₹
+                                      %
                                       {formatCurrency(
-                                        nestedUser.totalCommission
+                                        nestedUser.totalCommissionInPercent
                                       )}
                                     </span>
                                   </td>
@@ -192,7 +192,7 @@ export default function LevelWiseUsers() {
                 <th>Level</th>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Commission (₹)</th>
+                <th>Commission (%)</th>
                 <th>Details</th>
               </tr>
             </thead>

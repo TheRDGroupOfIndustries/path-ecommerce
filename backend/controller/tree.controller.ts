@@ -132,16 +132,19 @@ const buildNestedLevels = (currentLevel: number): any => {
 
   // Prepare associates with combined revenue and commission
   const updatedAssociates = associates.map((a) => {
-    const fullRevenue = a.revenue + totalLowerRevenue;
-    const totalCommission = parseFloat(((levelData.percent / 100) * fullRevenue).toFixed(2));
+   const fullRevenue = a.revenue + totalLowerRevenue;
+    const totalCommissionInRupee = parseFloat(((levelData.percent / 100) * fullRevenue).toFixed(2));
+    const totalCommissionInPercent = parseFloat(((totalCommissionInRupee / fullRevenue) * 100).toFixed(2));
 
-    return {
+      return {
       ...a,
       ...levelWiseRevenue,
       revenueFromLowerLevels: totalLowerRevenue,
-      finalRevenue:fullRevenue,
-      totalCommission,
+      finalRevenue: fullRevenue,
+      totalCommissionInRupee,
+      totalCommissionInPercent,
     };
+
   });
 
   const result: any = {

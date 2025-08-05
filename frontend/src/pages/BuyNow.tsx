@@ -247,7 +247,7 @@ function BuyNow() {
   console.log("data: ", data);
 
   return (
-    <div className=" min-h-screen h-auto w-screen relative mb-16 p-4 container mx-auto">
+    <div className=" min-h-screen h-auto w-screen relative mb-16 sm:p-4 container mx-auto">
       <div className="px-6 mb-2">
         <div className="flex items-center justify-center h-14 text-black">
           <ChevronLeft

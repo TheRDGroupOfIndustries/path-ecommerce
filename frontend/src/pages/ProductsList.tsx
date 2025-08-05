@@ -72,12 +72,7 @@ const ProductsList = () => {
   };
 
 if (products === undefined) return <Loader />;
-if (products.length == 0)
-  return (
-    <div className="flex items-center justify-center h-screen text-center">
-      <h2 className="text-3xl font-semibold text-gray-800">No products available</h2>
-    </div>
-  );
+
 
 
   return (
@@ -92,7 +87,13 @@ if (products.length == 0)
         </h2>
       </div>
 
-      {products.map((product) => (
+      { products.length==0 ?( <div className="flex items-center justify-center h-[calc(100vh-7rem)] text-center">
+          <h2 className="text-3xl font-semibold text-gray-800">
+            No products available
+          </h2>
+        </div>):
+
+      (  products.map((product) => (
         <ProductListItem
           key={product?.id}
           image={product?.images[0]}
@@ -100,7 +101,7 @@ if (products.length == 0)
           title={product?.name}
           description={product?.description || "Demo Description "}
           productId={product?.id}
-        />
+        />)
       ))}
     </div>
   );

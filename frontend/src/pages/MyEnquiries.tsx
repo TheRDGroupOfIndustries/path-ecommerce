@@ -3,7 +3,6 @@ import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import Loader from "@/components/Loader/Loader";
-import EmptyCart from "@/components/EmptyCart/EmptyCart";
 import axios from "axios";
 import { API_URL } from "@/lib/api.env";
 
@@ -97,12 +96,9 @@ export default function MyEnquiries() {
         <h2 className="text-2xl font-semibold flex-1 text-center">
           My Enquiries
         </h2>
-        <div className="w-8 h-8" />
+        <div className="w-6 h-6" />
       </div>
 
-      {/* {enquiries.map((enquiry) => (
-        <EnquiryCard key={enquiry.id} {...enquiry} />
-      ))} */}
       {
         enquiries.length === 0?( <div className="flex items-center justify-center h-screen text-center">
         <h2 className="text-3xl font-semibold text-gray-800">No enquiries</h2>

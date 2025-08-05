@@ -146,13 +146,13 @@ function ChangeAddress() {
   }, []);
 
   return (
-    <div className="min-h-screen h-auto w-screen relative mb-10">
-      <div className="flex items-center justify-center gap-0 h-14 text-black mb-2 px-6 border-2 border-neutral-200">
+     <div className="container p-4 mx-auto h-[100dvh] flex flex-col mb-28">
+      <div className="flex items-center justify-between px-4 py-3 border-b">
         <ChevronLeft
           className="w-8 h-8 cursor-pointer"
           onClick={() => navigate(-1)}
         />
-        <h2 className="flex-1 text-2xl font-sans text-center font-semibold">
+        <h2 className="flex-1 text-2xl font-sans text-center font-semibold text-black">
           Change Address
         </h2>
       </div>
@@ -236,7 +236,7 @@ function ChangeAddress() {
         </div>
       </div>
 
-      <div className="fixed bottom-2 w-full px-4">
+      <div className="fixed bottom-2 max-w-md px-4">
         <ShadeBtn
           title={loading ? "Changing Address..." : "Change Address"}
           action={() => handleClick()}

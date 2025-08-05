@@ -1,5 +1,3 @@
-"use client"
-
 import React, { useState, useEffect, useContext, useRef } from "react"
 import { Check, Eye, EyeOff, Pencil, Printer, X, Search } from "lucide-react"
 import "./LevelWiseUsers.css"
@@ -7,6 +5,7 @@ import { fetchDataFromApi, patchData } from "../../utils/api"
 import { myContext } from "../../App"
 import * as XLSX from "xlsx"
 import { saveAs } from "file-saver"
+
 
 // Format currency utility
 const formatCurrency = (val) => (val !== undefined && val !== null && !isNaN(val) ? Number(val).toFixed(2) : "-")
@@ -93,45 +92,46 @@ function LevelRow({
       inputRef.current.focus()
       inputRef.current.select()
     }
+
+  }, [editingRowId]);
+
+
+const flattenUserDataForExcel = (user, lowerLevels) => {
+  const rows = [
+    {
+      Level: user.level,
+      Name: user.associaateName,
+      Email: user.associaateEmail,
+      "Commission (%)": user.totalCommissionInPercent,
+      "Total Commission (₹)": user.totalCommissionInRupee,   
+      ParentLevel: "-",
+    },
+  ];
+
+  const addNested = (levels, parentLevel) => {
+    if (!levels) return;
+    levels.forEach((level) => {
+      level.associates.forEach((assoc) => {
+        rows.push({
+          Level: assoc.level,
+          Name: assoc.associaateName,
+          Email: assoc.associaateEmail,
+          "Commission (%)": assoc.totalCommissionInPercent,
+          "Total Commission (₹)": assoc.totalCommissionInRupee,
+          ParentLevel: parentLevel,
+        });
+      });
+
+      if (level.lowerLevels) {
+        addNested(level.lowerLevels, level.level);
+      }
+    });
+  };
+
   }, [editingRowId])
 
-  const BASE_AMOUNT = 1000 // or get this dynamically if needed
 
-  const flattenUserDataForExcel = (user, lowerLevels) => {
-    const rows = [
-      {
-        Level: user.level,
-        Name: user.associaateName,
-        Email: user.associaateEmail,
-        "Commission (%)": user.totalCommissionInPercent,
-        "Total Commission (₹)": ((user.totalCommissionInPercent / 100) * BASE_AMOUNT).toFixed(2),
-        ParentLevel: "-",
-      },
-    ]
-
-    const addNested = (levels, parentLevel) => {
-      if (!levels) return
-      levels.forEach((level) => {
-        level.associates.forEach((assoc) => {
-          rows.push({
-            Level: assoc.level,
-            Name: assoc.associaateName,
-            Email: assoc.associaateEmail,
-            "Commission (%)": assoc.totalCommissionInPercent,
-            "Total Commission (₹)": ((assoc.totalCommissionInPercent / 100) * BASE_AMOUNT).toFixed(2),
-            ParentLevel: parentLevel,
-          })
-        })
-        if (level.lowerLevels) {
-          addNested(level.lowerLevels, level.level)
-        }
-      })
-    }
-
-    addNested(lowerLevels, user.level)
-    return rows
-  }
-
+  
   const exportReportToExcel = (user, lowerLevels) => {
     const data = flattenUserDataForExcel(user, lowerLevels)
     // Create worksheet from data
@@ -279,7 +279,11 @@ function LevelRow({
                       aria-label={`Edit commission for ${user.associaateName}`}
                     >
                       <Pencil />
+
+                    </button>     
+
                     </button>
+
                     {/* Generate Report button */}
                     <button
                       className="delete-btn"

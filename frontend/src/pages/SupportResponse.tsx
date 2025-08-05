@@ -31,7 +31,7 @@ function SupportResponse() {
     }
 
   return (
-    <div>
+   <div className="container p-4 mx-auto h-[100dvh] flex flex-col ">
     <div className="flex items-center justify-between px-4 py-3 border-b bg-white ">
         <ChevronLeft
           className="w-6 h-6 cursor-pointer text-black"

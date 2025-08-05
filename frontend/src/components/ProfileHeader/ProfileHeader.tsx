@@ -1,25 +1,25 @@
-import { Search } from "lucide-react"
-import { useAuth } from "@/context/authContext"
-import PROIFLE_IMAGE from "@/assets/user_img.png"
-import LOOGO from "@/assets/SPC.jpg"
-import { useLocation, useNavigate } from "react-router-dom"
-import { useEffect, useState } from "react"
-import axios from "axios"
-import { API_URL } from "@/lib/api.env"
+import { Search } from "lucide-react";
+import { useAuth } from "@/context/authContext";
+import PROIFLE_IMAGE from "@/assets/user_img.png";
+import LOOGO from "@/assets/SPC.jpg";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { API_URL } from "@/lib/api.env";
 
 const ProfileHeader = ({ type }: { type?: string }) => {
-  const { user } = useAuth()
-  const location = useLocation()
-  const navigation = useNavigate()
+  const { user } = useAuth();
+  const location = useLocation();
+  const navigation = useNavigate();
 
-  const [category, setCategory] = useState(["For You"])
-  const [active, setActive] = useState(category[0])
-  const [input, setInput] = useState("")
+  const [category, setCategory] = useState(["For You"]);
+  const [active, setActive] = useState(category[0]);
+  const [input, setInput] = useState("");
   const handleClick = (path: string) => {
-    navigation(path)
-  }
+    navigation(path);
+  };
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await axios.get(`${API_URL}/api/product/get-all`);
@@ -30,7 +30,7 @@ const ProfileHeader = ({ type }: { type?: string }) => {
         console.error("Failed to fetch products", err);
       }
     };
-        const fetchServices = async () => {
+    const fetchServices = async () => {
       try {
         const response = await axios.get(`${API_URL}/api/marketplace/get-all`);
         const marketplaces = response.data?.marketplaces || [];
@@ -46,7 +46,7 @@ const ProfileHeader = ({ type }: { type?: string }) => {
       }
     };
 
-        const fetchProperties = async () => {
+    const fetchProperties = async () => {
       try {
         const res = await axios.get(`${API_URL}/api/property/get-all`);
         const data = res.data?.properties || [];
@@ -62,27 +62,26 @@ const ProfileHeader = ({ type }: { type?: string }) => {
 
     switch (location.pathname) {
       case "/":
-        fetchProducts()
+        fetchProducts();
         break;
 
       case "/all-service":
-        fetchServices()
+        fetchServices();
         break;
 
       case "/houses-plots":
-        fetchProperties()
+        fetchProperties();
         break;
       default:
         break;
     }
   }, [location.pathname]);
 
-
   const tabs = [
     { name: "Shop", path: "/" },
     { name: "Marketplace", path: "/all-service" },
     { name: "Houses & Plots", path: "/houses-plots" },
-  ]
+  ];
 
   return (
     <>
@@ -92,27 +91,33 @@ const ProfileHeader = ({ type }: { type?: string }) => {
         <div className="w-full bg-white px-6 py-4 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-2 w-16 h-16">
-            <img src={LOOGO || "/placeholder.svg"} alt="Logo" className="w-full h-full object-cover" />
+            <img
+              src={LOOGO || "/placeholder.svg"}
+              alt="Logo"
+              className="w-full h-full object-cover"
+            />
           </div>
 
-        <div className="">
-          <div className="flex justify-center gap-8">
-            {tabs.map((items) => {
-              const isActive = location.pathname === items.path
-              return (
-                <button
-                  key={items.path}
-                  onClick={() => handleClick(items.path)}
-                  className={`${
-                    isActive ? "after:translate-y-12 -mt-4 text-blue-600 after:opacity-100 " : ""
-                  } text-lg font-sans font-medium relative after:absolute after:w-1.5 after:h-1.5 after:rounded-full after:left-[45%] after:-top-1/4 after:bg-blue-600 after:-translate-y-full after:opacity-0 transition-all duration-300 text-shadow-neutral-900`}
-                >
-                  {items.name}
-                </button>
-              )
-            })}
+          <div className="">
+            <div className="flex justify-center gap-8">
+              {tabs.map((items) => {
+                const isActive = location.pathname === items.path;
+                return (
+                  <button
+                    key={items.path}
+                    onClick={() => handleClick(items.path)}
+                    className={`${
+                      isActive
+                        ? "after:translate-y-12 -mt-4 text-blue-600 after:opacity-100 "
+                        : ""
+                    } text-lg font-sans font-medium relative after:absolute after:w-1.5 after:h-1.5 after:rounded-full after:left-[45%] after:-top-1/4 after:bg-blue-600 after:-translate-y-full after:opacity-0 transition-all duration-300 text-shadow-neutral-900`}
+                  >
+                    {items.name}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
           {/* Search Bar */}
 
           <div className="flex-1 max-w-[40%]">
@@ -134,8 +139,15 @@ const ProfileHeader = ({ type }: { type?: string }) => {
 
           {/* Profile */}
           <div className="flex items-center">
-            <button onClick={() => navigation("/profile")} className="cursor-pointer flex items-center space-x-2">
-              <img src={user?.imageUrl || PROIFLE_IMAGE} alt="User" className="w-12 h-12 rounded-full object-cover" />
+            <button
+              onClick={() => navigation("/profile")}
+              className="cursor-pointer flex items-center space-x-2"
+            >
+              <img
+                src={user?.imageUrl || PROIFLE_IMAGE}
+                alt="User"
+                className="w-12 h-12 rounded-full object-cover"
+              />
             </button>
           </div>
         </div>
@@ -156,10 +168,16 @@ const ProfileHeader = ({ type }: { type?: string }) => {
       <div className="md:hidden">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <img src={user?.imageUrl || PROIFLE_IMAGE} alt="User" className="w-12 h-12 rounded-full object-cover" />
+            <img
+              src={user?.imageUrl || PROIFLE_IMAGE}
+              alt="User"
+              className="w-12 h-12 rounded-full object-cover"
+            />
             <div className="leading-tight">
               <p className="text-sm text-muted-foreground">Hey,</p>
-              <p className="text-lg font-semibold text-black">{user?.name || "Guest"}</p>
+              <p className="text-lg font-semibold text-black">
+                {user?.name || "Guest"}
+              </p>
             </div>
           </div>
           <button
@@ -176,19 +194,10 @@ const ProfileHeader = ({ type }: { type?: string }) => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default ProfileHeader
-
-
-
-
-
-
-
-
-
+export default ProfileHeader;
 
 // import { Search } from "lucide-react"
 // import { useAuth } from "@/context/authContext"
@@ -268,8 +277,6 @@ export default ProfileHeader
 //   </div>
 // </div>
 
-
-
 //       {/* Mobile View */}
 //       <div className="md:hidden">
 //         <div className="flex justify-between items-center">
@@ -300,7 +307,6 @@ export default ProfileHeader
 // export default ProfileHeader
 
 //----------------------------------------------------------------------------------------------
-
 
 // import { Search } from "lucide-react";
 // import React, { useState } from "react";
@@ -369,7 +375,6 @@ export default ProfileHeader
 //           </button>
 //         </div>
 //       </div>
-
 
 //       <div className="md:hidden">
 //         <div className="flex justify-between items-center">

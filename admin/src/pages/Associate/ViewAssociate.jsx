@@ -8,7 +8,7 @@ function EditAssociate({ closeModal, id, level, percentageInt }) {
   const [percentage, setPercentage] = useState(percentageInt ?? "")
   const [percentageList, setPercentageList] = useState([])
   const [loading, setLoading] = useState(false)
-   const [searchQuery, setSearchQuery] = useState("");
+  
 
   useEffect(() => {
     const tempList = []

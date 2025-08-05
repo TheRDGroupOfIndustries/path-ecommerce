@@ -468,6 +468,7 @@ strong{
 
 .view-btn,
 .edit-btn,
+.report-btn,
 .delete-btn {
   padding: 6px 12px;
   border: none;
@@ -502,6 +503,16 @@ strong{
 .delete-btn {
   background: linear-gradient(135deg, #f6c3c5, #fdd0d0);
   color: rgb(243, 13, 13);
+}
+
+.report-btn{
+  background: linear-gradient(135deg, #c3f8c2, #d1fbd2);
+  color: rgb(58, 135, 10);
+}
+
+.report-btn:hover{
+   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(78, 215, 78, 0.4);
 }
 
 .delete-btn:hover {
@@ -695,6 +706,7 @@ strong{
   }
   .view-btn,
   .edit-btn,
+  .report-btn,
   .delete-btn {
     width: 100%;
     font-size: 0.95rem;

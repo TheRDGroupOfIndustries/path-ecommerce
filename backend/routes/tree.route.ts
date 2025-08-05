@@ -7,7 +7,7 @@ router.get("/", getHighLevelAssociates);
 
 router.patch("/edit", updateTopLevelCommissionPercent);
 
-router.delete("/delete", deleteAssociateById);
+router.delete("/delete/:id", deleteAssociateById);
 
 router.get("/search-associate", searchAssociates);
 

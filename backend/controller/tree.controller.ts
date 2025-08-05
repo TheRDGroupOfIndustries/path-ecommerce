@@ -223,8 +223,9 @@ export const getOverriddenCommissionPercent = (level: number): number | undefine
   return overriddenCommissions[level];
 };
 
+
 export const deleteAssociateById = async (req: Request, res: Response) => {
-  const { associateId } = req.body;
+  const associateId = req.params.id;
 
   if (!associateId) {
     return res.status(400).json({ success: false, message: "Associate ID is required" });
@@ -241,7 +242,7 @@ export const deleteAssociateById = async (req: Request, res: Response) => {
 
     const referralIds = referrals.map((ref) => ref.id);
 
-    // ✅ Use correct model name for transactions
+    //  Use correct model name for transactions
     await db.referralTransaction.deleteMany({
       where: {
         referralId: { in: referralIds },
@@ -256,7 +257,7 @@ export const deleteAssociateById = async (req: Request, res: Response) => {
 
     await db.associate.deleteMany({
       where: {
-        userId: associateId,
+        id: associateId,
       },
     });
 

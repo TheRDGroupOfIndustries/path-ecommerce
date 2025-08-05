@@ -8,6 +8,7 @@ const ProtectedRoute = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    console.log("protected:",token)
 
     if (!token) {
       setValid(false);
@@ -33,7 +34,22 @@ const ProtectedRoute = ({ children }) => {
     }
   }, []);
 
-  if (loading) return null; // or a spinner
+  if (loading) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "1.2rem",
+          fontWeight: "500",
+        }}
+      >
+        Checking authentication...
+      </div>
+    );
+  }
 
   return valid ? children : <Navigate to="/login" />;
 };

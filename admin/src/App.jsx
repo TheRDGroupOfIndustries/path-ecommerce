@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, createContext, useEffect } from "react";
 
 // Components
@@ -146,8 +146,19 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/kycc" element={<KYC />} />
-            <Route path="/kyc-status" element={<KycStatusPage />} />
+
+            <Route path="/kycc" element={
+             <ProtectedRoute>
+             <KYC />
+             </ProtectedRoute>
+            }
+             />
+
+            <Route path="/kyc-status" element={
+              <ProtectedRoute>
+              <KycStatusPage />
+              </ProtectedRoute>
+              } />
 
             {/* Protected Layout and Routes */}
             <Route

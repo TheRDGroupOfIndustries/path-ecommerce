@@ -8,6 +8,7 @@ import { Suspense, lazy, useEffect } from "react";
 import MyEnquiries from "./pages/MyEnquiries";
 import HelpDesk from "./pages/HelpDesk";
 import SupportResponse from "./pages/SupportResponse";
+import Loader from "./components/Loader/Loader";
 
 // 1️ Lazy load pages for better performance
 const Login = lazy(() => import("./Auth/Login"));
@@ -76,7 +77,7 @@ function App() {
 
         {/* 3️⃣ Suspense fallback for lazy loading */}
         <Suspense
-          fallback={<div className="text-center mt-10">Loading...</div>}
+          fallback={<Loader/>}
         >
           <Routes>
             <Route path="/login" element={<Login />} />

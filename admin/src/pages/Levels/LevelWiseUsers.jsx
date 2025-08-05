@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { Check, Eye, EyeOff, Pencil, Printer, X } from "lucide-react";
+import { Check, Eye, EyeOff, Pencil, Printer, Trash, X } from "lucide-react";
 import "./LevelWiseUsers.css";
 import { fetchDataFromApi, patchData } from "../../utils/api";
 import { myContext } from "../../App";
@@ -115,10 +115,7 @@ const flattenUserDataForExcel = (user, lowerLevels) => {
       Name: user.associaateName,
       Email: user.associaateEmail,
       "Commission (%)": user.totalCommissionInPercent,
-      "Total Commission (₹)": (
-        (user.totalCommissionInPercent / 100) *
-        BASE_AMOUNT
-      ).toFixed(2),
+      "Total Commission (₹)": user.totalCommissionInRupee,   
       ParentLevel: "-",
     },
   ];
@@ -132,10 +129,7 @@ const flattenUserDataForExcel = (user, lowerLevels) => {
           Name: assoc.associaateName,
           Email: assoc.associaateEmail,
           "Commission (%)": assoc.totalCommissionInPercent,
-          "Total Commission (₹)": (
-            (assoc.totalCommissionInPercent / 100) *
-            BASE_AMOUNT
-          ).toFixed(2),
+          "Total Commission (₹)": assoc.totalCommissionInRupee,
           ParentLevel: parentLevel,
         });
       });
@@ -323,7 +317,7 @@ const flattenUserDataForExcel = (user, lowerLevels) => {
                       aria-label={`Edit commission for ${user.associaateName}`}
                     >
                       <Pencil />
-                    </button>
+                    </button>     
 
                     {/* Generate Report button */}
                     <button

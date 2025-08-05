@@ -332,15 +332,15 @@ const HelpDesk = () => {
 
   return (
     <div className="container p-4 mx-auto h-[100dvh] flex flex-col ">
-      <div className="flex items-center justify-between px-4 py-3 border-b bg-white ">
+      <div className="flex justify-between items-center mb-4 text-black border-b py-3">
         <ChevronLeft
-          className="w-6 h-6 cursor-pointer text-black"
+          className="w-8 h-8 cursor-pointer text-black"
           onClick={() => navigate("/profile")}
         />
         <h2 className="text-xl font-semibold text-black">Help Desk</h2>
         <div className="w-6 h-6" />
       </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white">
+      <div className="flex-1 overflow-y-autospace-y-4 bg-white">
         {renderChatStep()}
       </div>
     </div>

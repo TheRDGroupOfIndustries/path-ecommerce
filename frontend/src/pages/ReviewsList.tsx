@@ -60,95 +60,88 @@ const ReviewsList = () => {
 
   const [productsWithReviews, setProductsWithReviews] = useState();
 
+  useEffect(() => {
+    const fetchSellerDashboard = async () => {
+      try {
+        const res = await axios.get(
+          `${API_URL}/api/seller/get-seller/${user?.id}`
+        );
+        const data = res.data;
+        // console.log(data);
 
-useEffect(() => {
-  const fetchSellerDashboard = async () => {
-    try {
-      const res = await axios.get(`${API_URL}/api/seller/get-seller/${user?.id}`);
-      const data = res.data;
-      // console.log(data);
-      
+        const map = new Map();
 
-      const map = new Map();
+        // ---------- 1. Product Reviews ----------
+        data.productSeller?.forEach((product) => {
+          if (product.review.length > 0) {
+            const ratings = product.review.map((r) => r.rating);
+            const avgRating =
+              ratings.reduce((a, b) => a + b, 0) / ratings.length;
 
-      // ---------- 1. Product Reviews ----------
-      data.productSeller?.forEach((product) => {
-        if (product.review.length > 0) {
-          const ratings = product.review.map((r) => r.rating);
-          const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+            map.set(`product-${product.id}`, {
+              key: `product-${product.id}`,
+              name: product.name,
+              images: product.images,
+              avgRating,
+              totalReviews: ratings.length,
+              type: "product",
+              id: product.id,
+            });
+          }
+        });
 
-          map.set(`product-${product.id}`, {
-            key: `product-${product.id}`,
-            name: product.name,
-            images: product.images,
-            avgRating,
-            totalReviews: ratings.length,
-            type: "product",
-            id: product.id,
-          });
-        }
-      });
+        // ---------- 2. Marketplace Reviews ----------
+        data.marketplaces?.forEach((mp) => {
+          if (mp.reviews.length > 0) {
+            const ratings = mp.reviews.map((r) => r.rating);
+            const avgRating =
+              ratings.reduce((a, b) => a + b, 0) / ratings.length;
 
-      // ---------- 2. Marketplace Reviews ----------
-      data.marketplaces?.forEach((mp) => {
-        if (mp.reviews.length > 0) {
-          const ratings = mp.reviews.map((r) => r.rating);
-          const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+            map.set(`marketplace-${mp.id}`, {
+              key: `marketplace-${mp.id}`,
+              name: mp.name,
+              images: mp.imageUrl,
+              avgRating,
+              totalReviews: ratings.length,
+              type: "marketplace",
+              id: mp.id,
+            });
+          }
+        });
 
-          map.set(`marketplace-${mp.id}`, {
-            key: `marketplace-${mp.id}`,
-            name: mp.name,
-            images: mp.imageUrl,
-            avgRating,
-            totalReviews: ratings.length,
-            type: "marketplace",
-            id: mp.id,
-          });
-        }
-      });
+        // ---------- 3. Property Reviews ----------
+        data.properties?.forEach((prop) => {
+          if (prop.reviews.length > 0) {
+            const ratings = prop.reviews.map((r) => r.rating);
+            const avgRating =
+              ratings.reduce((a, b) => a + b, 0) / ratings.length;
 
-      // ---------- 3. Property Reviews ----------
-      data.properties?.forEach((prop) => {
-        if (prop.reviews.length > 0) {
-          const ratings = prop.reviews.map((r) => r.rating);
-          const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+            map.set(`property-${prop.id}`, {
+              key: `property-${prop.id}`,
+              name: prop.name,
+              images: prop.imageUrl,
+              avgRating,
+              totalReviews: ratings.length,
+              type: "property",
+              id: prop.id,
+            });
+          }
+        });
 
-          map.set(`property-${prop.id}`, {
-            key: `property-${prop.id}`,
-            name: prop.name,
-            images: prop.imageUrl,
-            avgRating,
-            totalReviews: ratings.length,
-            type: "property",
-            id: prop.id,
-          });
-        }
-      });
+        const finalArr = Array.from(map.values());
+        setProductsWithReviews(finalArr);
+      } catch (err) {
+        console.error("Failed to fetch seller dashboard data", err);
+      }
+    };
 
-      const finalArr = Array.from(map.values());
-      setProductsWithReviews(finalArr);
-    } catch (err) {
-      console.error("Failed to fetch seller dashboard data", err);
+    if (user?.id) {
+      fetchSellerDashboard();
     }
-  };
-
-  if (user?.id) {
-    fetchSellerDashboard();
-  }
-}, [user?.id]);
-
-
-
+  }, [user?.id]);
 
   if (productsWithReviews === undefined) return <Loader />;
-  if (productsWithReviews.length === 0)
-    return (
-      <div className="flex items-center justify-center h-screen text-center">
-        <h2 className="text-3xl font-semibold text-gray-800">
-          No reviews yet.
-        </h2>
-      </div>
-    );
+ 
 
   return (
     <div className="container mx-auto p-4 mb-16">
@@ -164,17 +157,25 @@ useEffect(() => {
       </div>
 
       {/* Product Cards */}
-      {productsWithReviews.map(
-        ({ key, name, images, avgRating, totalReviews, type, id }) => (
-          <ProductCard
-            key={key}
-            name={name}
-            images={images}
-            avgRating={avgRating}
-            totalReviews={totalReviews}
-            type={type}
-            id={id}
-          />
+      {productsWithReviews.length === 0 ? (
+        <div className="flex items-center justify-center h-screen text-center">
+          <h2 className="text-3xl font-semibold text-gray-800">
+            No reviews yet.
+          </h2>
+        </div>
+      ) : (
+        productsWithReviews.map(
+          ({ key, name, images, avgRating, totalReviews, type, id }) => (
+            <ProductCard
+              key={key}
+              name={name}
+              images={images}
+              avgRating={avgRating}
+              totalReviews={totalReviews}
+              type={type}
+              id={id}
+            />
+          )
         )
       )}
     </div>

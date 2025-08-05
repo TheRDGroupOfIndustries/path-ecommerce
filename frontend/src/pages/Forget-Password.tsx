@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { API_URL } from "@/lib/api.env";
 import axios from "axios";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 function ForgetPass() {
@@ -25,7 +26,7 @@ function ForgetPass() {
     try {
       setLoading(true);
       setError((prev) => ({ ...prev, state: false, message: "" }));
-      const req = await axios.get(`${API_URL}/api/users/get-by-value/${value}`);
+      const req = await axios.get(`${API_URL}/api/users/get-by-email/${value}`);
       if (req.status === 400) {
         setError((prev) => ({
           ...prev,
@@ -89,7 +90,7 @@ function ForgetPass() {
     })
 
     if (req.status === 200) {
-        alert("Password Changed!")
+        toast.success("Password Changed!")
         navigate("/login")
     }
   }
@@ -169,7 +170,7 @@ function ForgetPass() {
         className="w-full text-white py-6 text-lg rounded-xl primary-bg"
       >
         {isLoading
-          ? "..."
+          ? "Sending..."
           : step === 0
           ? "Send OTP"
           : step === 1

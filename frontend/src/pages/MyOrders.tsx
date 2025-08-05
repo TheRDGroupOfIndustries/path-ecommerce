@@ -232,10 +232,10 @@ export default function MyOrders() {
         />
 
         <h2 className="text-2xl  font-semibold ">My orders</h2>
-
-        <div className="flex items-center space-x-2">
+              <div className="w-7 h-7"/>
+        {/* <div className="flex items-center space-x-2">
           <Search className="w-7 h-7 text-black" />
-        </div>
+        </div> */}
       </div>
 
       {/* {user?.role === "SELLER" || user?.role === "ADMIN" ? (

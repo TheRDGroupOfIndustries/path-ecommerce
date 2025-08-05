@@ -3,6 +3,7 @@ import ProfileHeader from "@/components/ProfileHeader/ProfileHeader";
 import CardComponent from "@/components/CardComponent/CardComponent";
 import axios from "axios";
 import { API_URL } from "@/lib/api.env";
+import Loader from "@/components/Loader/Loader";
 
 const AllServicesPage = () => {
   const [activeTab, setActiveTab] = useState("All Services");
@@ -92,7 +93,10 @@ const [loading, setLoading] = useState(true);
       </div> */}
 
       {/* Cards or No Data */}
-{filteredServices.length > 0 ? (
+{
+loading ? (
+  <Loader/>
+) : filteredServices.length > 0 ? (
   <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
     {filteredServices.map((service) => (
       <CardComponent

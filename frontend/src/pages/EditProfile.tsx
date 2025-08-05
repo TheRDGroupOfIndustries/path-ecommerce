@@ -158,7 +158,7 @@ const EditProfile = () => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-black text-white py-4 rounded-lg flex items-center justify-center gap-2"
+              className="w-fit bg-black text-white py-4 rounded-lg flex items-center justify-center gap-2"
             >
               {isLoading ? "Updating..." : "Update Profile"}
             </Button>

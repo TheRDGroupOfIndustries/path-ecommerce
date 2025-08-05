@@ -3,7 +3,9 @@ import {
   HandPlatter,
   Building2,
   CircleUserRound,
+  Mail, Lock, ShieldCheck, HelpCircle, Instagram, Linkedin, Twitter, Facebook 
 } from "lucide-react";
+
 import { useLocation, useNavigate } from "react-router-dom";
 
 const tabs = [
@@ -95,26 +97,43 @@ const BottomNavBar = () => {
           </div>
 
           {/* Support */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Support</h3>
-            <ul className="space-y-2 text-sm text-gray-300">
-              <li className="hover:text-white cursor-pointer">Contact Us</li>
-              <li className="hover:text-white cursor-pointer">Privacy Policy</li>
-              <li className="hover:text-white cursor-pointer">Terms of Service</li>
-              <li className="hover:text-white cursor-pointer">FAQs</li>
-            </ul>
-          </div>
+        <div>
+  <h3 className="text-lg font-semibold mb-4">Support</h3>
+  <ul className="space-y-2 text-sm text-gray-300">
+    <li className="hover:text-white cursor-pointer flex items-center gap-2">
+      <Mail size={18} /> Contact Us
+    </li>
+    <li className="hover:text-white cursor-pointer flex items-center gap-2">
+      <Lock size={18} /> Privacy Policy
+    </li>
+    <li className="hover:text-white cursor-pointer flex items-center gap-2">
+      <ShieldCheck size={18} /> Terms of Service
+    </li>
+    <li className="hover:text-white cursor-pointer flex items-center gap-2">
+      <HelpCircle size={18} /> FAQs
+    </li>
+  </ul>
+</div>
 
-          {/* Socials */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
-            <ul className="space-y-2 text-sm text-gray-300">
-              <li className="hover:text-white cursor-pointer">Instagram</li>
-              <li className="hover:text-white cursor-pointer">LinkedIn</li>
-              <li className="hover:text-white cursor-pointer">Twitter</li>
-              <li className="hover:text-white cursor-pointer">Facebook</li>
-            </ul>
-          </div>
+{/* Socials */}
+<div>
+  <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
+  <ul className="space-y-2 text-sm text-gray-300">
+    <li className="hover:text-white cursor-pointer flex items-center gap-2">
+      <Instagram size={18} /> Instagram
+    </li>
+    <li className="hover:text-white cursor-pointer flex items-center gap-2">
+      <Linkedin size={18} /> LinkedIn
+    </li>
+    <li className="hover:text-white cursor-pointer flex items-center gap-2">
+      <Twitter size={18} /> Twitter
+    </li>
+    <li className="hover:text-white cursor-pointer flex items-center gap-2">
+      <Facebook size={18} /> Facebook
+    </li>
+  </ul>
+</div>
+
         </div>
       </footer>
     </>

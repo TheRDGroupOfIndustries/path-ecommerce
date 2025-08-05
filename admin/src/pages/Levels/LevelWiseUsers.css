@@ -249,3 +249,54 @@
 .dark .lwuser-nested-heading{
   background-color: #181C2F;
 }
+
+.lwuser-nested-table-wrapper {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: white;
+}
+
+.dark .lwuser-nested-table-wrapper {
+  border: 1px solid #334155;
+  background-color: #1e293b;
+}
+
+
+.commission-inputs {
+  width: 60px;
+  padding: 4px;
+  border: 1px solid #94a3b8;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+
+
+.btn-save,
+.btn-cancel {
+  margin-left: 8px;
+  /* border: 1.5px solid #28a745; */
+  background-color: #d4edda;
+  border-radius: 4px;
+  padding: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  max-width: fit-content;
+  
+}
+
+.btn-cancel {
+  /* border: 1.5px solid #dc3545; */
+  background-color: #f8d7da;
+  
+}
+
+
+.action-buttonss {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}

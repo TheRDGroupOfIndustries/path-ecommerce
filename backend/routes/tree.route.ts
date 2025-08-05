@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { getHighLevelAssociates,updateTopLevelCommissionPercent,deleteAssociateById ,searchAssociates} from "../controller/tree.controller.js";
+import { getHighLevelAssociates,updateCommissionPercent,deleteAssociateById ,searchAssociates} from "../controller/tree.controller.js";
 
 const router = Router();
 
 router.get("/", getHighLevelAssociates);
 
-router.patch("/edit", updateTopLevelCommissionPercent);
+router.patch("/edit", updateCommissionPercent);
 
 router.delete("/delete/:id", deleteAssociateById);
 

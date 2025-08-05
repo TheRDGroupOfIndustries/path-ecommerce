@@ -1,112 +1,100 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
-import { Check, Eye, EyeOff, Pencil, Printer, Trash, X } from "lucide-react";
-import "./LevelWiseUsers.css";
-import { fetchDataFromApi, patchData } from "../../utils/api";
-import { myContext } from "../../App";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+import React, { useState, useEffect, useContext, useRef } from "react"
+import { Check, Eye, EyeOff, Pencil, Printer, X, Search } from "lucide-react"
+import "./LevelWiseUsers.css"
+import { fetchDataFromApi, patchData } from "../../utils/api"
+import { myContext } from "../../App"
+import * as XLSX from "xlsx"
+import { saveAs } from "file-saver"
+
 
 // Format currency utility
-const formatCurrency = (val) =>
-  val !== undefined && val !== null && !isNaN(val)
-    ? Number(val).toFixed(2)
-    : "-";
+const formatCurrency = (val) => (val !== undefined && val !== null && !isNaN(val) ? Number(val).toFixed(2) : "-")
 
 const renderNestedLevels = (node, depth = 1) => {
-  if (!node) return [];
-
+  if (!node) return []
   return node.flatMap((item, index) => {
     const currentRow = (
       <tr key={`${depth}-${index}`}>
         <td className="pl-4 py-2"> {item.associates[0].level}</td>
-        <td className="py-2 lwuser-commission-amount">
-          {item.associates[0].totalCommissionInPercent}%
-        </td>
+        <td className="py-2 lwuser-commission-amount">{item.associates[0].totalCommissionInPercent}%</td>
       </tr>
-    );
-
+    )
     // recursively go through lowerLevels (if present)
-    const childRows = item.lowerLevels
-      ? renderNestedLevels(item.lowerLevels, depth + 1)
-      : [];
-
-    return [currentRow, ...childRows];
-  });
-};
+    const childRows = item.lowerLevels ? renderNestedLevels(item.lowerLevels, depth + 1) : []
+    return [currentRow, ...childRows]
+  })
+}
 
 // Recursive row renderer
-
 function LevelRow({
   levelData,
   expandedRows,
   toggleExpand,
   depth = 0,
   onCommissionUpdate,
+  originalLevelData, // Add this prop to maintain original structure
 }) {
-  const context = useContext(myContext);
-  const [editingRowId, setEditingRowId] = React.useState(null);
-  const [editedCommission, setEditedCommission] = React.useState("");
-  const inputRef = useRef(null);
+  const context = useContext(myContext)
+  const [editingRowId, setEditingRowId] = React.useState(null)
+  const [editedCommission, setEditedCommission] = React.useState("")
+  const inputRef = useRef(null)
 
   // Function to start editing a row
   const startEditing = (rowId, currentCommission) => {
     if (editingRowId === rowId) {
-      setEditingRowId(null);
+      setEditingRowId(null)
     } else {
-      setEditingRowId(rowId);
-      setEditedCommission(currentCommission ?? "");
+      setEditingRowId(rowId)
+      setEditedCommission(currentCommission ?? "")
     }
-  };
+  }
 
   // Call PATCH /edit API to save commission update
   const saveEdit = async (user) => {
     if (!editedCommission || isNaN(editedCommission)) {
-      alert("Please enter a valid percentage.");
-      return;
+      alert("Please enter a valid percentage.")
+      return
     }
 
     try {
-      const level = user.level;
-      const newPercent = parseFloat(editedCommission);
-
+      const level = user.level
+      const newPercent = Number.parseFloat(editedCommission)
       // Assuming your backend is on the same domain or handled proxy
       const response = await patchData("/tree/edit", {
         level,
         newPercent,
-      });
-      // console.log("res: ",response);
+      })
 
       if (response.success) {
-        // alert(response.message);
         context.setAlertBox({
           open: true,
           msg: response.message,
           error: false,
-        });
-        setEditingRowId(null);
+        })
+        setEditingRowId(null)
         if (onCommissionUpdate) {
-          onCommissionUpdate(user.id, newPercent);
+          onCommissionUpdate(user.id, newPercent)
         }
       } else {
-        alert("Failed to update commission: " + response.message);
+        alert("Failed to update commission: " + response.message)
       }
     } catch (error) {
-      alert("API request failed: " + error.message);
+      alert("API request failed: " + error.message)
     }
-  };
+  }
 
   const cancelEdit = () => {
-    setEditingRowId(null);
-  };
+    setEditingRowId(null)
+  }
 
   useEffect(() => {
     if (editingRowId !== null && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
+      inputRef.current.focus()
+      inputRef.current.select()
     }
+
   }, [editingRowId]);
 
-const BASE_AMOUNT = 1000; // or get this dynamically if needed
 
 const flattenUserDataForExcel = (user, lowerLevels) => {
   const rows = [
@@ -140,68 +128,66 @@ const flattenUserDataForExcel = (user, lowerLevels) => {
     });
   };
 
-  addNested(lowerLevels, user.level);
-
-  return rows;
-};
+  }, [editingRowId])
 
 
+  
   const exportReportToExcel = (user, lowerLevels) => {
-    const data = flattenUserDataForExcel(user, lowerLevels);
-
+    const data = flattenUserDataForExcel(user, lowerLevels)
     // Create worksheet from data
-    const worksheet = XLSX.utils.json_to_sheet(data, { origin: "A3" }); // Data starts from row 3
+    const worksheet = XLSX.utils.json_to_sheet(data, { origin: "A3" }) // Data starts from row 3
 
     // Add heading row manually
-    XLSX.utils.sheet_add_aoa(
-      worksheet,
-      [[`${user.associaateName}'s Referral Report`]],
-      {
-        origin: "A1",
-      }
-    );
+    XLSX.utils.sheet_add_aoa(worksheet, [[`${user.associaateName}'s Referral Report`]], {
+      origin: "A1",
+    })
 
     // Merge cells A1 to E1 for heading
-    worksheet["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
+    worksheet["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }]
 
     // Add some basic styling for column widths
-   worksheet["!cols"] = [
-  { wch: 10 }, // Level
-  { wch: 25 }, // Name
-  { wch: 30 }, // Email
-  { wch: 20 }, // Commission (%)
-  { wch: 25 }, // Total Commission (₹)
-  { wch: 15 }, // Parent
-];
+    worksheet["!cols"] = [
+      { wch: 10 }, // Level
+      { wch: 25 }, // Name
+      { wch: 30 }, // Email
+      { wch: 20 }, // Commission (%)
+      { wch: 25 }, // Total Commission (₹)
+      { wch: 15 }, // Parent
+    ]
 
-
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report")
     const excelBuffer = XLSX.write(workbook, {
       bookType: "xlsx",
       type: "array",
-    });
-
+    })
     const blob = new Blob([excelBuffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
-    });
-    saveAs(blob, `${user.associaateName}_Referral_Report.xlsx`);
-  };
+    })
+    saveAs(blob, `${user.associaateName}_Referral_Report.xlsx`)
+  }
 
-  if (!levelData?.associates || !levelData.associates.length) return null;
+  if (!levelData?.associates || !levelData.associates.length) return null
 
   return (
     <>
       {levelData.associates.map((user) => {
-        const rowId = user.id;
+        const rowId = user.id
+
+        // Use original data to check for nested levels, not filtered data
+        const originalUserData = originalLevelData?.associates?.find((assoc) => assoc.id === user.id)
+        const originalNestedLevels = originalLevelData?.lowerLevels?.filter(
+          (lvl) => Array.isArray(lvl.associates) && lvl.associates.length > 0,
+        )
+
+        // For display purposes, use filtered data
         const nestedLevels =
           Array.isArray(levelData.lowerLevels) &&
-          levelData.lowerLevels.filter(
-            (lvl) => Array.isArray(lvl.associates) && lvl.associates.length > 0
-          );
-        const hasNested = nestedLevels && nestedLevels.length > 0;
-        const isEditing = editingRowId === rowId;
+          levelData.lowerLevels.filter((lvl) => Array.isArray(lvl.associates) && lvl.associates.length > 0)
+
+        // Check if user has nested levels in original data (for action buttons)
+        const hasNested = originalNestedLevels && originalNestedLevels.length > 0
+        const isEditing = editingRowId === rowId
 
         return (
           <React.Fragment key={rowId}>
@@ -216,7 +202,6 @@ const flattenUserDataForExcel = (user, lowerLevels) => {
                 <strong>{user.associaateName}</strong>
               </td>
               <td>{user.associaateEmail}</td>
-
               <td style={{ textAlign: "center" }}>
                 {isEditing ? (
                   <>
@@ -231,37 +216,23 @@ const flattenUserDataForExcel = (user, lowerLevels) => {
                       onChange={(e) => setEditedCommission(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                          saveEdit(user);
+                          saveEdit(user)
                         } else if (e.key === "Escape") {
-                          cancelEdit();
+                          cancelEdit()
                         }
                       }}
                     />
-                    <button
-                      onClick={() => saveEdit(user)}
-                      className="btn-save"
-                      aria-label="Save"
-                      title="Save"
-                    >
+                    <button onClick={() => saveEdit(user)} className="btn-save" aria-label="Save" title="Save">
                       <Check color="#28a745" size={18} />
                     </button>
-
-                    <button
-                      onClick={cancelEdit}
-                      className="btn-cancel"
-                      aria-label="Cancel"
-                      title="Cancel"
-                    >
+                    <button onClick={cancelEdit} className="btn-cancel" aria-label="Cancel" title="Cancel">
                       <X color="#dc3545" size={18} />
                     </button>
                   </>
                 ) : (
-                  <span className="lwuser-commission-amount">
-                    {formatCurrency(user.totalCommissionInPercent)} %
-                  </span>
+                  <span className="lwuser-commission-amount">{formatCurrency(user.totalCommissionInPercent)} %</span>
                 )}
               </td>
-
               <td
                 style={{
                   textAlign: "center",
@@ -270,18 +241,14 @@ const flattenUserDataForExcel = (user, lowerLevels) => {
                 tabIndex={hasNested ? 0 : undefined}
                 role="button"
                 aria-pressed={expandedRows.includes(rowId)}
-                aria-label={
-                  expandedRows.includes(rowId)
-                    ? "Collapse details"
-                    : "Expand details"
-                }
+                aria-label={expandedRows.includes(rowId) ? "Collapse details" : "Expand details"}
                 onClick={hasNested ? () => toggleExpand(rowId) : undefined}
                 onKeyDown={
                   hasNested
                     ? (e) => {
                         if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          toggleExpand(rowId);
+                          e.preventDefault()
+                          toggleExpand(rowId)
                         }
                       }
                     : undefined
@@ -294,42 +261,41 @@ const flattenUserDataForExcel = (user, lowerLevels) => {
                       className="view-btn"
                       title="View"
                       onClick={(e) => {
-                        e.stopPropagation();
-                        toggleExpand(rowId);
+                        e.stopPropagation()
+                        toggleExpand(rowId)
                       }}
-                      aria-label={
-                        expandedRows.includes(rowId)
-                          ? "Hide nested users"
-                          : "Show nested users"
-                      }
+                      aria-label={expandedRows.includes(rowId) ? "Hide nested users" : "Show nested users"}
                     >
                       {expandedRows.includes(rowId) ? <EyeOff /> : <Eye />}
                     </button>
-
                     {/* Edit button */}
                     <button
                       className="edit-btn"
                       title="Edit"
                       onClick={(e) => {
-                        e.stopPropagation();
-                        startEditing(rowId, user.totalCommissionInPercent);
+                        e.stopPropagation()
+                        startEditing(rowId, user.totalCommissionInPercent)
                       }}
                       aria-label={`Edit commission for ${user.associaateName}`}
                     >
                       <Pencil />
+
                     </button>     
+
+                    </button>
 
                     {/* Generate Report button */}
                     <button
                       className="delete-btn"
                       title="Generate report"
                       onClick={(e) => {
-                        e.stopPropagation();
+                        e.stopPropagation()
                         const confirmed = window.confirm(
-                          `Do you want to download ${user.associaateName}'s referral report as Excel?`
-                        );
+                          `Do you want to download ${user.associaateName}'s referral report as Excel?`,
+                        )
                         if (confirmed) {
-                          exportReportToExcel(user, levelData.lowerLevels);
+                          // Use original data for report generation
+                          exportReportToExcel(user, originalNestedLevels)
                         }
                       }}
                       aria-label={`Generate report for ${user.associaateName}`}
@@ -342,10 +308,9 @@ const flattenUserDataForExcel = (user, lowerLevels) => {
                 )}
               </td>
             </tr>
-
-            {expandedRows.includes(rowId) && levelData.lowerLevels && (
+            {expandedRows.includes(rowId) && nestedLevels && nestedLevels.length > 0 && (
               <tr>
-                <td colSpan={3} className="p-0">
+                <td colSpan={5} className="p-0">
                   <div className="lwuser-nested-table-wrapper overflow-x-auto">
                     <table className="min-w-full text-left">
                       <thead>
@@ -354,49 +319,113 @@ const flattenUserDataForExcel = (user, lowerLevels) => {
                           <th className="px-4 py-2">Commission (%)</th>
                         </tr>
                       </thead>
-                      <tbody>{renderNestedLevels(levelData.lowerLevels)}</tbody>
+                      <tbody>{renderNestedLevels(nestedLevels)}</tbody>
                     </table>
                   </div>
                 </td>
               </tr>
             )}
           </React.Fragment>
-        );
+        )
       })}
     </>
-  );
+  )
 }
 
 export default function LevelWiseUsers() {
-  const [levels, setLevels] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [expandedRows, setExpandedRows] = useState([]);
+  const [levels, setLevels] = useState([])
+  const [originalLevels, setOriginalLevels] = useState([]) // Store original data
+  const [loading, setLoading] = useState(true)
+  const [expandedRows, setExpandedRows] = useState([])
+  const [searchQuery, setSearchQuery] = useState("")
+
+  // Handle search useEffect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.trim().length === 0) {
+        handleSearch() // fetch full tree
+      } else if (searchQuery.trim().length > 2) {
+        handleSearch() // filtered search
+      }
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
+
+  const handleSearch = async () => {
+    const trimmed = searchQuery.trim().toLowerCase()
+
+    if (trimmed.length === 0) {
+      // Show all data when search is empty
+      setLevels(originalLevels)
+      return
+    }
+
+    try {
+      setLoading(true)
+
+      // If we don't have original data, fetch it
+      if (originalLevels.length === 0) {
+        const res = await fetchDataFromApi("/tree")
+        const allLevels = res.levels || []
+        setOriginalLevels(allLevels)
+      }
+
+      const allLevels = originalLevels.length > 0 ? originalLevels : (await fetchDataFromApi("/tree")).levels || []
+
+      const filterRecursive = (levels) => {
+        const result = []
+        for (const level of levels) {
+          const matchedAssociates = level.associates.filter((assoc) => {
+            const name = assoc.associaateName?.toLowerCase() || ""
+            const email = assoc.associaateEmail?.toLowerCase() || ""
+            return name.includes(trimmed) || email.includes(trimmed)
+          })
+
+          const filteredLowerLevels = level.lowerLevels ? filterRecursive(level.lowerLevels) : []
+
+          if (matchedAssociates.length > 0 || filteredLowerLevels.length > 0) {
+            result.push({
+              ...level,
+              associates: matchedAssociates,
+              lowerLevels: filteredLowerLevels,
+            })
+          }
+        }
+        return result
+      }
+
+      const finalFiltered = filterRecursive(allLevels)
+      setLevels(finalFiltered)
+    } catch (error) {
+      console.error("Search error:", error)
+      setLevels([])
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
     async function load() {
-      setLoading(true);
+      setLoading(true)
       try {
-        const apiRes = await fetchDataFromApi("/tree");
-        const data = apiRes.levels;
-        console.log("data: ", data);
-
-        setLevels(data || []);
+        const apiRes = await fetchDataFromApi("/tree")
+        const data = apiRes.levels || []
+        console.log("data: ", data)
+        setLevels(data)
+        setOriginalLevels(data) // Store original data
       } catch {
-        setLevels([]);
+        setLevels([])
+        setOriginalLevels([])
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
-    load();
-  }, []);
+    load()
+  }, [])
 
   const toggleExpand = (rowId) => {
-    setExpandedRows((prev) =>
-      prev.includes(rowId)
-        ? prev.filter((id) => id !== rowId)
-        : [...prev, rowId]
-    );
-  };
+    setExpandedRows((prev) => (prev.includes(rowId) ? prev.filter((id) => id !== rowId) : [...prev, rowId]))
+  }
 
   const updateCommissionInLevels = (levelsArr, userId, newPercent) => {
     return levelsArr.map((level) => {
@@ -404,21 +433,19 @@ export default function LevelWiseUsers() {
         ...level,
         associates: level.associates.map((assoc) => {
           if (assoc.id === userId) {
-            return { ...assoc, totalCommissionInPercent: newPercent };
+            return { ...assoc, totalCommissionInPercent: newPercent }
           }
-          return assoc;
+          return assoc
         }),
-        lowerLevels: level.lowerLevels
-          ? updateCommissionInLevels(level.lowerLevels, userId, newPercent)
-          : undefined,
-      };
-    });
-  };
+        lowerLevels: level.lowerLevels ? updateCommissionInLevels(level.lowerLevels, userId, newPercent) : undefined,
+      }
+    })
+  }
+
   const handleCommissionUpdate = (userId, newPercent) => {
-    setLevels((prevLevels) =>
-      updateCommissionInLevels(prevLevels, userId, newPercent)
-    );
-  };
+    setLevels((prevLevels) => updateCommissionInLevels(prevLevels, userId, newPercent))
+    setOriginalLevels((prevLevels) => updateCommissionInLevels(prevLevels, userId, newPercent))
+  }
 
   if (loading) {
     return (
@@ -426,7 +453,7 @@ export default function LevelWiseUsers() {
         <p>Loading users...</p>
         <img src="SPC.png" alt="Loading..." className="loading-logo" />
       </div>
-    );
+    )
   }
 
   return (
@@ -434,18 +461,26 @@ export default function LevelWiseUsers() {
       <header className="lwuser-page-header">
         <h1>Level-wise Users</h1>
         <p>Referral network with associates and their nested referrals.</p>
+        <div className="search-section2">
+          <div className="search-container2">
+            <input
+              type="text"
+              placeholder="Search associate name..."
+              className="search-input2"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            />
+            <button className="search-button2" onClick={handleSearch}>
+              <Search size={18} />
+            </button>
+          </div>
+        </div>
       </header>
+
       <div className="lwuser-table-container">
-        <div
-          className="lwuser-table-wrapper"
-          tabIndex={0}
-          aria-label="Referral network table"
-        >
-          <table
-            className="lwuser-table"
-            role="table"
-            aria-describedby="table-desc"
-          >
+        <div className="lwuser-table-wrapper" tabIndex={0} aria-label="Referral network table">
+          <table className="lwuser-table" role="table" aria-describedby="table-desc">
             <caption id="table-desc" className="lwuser-sr-only">
               Referral network, all levels and their nested associates.
             </caption>
@@ -460,16 +495,21 @@ export default function LevelWiseUsers() {
             </thead>
             <tbody>
               {levels && levels.length > 0 ? (
-                levels.map((lvl) => (
-                  <LevelRow
-                    key={lvl.level + "-top"}
-                    levelData={lvl}
-                    expandedRows={expandedRows}
-                    toggleExpand={toggleExpand}
-                    depth={0}
-                    onCommissionUpdate={handleCommissionUpdate}
-                  />
-                ))
+                levels.map((lvl) => {
+                  // Find corresponding original level data
+                  const originalLvl = originalLevels.find((orig) => orig.level === lvl.level)
+                  return (
+                    <LevelRow
+                      key={lvl.level + "-top"}
+                      levelData={lvl}
+                      originalLevelData={originalLvl} // Pass original data
+                      expandedRows={expandedRows}
+                      toggleExpand={toggleExpand}
+                      depth={0}
+                      onCommissionUpdate={handleCommissionUpdate}
+                    />
+                  )
+                })
               ) : (
                 <tr>
                   <td colSpan={5} className="lwuser-no-nested-users">
@@ -482,192 +522,8 @@ export default function LevelWiseUsers() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-// import React, { useEffect, useState } from "react";
-// import { ChevronDown, ChevronRight } from "lucide-react";
-// import "./LevelWiseUsers.css";
 
-// const mockAssociates = [
-//   {
-//     id: 1,
-//     name: "Alice Smith",
-//     email: "alice@example.com",
-//     commission: 10.5,
-//     level: 8,
-//     nestedUsers: [
-//       {
-//         id: 101,
-//         name: "Alice Jr.",
-//         email: "alicejr@example.com",
-//         commission: 5.2,
-//         level: 6,
-//       },
-//       {
-//         id: 102,
-//         name: "Alison",
-//         email: "alison@example.com",
-//         commission: 3.8,
-//         level: 5,
-//       },
-//     ],
-//   },
-//   {
-//     id: 2,
-//     name: "Bob Johnson",
-//     email: "bob@example.com",
-//     commission: 8,
-//     level: 3,
-//     nestedUsers: [
-//       {
-//         id: 201,
-//         name: "Bobby",
-//         email: "bobby@example.com",
-//         commission: 2.5,
-//         level: 2,
-//       },
-//     ],
-//   },
-//   {
-//     id: 3,
-//     name: "Carol Williams",
-//     email: "carol@example.com",
-//     commission: 7,
-//     level: 1,
-//     nestedUsers: [],
-//   },
-// ];
 
-// export default function LevelWiseUsers() {
-//   const [associates, setAssociates] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [expandedIds, setExpandedIds] = useState([]);
-
-//   useEffect(() => {
-//     // simulate data loading delay
-//     const timer = setTimeout(() => {
-//       setAssociates(mockAssociates);
-//       setLoading(false);
-//     }, 500);
-//     return () => clearTimeout(timer);
-//   }, []);
-
-//   const toggleExpand = (id) => {
-//     setExpandedIds((prev) =>
-//       prev.includes(id) ? prev.filter((e) => e !== id) : [...prev, id]
-//     );
-//   };
-
-//   if (loading)
-//     return (
-//       <div className="lwuser-no-nested-users" role="status" aria-live="polite">
-//         Loading...
-//       </div>
-//     );
-
-//   return (
-//     <div className="lwuser-container" role="main">
-//       <header className="lwuser-page-header">
-//         <h1>Level-wise Users</h1>
-//         <p>Referral network with associates and their nested referrals.</p>
-//       </header>
-
-//       <div className="lwuser-table-container">
-//         <div className="lwuser-table-wrapper" tabIndex={0} aria-label="Referral network table">
-//           <table className="lwuser-table" role="table" aria-describedby="table-desc">
-//             <thead>
-//               <tr>
-//                 <th className="lwuser-serial-number">#</th>
-//                 <th>Level</th>
-//                 <th>Name</th>
-//                 <th>Email</th>
-//                 <th>Commission (%)</th>
-//                 <th>Details</th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {associates.map((a, idx) => (
-//                 <React.Fragment key={a.id}>
-//                   <tr
-//                     className="lwuser-main-row"
-//                     onClick={() => toggleExpand(a.id)}
-//                     onKeyDown={(e) => {
-//                       if (e.key === "Enter" || e.key === " ") {
-//                         e.preventDefault();
-//                         toggleExpand(a.id);
-//                       }
-//                     }}
-//                     style={{ cursor: "pointer" }}
-//                     tabIndex={0}
-//                     role="button"
-//                     aria-expanded={expandedIds.includes(a.id)}
-//                     aria-controls={`nested-users-${a.id}`}
-//                   >
-//                     <td className="lwuser-serial-number">{idx + 1}</td>
-//                     <td style={{ textAlign: "center" }}>{a.level}</td>
-//                     <td>{a.name}</td>
-//                     <td>{a.email}</td>
-//                     <td style={{ textAlign: "center" }}>
-//                       <span className="lwuser-commission-amount">
-//                         {a.commission.toFixed(2)}
-//                       </span>
-//                     </td>
-//                     <td style={{ textAlign: "center" }}>
-//                       <span className="lwuser-expand-icon" aria-label={expandedIds.includes(a.id) ? "Collapse" : "Expand"}>
-//                         {expandedIds.includes(a.id) ? (
-//                           <ChevronDown size={18} />
-//                         ) : (
-//                           <ChevronRight size={18} />
-//                         )}
-//                       </span>
-//                     </td>
-//                   </tr>
-
-//                   {expandedIds.includes(a.id) && (
-//                     <tr className="lwuser-expanded-row">
-//                       <td colSpan={6} style={{ padding: 0 }}>
-//                         <div className="lwuser-details-container" id={`nested-users-${a.id}`}>
-//                           {a.nestedUsers.length === 0 ? (
-//                             <p className="lwuser-no-referrals">No nested users found.</p>
-//                           ) : (
-//                             <table className="lwuser-table" style={{ margin: 0 }}>
-//                               <thead>
-//                                 <tr>
-//                                   <th className="lwuser-serial-number">#</th>
-//                                   <th>Level</th>
-//                                   <th>Name</th>
-//                                   <th>Email</th>
-//                                   <th>Commission (%)</th>
-//                                 </tr>
-//                               </thead>
-//                               <tbody>
-//                                 {a.nestedUsers.map((u, uidx) => (
-//                                   <tr key={u.id}>
-//                                     <td className="lwuser-serial-number">{uidx + 1}</td>
-//                                     <td style={{ textAlign: "center" }}>{u.level}</td>
-//                                     <td>{u.name}</td>
-//                                     <td>{u.email}</td>
-//                                     <td style={{ textAlign: "center" }}>
-//                                       <span className="lwuser-commission-amount">
-//                                         {u.commission.toFixed(2)}
-//                                       </span>
-//                                     </td>
-//                                   </tr>
-//                                 ))}
-//                               </tbody>
-//                             </table>
-//                           )}
-//                         </div>
-//                       </td>
-//                     </tr>
-//                   )}
-//                 </React.Fragment>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }

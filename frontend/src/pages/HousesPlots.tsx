@@ -3,15 +3,18 @@ import ProfileHeader from "@/components/ProfileHeader/ProfileHeader";
 import CardComponent from "@/components/CardComponent/CardComponent";
 import axios from "axios";
 import { API_URL } from "@/lib/api.env";
+import Loader from "@/components/Loader/Loader";
 
 const HousesPlots = () => {
   const [activeTab, setActiveTab] = useState("All Properties");
   const [properties, setProperties] = useState([]);
   const [tabs, setTabs] = useState(["All Properties"]);
+const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProperties = async () => {
       try {
+          setLoading(true); // Start loading
         const res = await axios.get(`${API_URL}/api/property/get-all`);
         const data = res.data?.properties || [];
 
@@ -24,6 +27,8 @@ const HousesPlots = () => {
         setTabs(["All Properties", ...categories]);
       } catch (error) {
         console.error("Failed to fetch properties", error);
+      }finally{
+        setLoading(false); // Stop loading
       }
     };
 
@@ -68,7 +73,7 @@ const HousesPlots = () => {
       </div>
 
       {/* Property Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      {/* <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {filteredProperties.map((property) => (
           <CardComponent
             key={property.id}
@@ -84,7 +89,37 @@ const HousesPlots = () => {
             path={`/enquire/property/${property.id}`}
           />
         ))}
-      </div>
+      </div> */}
+      {/* Property Cards or Empty State */}
+
+{/* Property Cards or Loader or Empty State */}
+{loading ? (
+  <Loader/>
+) : filteredProperties.length > 0 ? (
+  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    {filteredProperties.map((property) => (
+      <CardComponent
+        key={property.id}
+        service={{
+          id: property.id,
+          title: property.name,
+          image: property.imageUrl?.[0],
+          category: property.category,
+          description: property.description,
+        }}
+        btnText="View"
+        type="property"
+        path={`/enquire/property/${property.id}`}
+      />
+    ))}
+  </div>
+) : (
+  <div className="h-64 grid place-items-center text-center text-muted-foreground">
+    <p>No properties available under <strong>{activeTab}</strong>.</p>
+  </div>
+)}
+
+
     </div>
   );
 };

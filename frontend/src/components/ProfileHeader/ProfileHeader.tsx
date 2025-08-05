@@ -141,7 +141,7 @@ const ProfileHeader = ({ type }: { type?: string }) => {
         </div>
 
         {/* Second Header - Navigation Tabs */}
-        <div className="w-5/6 flex justify-center items-center gap-8 pt-2.5 mx-auto border-t border-gray-300">
+        {/* <div className="w-5/6 flex justify-center items-center gap-8 pt-2.5 mx-auto border-t border-gray-300">
             {
               category.map((items) => (
                 <button
@@ -149,7 +149,7 @@ const ProfileHeader = ({ type }: { type?: string }) => {
                 key={items} className={`${active === items ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-400"} text-base font-normal cursor-pointer hover:scale-110 transition-all`}>{items}</button>
               ))
             }
-        </div>
+        </div> */}
       </div>
 
       {/* Mobile View  */}

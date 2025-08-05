@@ -127,8 +127,8 @@ useEffect(() => {
                   description: items.description,
                 }}
                 btnText={"View"}
-                type={"marketplace"}
-                path={`/enquire/marketplace/${items.id}`}
+                type={type}
+                path={`/enquire/${type}/${items.id}`}
               />
             ) : (
               <ProductCard

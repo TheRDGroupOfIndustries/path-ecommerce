@@ -95,38 +95,91 @@ function ForgetPass() {
   }
 
   return (
-    <div className="w-screen h-screen flex justify-center px-4 flex-col">
-      <div>
-        <h1 className="text-2xl font-bold text-black font-sans text-left">
-          Recover Your Password
-        </h1>
-        <p className="text-sm text-gray-400">
-          You can easily recover your password just with simple steps
-        </p>
-      </div>
+    // <div className="w-screen h-screen flex justify-center px-4 flex-col">
+    //   <div>
+    //     <h1 className="text-2xl font-bold text-black font-sans text-left">
+    //       Recover Your Password
+    //     </h1>
+    //     <p className="text-sm text-gray-400">
+    //       You can easily recover your password just with simple steps
+    //     </p>
+    //   </div>
 
-      <div className="mt-8 flex flex-col gap-4">
-        <input
-          required
-          type={`${step === 1 ? "number" : "text"}`}
-          className="w-full py-4 px-4 rounded-xl outline-none border-none text-sm bg-gray-200"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder={`${step === 0 ? "Your Email Address" : step === 1 ? "Verify OTP" : "New Password"}`}
-        />
-        {error.state && <p className="text-red-800 text-sm">{error.message}</p>}
-        <Button
-          onClick={step === 0 ? () => genOtp() : step === 1 ? () => VerifyOTP() : () => setNewPassword()}
-          type="submit"
-          disabled={isLoading}
-          className="w-full text-white py-7 text-lg rounded-xl
-              primary-bg
-              "
-        >
-          {isLoading ? "..." : step === 0 ? "Send OTP" : step === 1 ? "Verify" : "Set Password"}
-        </Button>
-      </div>
+    //   <div className="mt-8 flex flex-col gap-4">
+    //     <input
+    //       required
+    //       type={`${step === 1 ? "number" : "text"}`}
+    //       className="w-full py-4 px-4 rounded-xl outline-none border-none text-sm bg-gray-200"
+    //       value={value}
+    //       onChange={(e) => setValue(e.target.value)}
+    //       placeholder={`${step === 0 ? "Your Email Address" : step === 1 ? "Verify OTP" : "New Password"}`}
+    //     />
+    //     {error.state && <p className="text-red-800 text-sm">{error.message}</p>}
+    //     <Button
+    //       onClick={step === 0 ? () => genOtp() : step === 1 ? () => VerifyOTP() : () => setNewPassword()}
+    //       type="submit"
+    //       disabled={isLoading}
+    //       className="w-full text-white py-7 text-lg rounded-xl
+    //           primary-bg
+    //           "
+    //     >
+    //       {isLoading ? "..." : step === 0 ? "Send OTP" : step === 1 ? "Verify" : "Set Password"}
+    //     </Button>
+    //   </div>
+    // </div>
+    <div className="w-screen min-h-screen flex items-center justify-center  px-4">
+  <div className="w-full max-w-md mx-auto flex flex-col gap-6 bg-white rounded-xl p-8 ">
+    <div>
+      <h1 className="text-2xl font-bold text-black font-sans text-left">
+        Recover Your Password
+      </h1>
+      <p className="text-sm text-gray-400">
+        You can easily recover your password just with simple steps
+      </p>
     </div>
+
+    <div className="mt-4 flex flex-col gap-6">
+      <input
+        required
+        type={step === 1 ? "number" : "text"}
+        className="w-full py-4 px-4 rounded-xl outline-none border-none text-sm bg-gray-200"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder={
+          step === 0
+            ? "Your Email Address"
+            : step === 1
+            ? "Verify OTP"
+            : "New Password"
+        }
+      />
+      {error.state && (
+        <p className="text-red-800 text-sm">{error.message}</p>
+      )}
+      <Button
+        onClick={
+          step === 0
+            ? () => genOtp()
+            : step === 1
+            ? () => VerifyOTP()
+            : () => setNewPassword()
+        }
+        type="submit"
+        disabled={isLoading}
+        className="w-full text-white py-6 text-lg rounded-xl primary-bg"
+      >
+        {isLoading
+          ? "..."
+          : step === 0
+          ? "Send OTP"
+          : step === 1
+          ? "Verify"
+          : "Set Password"}
+      </Button>
+    </div>
+  </div>
+</div>
+
   );
 }
 

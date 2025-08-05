@@ -18,8 +18,10 @@ const renderNestedLevels = (node, depth = 1) => {
   return node.flatMap((item, index) => {
     const currentRow = (
       <tr key={`${depth}-${index}`}>
-        <td className="pl-4 py-2"> {item.level}</td>
-        <td className="py-2 lwuser-commission-amount">{item.percent}%</td>
+        <td className="pl-4 py-2"> {item.associates[0].level}</td>
+        <td className="py-2 lwuser-commission-amount">
+          {item.associates[0].totalCommissionInPercent}%
+        </td>
       </tr>
     );
 
@@ -104,41 +106,51 @@ function LevelRow({
     }
   }, [editingRowId]);
 
-  const flattenUserDataForExcel = (user, lowerLevels) => {
-    // Create flat rows: starting user first
-    const rows = [
-      {
-        Level: user.level,
-        Name: user.associaateName,
-        Email: user.associaateEmail,
-        "Commission (%)": user.totalCommissionInPercent,
-        ParentLevel: "-",
-      },
-    ];
+const BASE_AMOUNT = 1000; // or get this dynamically if needed
 
-    // Recursively add child levels if any
-    const addNested = (levels, parentLevel) => {
-      if (!levels) return;
-      levels.forEach((level) => {
-        level.associates.forEach((assoc) => {
-          rows.push({
-            Level: assoc.level,
-            Name: assoc.associaateName,
-            Email: assoc.associaateEmail,
-            "Commission (%)": assoc.totalCommissionInPercent,
-            ParentLevel: parentLevel,
-          });
+const flattenUserDataForExcel = (user, lowerLevels) => {
+  const rows = [
+    {
+      Level: user.level,
+      Name: user.associaateName,
+      Email: user.associaateEmail,
+      "Commission (%)": user.totalCommissionInPercent,
+      "Total Commission (₹)": (
+        (user.totalCommissionInPercent / 100) *
+        BASE_AMOUNT
+      ).toFixed(2),
+      ParentLevel: "-",
+    },
+  ];
+
+  const addNested = (levels, parentLevel) => {
+    if (!levels) return;
+    levels.forEach((level) => {
+      level.associates.forEach((assoc) => {
+        rows.push({
+          Level: assoc.level,
+          Name: assoc.associaateName,
+          Email: assoc.associaateEmail,
+          "Commission (%)": assoc.totalCommissionInPercent,
+          "Total Commission (₹)": (
+            (assoc.totalCommissionInPercent / 100) *
+            BASE_AMOUNT
+          ).toFixed(2),
+          ParentLevel: parentLevel,
         });
-        if (level.lowerLevels) {
-          addNested(level.lowerLevels, level.level);
-        }
       });
-    };
 
-    addNested(lowerLevels, user.level);
-
-    return rows;
+      if (level.lowerLevels) {
+        addNested(level.lowerLevels, level.level);
+      }
+    });
   };
+
+  addNested(lowerLevels, user.level);
+
+  return rows;
+};
+
 
   const exportReportToExcel = (user, lowerLevels) => {
     const data = flattenUserDataForExcel(user, lowerLevels);
@@ -159,13 +171,15 @@ function LevelRow({
     worksheet["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
 
     // Add some basic styling for column widths
-    worksheet["!cols"] = [
-      { wch: 10 }, // Level
-      { wch: 25 }, // Name
-      { wch: 30 }, // Email
-      { wch: 20 }, // Commission
-      { wch: 15 }, // Parent
-    ];
+   worksheet["!cols"] = [
+  { wch: 10 }, // Level
+  { wch: 25 }, // Name
+  { wch: 30 }, // Email
+  { wch: 20 }, // Commission (%)
+  { wch: 25 }, // Total Commission (₹)
+  { wch: 15 }, // Parent
+];
+
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
@@ -370,6 +384,8 @@ export default function LevelWiseUsers() {
       try {
         const apiRes = await fetchDataFromApi("/tree");
         const data = apiRes.levels;
+        console.log("data: ", data);
+
         setLevels(data || []);
       } catch {
         setLevels([]);

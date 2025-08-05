@@ -8,10 +8,12 @@ const AllServicesPage = () => {
   const [activeTab, setActiveTab] = useState("All Services");
   const [services, setServices] = useState([]);
   const [tabs, setTabs] = useState(["All Services"]);
+const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
+        setLoading(true)
         const response = await axios.get(`${API_URL}/api/marketplace/get-all`);
         const marketplaces = response.data?.marketplaces || [];
         setServices(marketplaces);
@@ -23,6 +25,9 @@ const AllServicesPage = () => {
         setTabs(["All Services", ...categories]);
       } catch (error) {
         console.error("Error fetching services:", error);
+      }
+      finally{
+        setLoading(false)
       }
     };
 
@@ -68,7 +73,7 @@ const AllServicesPage = () => {
       </div>
 
       {/* Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      {/* <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {filteredServices.map((service) => (
           <CardComponent
             key={service.id}
@@ -84,7 +89,33 @@ const AllServicesPage = () => {
             path={`/enquire/marketplace/${service.id}`}
           />
         ))}
-      </div>
+      </div> */}
+
+      {/* Cards or No Data */}
+{filteredServices.length > 0 ? (
+  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    {filteredServices.map((service) => (
+      <CardComponent
+        key={service.id}
+        service={{
+          id: service.id,
+          title: service.name,
+          category: service.category,
+          image: service.imageUrl[0],
+          description: service.description,
+        }}
+        btnText="View"
+        type="marketplace"
+        path={`/enquire/marketplace/${service.id}`}
+      />
+    ))}
+  </div>
+) : (
+  <div className="h-64 grid place-items-center text-center text-muted-foreground">
+    <p>No services available.</p>
+  </div>
+)}
+
     </div>
   );
 };

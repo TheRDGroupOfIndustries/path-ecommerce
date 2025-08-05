@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import React, { useState, useEffect, useContext, useRef } from "react";
+import { Check, Eye, EyeOff, Pencil, Printer, X } from "lucide-react";
 import "./LevelWiseUsers.css";
-import { fetchDataFromApi } from "../../utils/api";
+import { fetchDataFromApi, patchData } from "../../utils/api";
+import { myContext } from "../../App";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 // Format currency utility
 const formatCurrency = (val) =>
@@ -9,9 +12,177 @@ const formatCurrency = (val) =>
     ? Number(val).toFixed(2)
     : "-";
 
+const renderNestedLevels = (node, depth = 1) => {
+  if (!node) return [];
+
+  return node.flatMap((item, index) => {
+    const currentRow = (
+      <tr key={`${depth}-${index}`}>
+        <td className="pl-4 py-2"> {item.level}</td>
+        <td className="py-2 lwuser-commission-amount">{item.percent}%</td>
+      </tr>
+    );
+
+    // recursively go through lowerLevels (if present)
+    const childRows = item.lowerLevels
+      ? renderNestedLevels(item.lowerLevels, depth + 1)
+      : [];
+
+    return [currentRow, ...childRows];
+  });
+};
+
 // Recursive row renderer
-function LevelRow({ levelData, expandedRows, toggleExpand, depth = 0 }) {
+
+function LevelRow({
+  levelData,
+  expandedRows,
+  toggleExpand,
+  depth = 0,
+  onCommissionUpdate,
+}) {
+  const context = useContext(myContext);
+  const [editingRowId, setEditingRowId] = React.useState(null);
+  const [editedCommission, setEditedCommission] = React.useState("");
+  const inputRef = useRef(null);
+
+  // Function to start editing a row
+  const startEditing = (rowId, currentCommission) => {
+    if (editingRowId === rowId) {
+      setEditingRowId(null);
+    } else {
+      setEditingRowId(rowId);
+      setEditedCommission(currentCommission ?? "");
+    }
+  };
+
+  // Call PATCH /edit API to save commission update
+  const saveEdit = async (user) => {
+    if (!editedCommission || isNaN(editedCommission)) {
+      alert("Please enter a valid percentage.");
+      return;
+    }
+
+    try {
+      const level = user.level;
+      const newPercent = parseFloat(editedCommission);
+
+      // Assuming your backend is on the same domain or handled proxy
+      const response = await patchData("/tree/edit", {
+        level,
+        newPercent,
+      });
+      // console.log("res: ",response);
+
+      if (response.success) {
+        // alert(response.message);
+        context.setAlertBox({
+          open: true,
+          msg: response.message,
+          error: false,
+        });
+        setEditingRowId(null);
+        if (onCommissionUpdate) {
+          onCommissionUpdate(user.id, newPercent);
+        }
+      } else {
+        alert("Failed to update commission: " + response.message);
+      }
+    } catch (error) {
+      alert("API request failed: " + error.message);
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingRowId(null);
+  };
+
+  useEffect(() => {
+    if (editingRowId !== null && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editingRowId]);
+
+  const flattenUserDataForExcel = (user, lowerLevels) => {
+    // Create flat rows: starting user first
+    const rows = [
+      {
+        Level: user.level,
+        Name: user.associaateName,
+        Email: user.associaateEmail,
+        "Commission (%)": user.totalCommissionInPercent,
+        ParentLevel: "-",
+      },
+    ];
+
+    // Recursively add child levels if any
+    const addNested = (levels, parentLevel) => {
+      if (!levels) return;
+      levels.forEach((level) => {
+        level.associates.forEach((assoc) => {
+          rows.push({
+            Level: assoc.level,
+            Name: assoc.associaateName,
+            Email: assoc.associaateEmail,
+            "Commission (%)": assoc.totalCommissionInPercent,
+            ParentLevel: parentLevel,
+          });
+        });
+        if (level.lowerLevels) {
+          addNested(level.lowerLevels, level.level);
+        }
+      });
+    };
+
+    addNested(lowerLevels, user.level);
+
+    return rows;
+  };
+
+  const exportReportToExcel = (user, lowerLevels) => {
+    const data = flattenUserDataForExcel(user, lowerLevels);
+
+    // Create worksheet from data
+    const worksheet = XLSX.utils.json_to_sheet(data, { origin: "A3" }); // Data starts from row 3
+
+    // Add heading row manually
+    XLSX.utils.sheet_add_aoa(
+      worksheet,
+      [[`${user.associaateName}'s Referral Report`]],
+      {
+        origin: "A1",
+      }
+    );
+
+    // Merge cells A1 to E1 for heading
+    worksheet["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
+
+    // Add some basic styling for column widths
+    worksheet["!cols"] = [
+      { wch: 10 }, // Level
+      { wch: 25 }, // Name
+      { wch: 30 }, // Email
+      { wch: 20 }, // Commission
+      { wch: 15 }, // Parent
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
+    saveAs(blob, `${user.associaateName}_Referral_Report.xlsx`);
+  };
+
   if (!levelData?.associates || !levelData.associates.length) return null;
+
   return (
     <>
       {levelData.associates.map((user) => {
@@ -22,104 +193,165 @@ function LevelRow({ levelData, expandedRows, toggleExpand, depth = 0 }) {
             (lvl) => Array.isArray(lvl.associates) && lvl.associates.length > 0
           );
         const hasNested = nestedLevels && nestedLevels.length > 0;
+        const isEditing = editingRowId === rowId;
 
         return (
           <React.Fragment key={rowId}>
             <tr
               className="lwuser-main-row"
-              style={{ cursor: hasNested ? "pointer" : "default" }}
-              tabIndex={hasNested ? 0 : undefined}
+              style={{ cursor: "default" }}
+              tabIndex={undefined}
               aria-expanded={expandedRows.includes(rowId)}
-              onClick={hasNested ? () => toggleExpand(rowId) : undefined}
-              onKeyDown={
-                hasNested
-                  ? (e) => {
-                      if (e.key === "Enter" || e.key === " ")
-                        toggleExpand(rowId);
-                    }
-                  : undefined
-              }
             >
               <td style={{ textAlign: "center" }}>{user.level}</td>
               <td>
                 <strong>{user.associaateName}</strong>
               </td>
               <td>{user.associaateEmail}</td>
+
               <td style={{ textAlign: "center" }}>
-                <span className="lwuser-commission-amount">
-                  %{formatCurrency(user.totalCommissionInPercent)}
-                </span>
-              </td>
-              <td style={{ textAlign: "center" }}>
-                {hasNested ? (
-                  <span className="lwuser-expand-icon">
-                    {expandedRows.includes(rowId) ? (
-                      <ChevronDown size={18} />
-                    ) : (
-                      <ChevronRight size={18} />
-                    )}
+                {isEditing ? (
+                  <>
+                    <input
+                      type="number"
+                      ref={inputRef}
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      className="commission-inputs"
+                      value={editedCommission}
+                      onChange={(e) => setEditedCommission(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          saveEdit(user);
+                        } else if (e.key === "Escape") {
+                          cancelEdit();
+                        }
+                      }}
+                    />
+                    <button
+                      onClick={() => saveEdit(user)}
+                      className="btn-save"
+                      aria-label="Save"
+                      title="Save"
+                    >
+                      <Check color="#28a745" size={18} />
+                    </button>
+
+                    <button
+                      onClick={cancelEdit}
+                      className="btn-cancel"
+                      aria-label="Cancel"
+                      title="Cancel"
+                    >
+                      <X color="#dc3545" size={18} />
+                    </button>
+                  </>
+                ) : (
+                  <span className="lwuser-commission-amount">
+                    {formatCurrency(user.totalCommissionInPercent)} %
                   </span>
+                )}
+              </td>
+
+              <td
+                style={{
+                  textAlign: "center",
+                  cursor: hasNested ? "pointer" : "default",
+                }}
+                tabIndex={hasNested ? 0 : undefined}
+                role="button"
+                aria-pressed={expandedRows.includes(rowId)}
+                aria-label={
+                  expandedRows.includes(rowId)
+                    ? "Collapse details"
+                    : "Expand details"
+                }
+                onClick={hasNested ? () => toggleExpand(rowId) : undefined}
+                onKeyDown={
+                  hasNested
+                    ? (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          toggleExpand(rowId);
+                        }
+                      }
+                    : undefined
+                }
+              >
+                {hasNested ? (
+                  <div className="action-buttonss">
+                    {/* View toggle button */}
+                    <button
+                      className="view-btn"
+                      title="View"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleExpand(rowId);
+                      }}
+                      aria-label={
+                        expandedRows.includes(rowId)
+                          ? "Hide nested users"
+                          : "Show nested users"
+                      }
+                    >
+                      {expandedRows.includes(rowId) ? <EyeOff /> : <Eye />}
+                    </button>
+
+                    {/* Edit button */}
+                    <button
+                      className="edit-btn"
+                      title="Edit"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startEditing(rowId, user.totalCommissionInPercent);
+                      }}
+                      aria-label={`Edit commission for ${user.associaateName}`}
+                    >
+                      <Pencil />
+                    </button>
+
+                    {/* Generate Report button */}
+                    <button
+                      className="delete-btn"
+                      title="Generate report"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const confirmed = window.confirm(
+                          `Do you want to download ${user.associaateName}'s referral report as Excel?`
+                        );
+                        if (confirmed) {
+                          exportReportToExcel(user, levelData.lowerLevels);
+                        }
+                      }}
+                      aria-label={`Generate report for ${user.associaateName}`}
+                    >
+                      <Printer />
+                    </button>
+                  </div>
                 ) : (
                   "-"
                 )}
               </td>
             </tr>
-            {hasNested &&
-              nestedLevels.map((nestedLevel, i) => (
-                <tr className="lwuser-expanded-row" key={rowId + "_lvl_" + i}>
-                  <td colSpan={5} style={{ padding: 0 }}>
-                    <div
-                      className={`lwuser-details-wrapper ${
-                        expandedRows.includes(rowId) ? "expanded" : ""
-                      }`}
-                    >
-                      {expandedRows.includes(rowId) && (
-                        <div className="lwuser-details-container">
-                          <div className="lwuser-nested-heading">
-                            <strong>
-                              Nested Users under: {user.associaateName} (Level{" "}
-                              {user.level})
-                            </strong>
-                          </div>
-                          <table className="lwuser-table" style={{ margin: 0 }}>
-                            <thead>
-                              <tr>
-                                <th>Level</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Commission (%)</th>
-                                <th>Details</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {nestedLevel.associates.map((nestedUser) => (
-                                <tr key={nestedUser.id}>
-                                  <td style={{ textAlign: "center" }}>
-                                    {nestedUser.level}
-                                  </td>
-                                  <td>
-                                    <strong>{nestedUser.associaateName}</strong>
-                                  </td>
-                                  <td>{nestedUser.associaateEmail}</td>
-                                  <td style={{ textAlign: "center" }}>
-                                    <span className="lwuser-commission-amount">
-                                      %
-                                      {formatCurrency(
-                                        nestedUser.totalCommissionInPercent
-                                      )}
-                                    </span>
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>-</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+
+            {expandedRows.includes(rowId) && levelData.lowerLevels && (
+              <tr>
+                <td colSpan={3} className="p-0">
+                  <div className="lwuser-nested-table-wrapper overflow-x-auto">
+                    <table className="min-w-full text-left">
+                      <thead>
+                        <tr>
+                          <th className="px-4 py-2">Level</th>
+                          <th className="px-4 py-2">Commission (%)</th>
+                        </tr>
+                      </thead>
+                      <tbody>{renderNestedLevels(levelData.lowerLevels)}</tbody>
+                    </table>
+                  </div>
+                </td>
+              </tr>
+            )}
           </React.Fragment>
         );
       })}
@@ -138,8 +370,6 @@ export default function LevelWiseUsers() {
       try {
         const apiRes = await fetchDataFromApi("/tree");
         const data = apiRes.levels;
-        console.log("data: ", data);
-
         setLevels(data || []);
       } catch {
         setLevels([]);
@@ -158,9 +388,31 @@ export default function LevelWiseUsers() {
     );
   };
 
+  const updateCommissionInLevels = (levelsArr, userId, newPercent) => {
+    return levelsArr.map((level) => {
+      return {
+        ...level,
+        associates: level.associates.map((assoc) => {
+          if (assoc.id === userId) {
+            return { ...assoc, totalCommissionInPercent: newPercent };
+          }
+          return assoc;
+        }),
+        lowerLevels: level.lowerLevels
+          ? updateCommissionInLevels(level.lowerLevels, userId, newPercent)
+          : undefined,
+      };
+    });
+  };
+  const handleCommissionUpdate = (userId, newPercent) => {
+    setLevels((prevLevels) =>
+      updateCommissionInLevels(prevLevels, userId, newPercent)
+    );
+  };
+
   if (loading) {
     return (
-     <div className="loading-container">
+      <div className="loading-container">
         <p>Loading users...</p>
         <img src="SPC.png" alt="Loading..." className="loading-logo" />
       </div>
@@ -193,7 +445,7 @@ export default function LevelWiseUsers() {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Commission (%)</th>
-                <th>Details</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -205,6 +457,7 @@ export default function LevelWiseUsers() {
                     expandedRows={expandedRows}
                     toggleExpand={toggleExpand}
                     depth={0}
+                    onCommissionUpdate={handleCommissionUpdate}
                   />
                 ))
               ) : (

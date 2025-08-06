@@ -4,7 +4,7 @@ import {
   promoteUserToAssociate,
   postData,
 } from "../../utils/api";
-
+import Select from "react-select";
 const AddAssociate = () => {
   const [users, setUsers] = useState([]);
   const [formData, setFormData] = useState({
@@ -30,6 +30,12 @@ const AddAssociate = () => {
       setUsers([]);
     }
   };
+  const userOptions = users
+    .filter((user) => user.role === "USER")
+    .map((user) => ({
+      value: user.id,
+      label: `${user.name}`,
+    }));
 
   const levels = Array.from({ length: 13 }, (_, i) => i); //till 12
 
@@ -147,26 +153,34 @@ const AddAssociate = () => {
       <form onSubmit={handleSubmit} className="add-item-form">
         <div className="form-grid">
           {/* Users */}
+
           <div className="input-group1">
             <label htmlFor="users" className="form-label">
               Users <span className="required">*</span>
             </label>
-            <select
+            <Select
               id="users"
               name="users"
-              value={formData.users}
-              onChange={handleInputChange}
-              className={`form-select ${errors.users ? "input-error" : ""}`}
-            >
-              <option value="">Select a User</option>
-              {users
-                .filter((user) => user.role === "USER")
-                .map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name} ({user.role})
-                  </option>
-                ))}
-            </select>
+              options={userOptions}
+              value={
+                userOptions.find((option) => option.value === formData.users) ||
+                null
+              }
+              onChange={(selected) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  users: selected?.value || "",
+                }));
+                if (errors.users) {
+                  setErrors((prev) => ({ ...prev, users: "" }));
+                }
+              }}
+              placeholder="Search and select a user"
+              classNamePrefix="react-select"
+              isClearable
+            />
+            {errors.users && <span className="error-text">{errors.users}</span>}
+
             {errors.users && <span className="error-text">{errors.users}</span>}
           </div>
 
@@ -255,14 +269,6 @@ const AddAssociate = () => {
 
 export default AddAssociate;
 
-
-
-
-
-
-
-
-
 // import React, { useState, useEffect } from "react";
 // import {
 //   fetchDataFromApi,
@@ -332,7 +338,6 @@ export default AddAssociate;
 //     setErrors((prev) => ({ ...prev, [name]: "" }));
 //   }
 // };
-
 
 //   const validateForm = () => {
 //     const newErrors = {};
@@ -538,7 +543,3 @@ export default AddAssociate;
 // };
 
 // export default AddAssociate;
-
-
-
-

@@ -232,9 +232,15 @@ export const updateCommissionPercent = async (req: Request, res: Response) => {
 
 
 export const getOverriddenCommissionPercent = async (level: number): Promise<number | undefined> => {
+  if (!db.commissionOverride) {
+    console.error("commissionOverride model not found on Prisma client");
+    return undefined;
+  }
+
   const override = await db.commissionOverride.findUnique({
     where: { level },
   });
+
   return override?.newPercent;
 };
 

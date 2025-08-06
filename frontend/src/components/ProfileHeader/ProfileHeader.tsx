@@ -126,7 +126,7 @@ const ProfileHeader = ({ type }: { type?: string }) => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 className="w-full h-[50px] rounded-full bg-gray-100 px-6 pr-14 text-sm text-black placeholder-gray-500"
-                placeholder="Search for products..."
+                placeholder={`Search for ${type}...`}
               />
               <button
                 onClick={() => navigation(`/search/${type}/${input}`)}

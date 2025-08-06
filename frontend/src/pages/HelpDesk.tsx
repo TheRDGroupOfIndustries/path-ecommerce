@@ -335,7 +335,7 @@ const HelpDesk = () => {
       <div className="flex justify-between items-center mb-4 text-black border-b py-3">
         <ChevronLeft
           className="w-8 h-8 cursor-pointer text-black"
-          onClick={() => navigate("/profile")}
+          onClick={() => navigate(-1)}
         />
         <h2 className="text-xl font-semibold text-black">Help Desk</h2>
         <div className="w-6 h-6" />

@@ -33,7 +33,7 @@ export default function ChangeEmail() {
   };
 
   return (
-    <div className="container mx-auto p-4 mb-6">
+    <div className="container mx-auto p-4 mb-24">
         <div className="flex items-center h-14 mb-4 text-black gap-4">
         <ChevronLeft
           className="w-8 h-8 cursor-pointer"

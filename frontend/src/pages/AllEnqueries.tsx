@@ -65,7 +65,7 @@ export default function AllEnqueries() {
   if (enquiries === undefined) return <Loader />;
 
   return (
-    <div className="container mx-auto p-4 mb-18">
+    <div className="container mx-auto p-4 mb-32">
       {/* Header */}
       <div className="flex items-center h-14  text-black mb-2">
         <ChevronLeft

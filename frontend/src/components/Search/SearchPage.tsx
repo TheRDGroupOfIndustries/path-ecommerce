@@ -44,9 +44,15 @@ function SearchPage() {
   }, []);
 
 const handleChange = async (parseInput?: string) => {
+
+  const searchQuery = parseInput || input;
+  if (!searchQuery.trim()) {
+    return;
+  }
+  
   try {
     setLoading(true);
-    const url = `${dynamicUrl}/${parseInput || input}`;
+    const url = `${dynamicUrl}/${searchQuery}`;
     console.log("Calling:", url);
 
     const req = await axios.get(url);

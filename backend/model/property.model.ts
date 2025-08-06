@@ -30,7 +30,7 @@ export const searchPropertyByName = async (value: string) => {
 };
 
 export const getSearchResults = async (query: string) => {
-    return await db.marketplace.findMany({
+    return await db.property.findMany({
         where: {
             OR: [
                 {

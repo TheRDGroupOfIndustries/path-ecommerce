@@ -91,7 +91,7 @@ export default function MyEnquiries() {
       <div className="flex justify-between items-center mb-4 text-black">
         <ChevronLeft
           className="w-8 h-8 cursor-pointer"
-          onClick={() => navigate("/profile")}
+          onClick={() => navigate(-1)}
         />
         <h2 className="text-2xl font-semibold flex-1 text-center">
           My Enquiries

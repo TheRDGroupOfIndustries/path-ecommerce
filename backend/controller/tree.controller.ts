@@ -210,20 +210,32 @@ const topLevels = await Promise.all(
 };
 
 export const updateCommissionPercent = async (req: Request, res: Response) => {
-  const { level, newPercent } = req.body;
+  const { associateId, level, newPercent } = req.body;
 
-  if (typeof level !== 'number' || typeof newPercent !== 'number') {
+  if (
+    typeof level !== 'number' ||
+    typeof newPercent !== 'number' ||
+    typeof associateId !== 'string'
+  ) {
     return res.status(400).json({ success: false, message: "Invalid input" });
   }
 
   try {
     await db.commissionOverride.upsert({
-      where: { level },
+      where: {
+        associateId_level: {
+          associateId,
+          level,
+        },
+      },
       update: { newPercent },
-      create: { level, newPercent },
+      create: { associateId, level, newPercent },
     });
 
-    return res.status(200).json({ success: true, message: `Commission successfully updated for level ${level}` });
+    return res.status(200).json({
+      success: true,
+      message: `Commission successfully updated for associate ${associateId} at level ${level}`,
+    });
   } catch (error) {
     console.error("Update error:", error);
     return res.status(500).json({ success: false, message: "Database update failed" });
@@ -250,7 +262,6 @@ export const getOverriddenCommissionPercent = async (
     return undefined;
   }
 };
-
 
 
 export const searchAssociates = async (req: Request, res: Response) => {

@@ -162,6 +162,10 @@ model Associate {
   percent   Int
   createdAt DateTime @default(now())
 
+  totalCommissionInRupee   Float?   
+  totalCommissionInPercent Float? 
+
+
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -229,8 +233,6 @@ model CartItem {
 }
 
 
-
-
 model Kyc {
   id              String   @id @default(cuid())
   fullName        String
@@ -287,10 +289,9 @@ model CommissionLevel {
 }
 
 
-
 model CommissionOverride {
   id           String   @id @default(cuid())   // Use this as the primary ID
-  associateId  String?                         // Optional
+  associateId  String                         // Optional
   level        Int
   newPercent   Float
 

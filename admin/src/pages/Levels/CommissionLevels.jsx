@@ -32,20 +32,23 @@ export default function CommissionLevels() {
     setLevels(updated);
   };
 
-  const fetchLevels = async () => {
-    try {
-      const res = await fetchDataFromApi("/level");
-      if (Array.isArray(res)) {
-        setLevels(res);
-      } else {
-        console.warn("Unexpected response format:", res);
-      }
-    } catch (error) {
-      console.error("Failed to fetch levels:", error);
-    } finally {
-      setLoading(false);
+const fetchLevels = async () => {
+  try {
+    const res = await fetchDataFromApi("/level/");
+    console.log("Fetched levels:", res); // <-- Add this line
+
+    if (Array.isArray(res)) {
+      setLevels(res);
+    } else {
+      console.warn("Unexpected response format:", res);
     }
-  };
+  } catch (error) {
+    console.error("Failed to fetch levels:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleSave = async () => {
     setSaving(true);

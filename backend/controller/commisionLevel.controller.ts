@@ -41,11 +41,25 @@ export const saveOrUpdateCommissionLevels = async (req: Request, res: Response) 
 };
 
 
+
 export const getCommissionLevels = async (req: Request, res: Response) => {
   try {
-    const levels = await db.commissionLevel.findMany({
-      orderBy: { level: "asc" }, 
+    let levels = await db.commissionLevel.findMany({
+      orderBy: { level: "asc" },
     });
+
+    if (levels.length === 0) {
+      const initial = Array.from({ length: 12 }).map((_, i) => ({
+        level: i + 1,
+        percent: 0,
+      }));
+
+      await db.commissionLevel.createMany({ data: initial });
+
+      levels = await db.commissionLevel.findMany({
+        orderBy: { level: "asc" },
+      });
+    }
 
     return res.status(200).json(levels);
   } catch (err) {

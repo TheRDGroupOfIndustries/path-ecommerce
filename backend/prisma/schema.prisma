@@ -287,7 +287,14 @@ model CommissionLevel {
 }
 
 
+
 model CommissionOverride {
-  level       Int     @id
-  newPercent  Float
+  id           String   @id @default(cuid())   // Use this as the primary ID
+  associateId  String?                         // Optional
+  level        Int
+  newPercent   Float
+
+  @@unique([associateId, level]) // Enforce uniqueness instead of primary key
 }
+
+

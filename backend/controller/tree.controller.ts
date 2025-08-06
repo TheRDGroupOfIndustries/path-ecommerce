@@ -144,7 +144,7 @@ export const getHighLevelAssociates = async (req: Request, res: Response) => {
     const isTopLevel = parentId === null;
 
       const commissionPercent = isTopLevel
-        ? (await getOverriddenCommissionPercent(currentLevel)) ?? levelData.percent ?? 0
+        ? (await getOverriddenCommissionPercent(a.associaateId,currentLevel)) ?? levelData.percent ?? 0
         : levelData.percent ?? 0;
 
 
@@ -230,19 +230,28 @@ export const updateCommissionPercent = async (req: Request, res: Response) => {
   }
 };
 
+export const getOverriddenCommissionPercent = async (
+  associateId: string,
+  level: number
+): Promise<number | undefined> => {
+  try {
+    const override = await db.commissionOverride.findUnique({
+      where: {
+        associateId_level: {
+          associateId,
+          level,
+        },
+      },
+    });
 
-export const getOverriddenCommissionPercent = async (level: number): Promise<number | undefined> => {
-  if (!db.commissionOverride) {
-    console.error("commissionOverride model not found on Prisma client");
+    return override?.newPercent;
+  } catch (error) {
+    console.error("Override fetch error:", error);
     return undefined;
   }
-
-  const override = await db.commissionOverride.findUnique({
-    where: { level },
-  });
-
-  return override?.newPercent;
 };
+
+
 
 export const searchAssociates = async (req: Request, res: Response) => {
   try {

@@ -190,3 +190,26 @@
   background-color: #1e293b;
   color: whitesmoke;
 }
+
+.dark .page-header {
+  margin-bottom: 2rem;
+  text-align: center;
+  background-color: #181C2F;
+}
+
+.dark .page-header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fbfcfd;
+  margin-bottom: 0.5rem;
+  margin-top: 2.5rem;
+}
+
+.dark .page-header p {
+  font-size: 1.1rem;
+  color: #f5f7fa;
+  margin: 0;
+}
+.dark .page-container{
+  background-color: #181C2F;
+}

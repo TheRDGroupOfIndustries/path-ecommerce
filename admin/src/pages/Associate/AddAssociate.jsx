@@ -195,7 +195,7 @@ const AddAssociate = () => {
           {/* Percent */}
           <div className="input-group1">
             <label htmlFor="percent" className="form-label">
-              Percent <span className="required">*</span>
+            Referral Percent <span className="required">*</span>
             </label>
             <select
               id="percent"

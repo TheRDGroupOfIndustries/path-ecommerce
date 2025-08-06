@@ -348,7 +348,8 @@ export default function LevelWiseUsers() {
     if (!confirmed) return
 
     try {
-      const res = await deleteData(`/tree/delete/${associateId}`)
+      // const res = await deleteData(`/tree/delete/${associateId}`)
+      const res = await deleteData(`/tree/delete/${associateId}`, { convertToUser: true })
       console.log("res: ", res)
       if (res.success) {
         context.setAlertBox({

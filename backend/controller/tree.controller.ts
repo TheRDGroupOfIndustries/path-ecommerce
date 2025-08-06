@@ -244,57 +244,6 @@ export const getOverriddenCommissionPercent = async (level: number): Promise<num
   return override?.newPercent;
 };
 
-
-
-export const deleteAssociateById = async (req: Request, res: Response) => {
-  const associateId = req.params.id;
-
-  if (!associateId) {
-    return res.status(400).json({ success: false, message: "Associate ID is required" });
-  }
-
-  try {
-    // Get related referrals created by this associate
-    const referrals = await db.referral.findMany({
-      where: {
-        createdForId: associateId,
-      },
-      select: { id: true },
-    });
-
-    const referralIds = referrals.map((ref) => ref.id);
-
-    //  Use correct model name for transactions
-    await db.referralTransaction.deleteMany({
-      where: {
-        referralId: { in: referralIds },
-      },
-    });
-
-    await db.referral.deleteMany({
-      where: {
-        id: { in: referralIds },
-      },
-    });
-
-    await db.associate.deleteMany({
-      where: {
-        id: associateId,
-      },
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: "Associate and related data deleted successfully.",
-    });
-  } catch (error) {
-    console.error("Delete error:", error);
-    return res.status(500).json({ success: false, message: "Server error during deletion." });
-  }
-};
-
-
-
 export const searchAssociates = async (req: Request, res: Response) => {
   try {
     const query = (req.query.name as string)?.trim();
@@ -332,229 +281,85 @@ export const searchAssociates = async (req: Request, res: Response) => {
   }
 };
 
+export const deleteAssociateById = async (req: Request, res: Response) => {
+  const associateId = req.params.id;
+
+  if (!associateId) {
+    return res.status(400).json({ success: false, message: "Associate ID is required" });
+  }
+
+  try {
+    // Step 1: Fetch the associate entry
+    const associate = await db.associate.findUnique({
+      where: { id: associateId },
+      include: { user: true }, // include user data
+    });
+
+    if (!associate || !associate.user) {
+      return res.status(404).json({ success: false, message: "Associate not found" });
+    }
+
+    const userId = associate.userId;
+
+    // Step 2: Update the user role from ASSOCIATE to USER
+    await db.user.update({
+      where: { id: userId },
+      data: { role: "USER" },
+    });
+
+    // Step 3: Delete referrals created for this associate
+    const referrals = await db.referral.findMany({
+      where: { createdForId: userId },
+      select: { id: true },
+    });
+
+    const referralIds = referrals.map((r) => r.id);
+
+    if (referralIds.length > 0) {
+      // Delete referral transactions
+      await db.referralTransaction.deleteMany({
+        where: {
+          referralId: { in: referralIds },
+        },
+      });
+
+      // Delete referrals
+      await db.referral.deleteMany({
+        where: {
+          id: { in: referralIds },
+        },
+      });
+    }
+
+    // Step 4: Delete Associate record
+    await db.associate.delete({
+      where: { id: associateId },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Associate converted to user and deleted successfully.",
+    });
+
+  } catch (error) {
+    console.error("Delete error:", error);
+
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2003"
+    ) {
+      return res.status(409).json({
+        success: false,
+        message: "Cannot delete associate. They are referenced in another table.",
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error during associate deletion.",
+    });
+  }
+};
 
 
-
-
-
-// export const getHighLevelAssociates = async (req: Request, res: Response) => {
-//   try {
-//     const levels = await db.commissionLevel.findMany({
-//       orderBy: { level: "asc" },
-//     });
-
-//     const referrals = await db.referral.findMany({
-//       include: {
-//         createdFor: {
-//           select: { id: true, name: true, email: true, phone: true },
-//         },
-//         usedByUsers: {
-//           select: {
-//             id: true,
-//             name: true,
-//             email: true,
-//             phone: true,
-//             createdAt: true,
-//           },
-//         },
-//         transactions: {
-//           select: {
-//             userId: true,
-//             commission: true,
-//             price: true,
-//             user: {
-//               select: {
-//                 id: true,
-//                 name: true,
-//                 email: true,
-//                 phone: true,
-//                 createdAt: true,
-//               },
-//             },
-//           },
-//         },
-//       },
-//     });
-
-//     const referralUsageMap: Record<string, { purchase: any[] }> = {};
-
-//     for (const ref of referrals) {
-//       const associateId = ref.createdFor?.id;
-//       if (!associateId) continue;
-
-//       const purchasesSeen = new Set();
-//       const uniquePurchaseUsers = [];
-
-//       for (const tx of ref.transactions) {
-//         if (tx.userId && !purchasesSeen.has(tx.userId)) {
-//           purchasesSeen.add(tx.userId);
-//           uniquePurchaseUsers.push(tx.user);
-//         }
-//       }
-
-//       referralUsageMap[associateId] = {
-//         purchase: uniquePurchaseUsers,
-//       };
-//     }
-
-//     const allAssociates = await db.associate.findMany({
-//       include: {
-//         user: {
-//           select: {
-//             id: true,
-//             name: true,
-//             email: true,
-//             phone: true,
-//             createdAt: true,
-//           },
-//         },
-//       },
-//     });
-
-//     const associatesByLevel: Record<number, any[]> = {};
-//     for (const assoc of allAssociates) {
-//       if (!associatesByLevel[assoc.level]) {
-//         associatesByLevel[assoc.level] = [];
-//       }
-
-//       const usage = referralUsageMap[assoc.userId] || { purchase: [] };
-
-//       const userTransactions = referrals
-//         .filter((ref) => ref.createdFor?.id === assoc.userId)
-//         .flatMap((ref) => ref.transactions || [])
-//         .filter((tx) => tx.userId);
-
-//       const totalRevenue = userTransactions.reduce(
-//         (sum, tx) => sum + (tx.commission || 0),
-//         0
-//       );
-
-//       const commissionEarned = (assoc.percent / 100) * totalRevenue;
-
-//       associatesByLevel[assoc.level].push({
-//         id: assoc.id,
-//         associaateId: assoc.userId,
-//         associaateEmail: assoc.user.email,
-//         associaateName: assoc.user.name,
-//         phone: assoc.user.phone,
-//         level: assoc.level,
-//         commissionPercent: assoc.percent,
-//         createdAt: assoc.createdAt,
-//         usedByUsers: usage,
-//         revenue: totalRevenue,
-//         commissionEarned: parseFloat(commissionEarned.toFixed(2)),
-//       });
-//     }
-
-//     const buildNestedLevels = (currentLevel: number, parentId: string | null = null): any => {
-//       const levelData = levels.find((lvl) => lvl.level === currentLevel);
-//       if (!levelData) return null;
-
-//       const associates = associatesByLevel[currentLevel] || [];
-//       const lowerLevel = buildNestedLevels(currentLevel - 1, "nested");
-
-//       let totalLowerRevenue = 0;
-//       const levelWiseRevenue: Record<string, number> = {};
-
-//       if (lowerLevel?.associates?.length) {
-//         for (const assoc of lowerLevel.associates) {
-//           const assocLevel = assoc.level;
-//           const assocRevenue = assoc.revenue || 0;
-
-//           const key = `level${assocLevel}Revenue`;
-//           levelWiseRevenue[key] = (levelWiseRevenue[key] || 0) + assocRevenue;
-//           totalLowerRevenue += assocRevenue;
-
-//           for (const k in assoc) {
-//             if (k.startsWith("level") && k.endsWith("Revenue")) {
-//               levelWiseRevenue[k] = (levelWiseRevenue[k] || 0) + assoc[k];
-//               totalLowerRevenue += assoc[k];
-//             }
-//           }
-//         }
-//       }
-
-//       const updatedAssociates = associates.map((a) => {
-//         const fullRevenue = a.revenue + totalLowerRevenue;
-//         const isTopLevel = parentId === null;
-
-//         const commissionPercent = isTopLevel
-//           ? getOverriddenCommissionPercent(currentLevel) ?? levelData.percent
-//           : levelData.percent;
-
-//         const totalCommissionInRupee = parseFloat(
-//           ((commissionPercent / 100) * fullRevenue).toFixed(2)
-//         );
-
-//         const totalCommissionInPercent = parseFloat(
-//           ((totalCommissionInRupee / fullRevenue) * 100).toFixed(2)
-//         );
-
-//         const result: any = {
-//           ...a,
-//           ...levelWiseRevenue,
-//           revenueFromLowerLevels: totalLowerRevenue,
-//           finalRevenue: fullRevenue,
-//           totalCommissionInRupee,
-//           totalCommissionInPercent,
-//         };
-
-//         if (isTopLevel) {
-//           result.commissionPercent = commissionPercent;
-//           result.totalCommissionInPercent = commissionPercent;
-//         }
-
-//         return result;
-//       });
-
-//       const result: any = {
-//         level: currentLevel,
-//         percent: levelData.percent,
-//         associates: updatedAssociates,
-//       };
-
-//       if (lowerLevel) {
-//         result.lowerLevels = [lowerLevel];
-//         result.revenueShared = totalLowerRevenue;
-//         result.commissionDistributed = {
-//           [`level_${currentLevel}`]: parseFloat(
-//             ((levelData.percent / 100) * totalLowerRevenue).toFixed(2)
-//           ),
-//         };
-//       }
-
-//       return result;
-//     };
-
-//     const topLevels = levels
-//       .filter((lvl) => lvl.level >= 2)
-//       .map((lvl) => buildNestedLevels(lvl.level));
-
-//     return res.status(200).json({
-//       success: true,
-//       levels: topLevels,
-//     });
-//   } catch (error) {
-//     console.error("Fetch error:", error);
-//     return res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
-
-// const overriddenCommissions: Record<number, number> = {}; 
-
-// export const updateCommissionPercent = (req: Request, res: Response) => {
-//   const { level, newPercent } = req.body;
-
-//   if (typeof level !== 'number' || typeof newPercent !== 'number') {
-//     return res.status(400).json({ success: false, message: "Invalid input" });
-//   }
-
-//   overriddenCommissions[level] = newPercent;
-
-//   return res.status(200).json({ success: true, message: `Commission updated for level ${level}` });
-// };
-
-// export const getOverriddenCommissionPercent = (level: number): number | undefined => {
-//   return overriddenCommissions[level];
-// };
 

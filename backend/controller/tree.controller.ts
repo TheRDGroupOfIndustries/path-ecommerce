@@ -347,75 +347,98 @@ export const getHighLevelAssociates = async (req: Request, res: Response) => {
       });
     }
 
-    // Fixed buildNestedLevels function with proper parent tracking
+    // Fixed buildNestedLevels function with proper hierarchy depth tracking
     const buildNestedLevels = async (
-      currentLevel: number, 
-      parentAssociateId: string | null = null
+      currentLevel: number,
+      parentAssociateId: string | null = null,
+      specificAssociateId: string | null = null,
+      hierarchyDepth: number = 0 // NEW: Track how deep we are in the hierarchy
     ): Promise<any> => {
       const levelData = levels.find((lvl) => lvl.level === currentLevel);
       if (!levelData) return null;
 
-      const associates = associatesByLevel[currentLevel] || [];
+      let associates = associatesByLevel[currentLevel] || [];
       
-      // Build lower levels first
-      const lowerLevelPromises = associates.map(async (associate) => {
-        return await buildNestedLevels(currentLevel - 1, associate.associaateId);
-      });
-      
-      const lowerLevels = await Promise.all(lowerLevelPromises);
-      const validLowerLevels = lowerLevels.filter(level => level !== null);
+      // If building for a specific associate, filter to only that associate
+      if (specificAssociateId) {
+        associates = associates.filter(assoc => assoc.associaateId === specificAssociateId);
+      }
 
-      let totalLowerRevenue = 0;
-      const levelWiseRevenue: Record<string, number> = {};
+      // Build lower levels for each associate individually
+      const updatedAssociates = await Promise.all(
+        associates.map(async (associate) => {
+          // Build lower levels specifically for this associate
+          const lowerLevelsForThisAssociate = [];
+          
+          // Get all levels below current level
+          const lowerLevelNumbers = levels
+            .filter(lvl => lvl.level < currentLevel)
+            .map(lvl => lvl.level)
+            .sort((a, b) => b - a); // descending order
 
-      // Calculate revenue from lower levels
-      for (const lowerLevel of validLowerLevels) {
-        if (lowerLevel?.associates?.length) {
-          for (const assoc of lowerLevel.associates) {
-            const assocLevel = assoc.level;
-            const assocRevenue = assoc.revenue || 0;
-            const key = `level${assocLevel}Revenue`;
-            levelWiseRevenue[key] = (levelWiseRevenue[key] || 0) + assocRevenue;
-            totalLowerRevenue += assocRevenue;
+          for (const lowerLevelNum of lowerLevelNumbers) {
+            const lowerLevel = await buildNestedLevels(
+              lowerLevelNum, 
+              associate.associaateId, // This associate becomes the parent
+              null, // Don't filter by specific associate for lower levels
+              hierarchyDepth + 1 // Increment depth
+            );
+            if (lowerLevel && lowerLevel.associates && lowerLevel.associates.length > 0) {
+              lowerLevelsForThisAssociate.push(lowerLevel);
+            }
+          }
 
-            // Add revenue from even lower levels
-            for (const k in assoc) {
-              if (k.startsWith("level") && k.endsWith("Revenue")) {
-                levelWiseRevenue[k] = (levelWiseRevenue[k] || 0) + assoc[k];
-                totalLowerRevenue += assoc[k];
+          // Calculate revenue from lower levels for THIS specific associate
+          let totalLowerRevenue = 0;
+          const levelWiseRevenue: Record<string, number> = {};
+
+          for (const lowerLevel of lowerLevelsForThisAssociate) {
+            if (lowerLevel?.associates?.length) {
+              for (const assoc of lowerLevel.associates) {
+                const assocLevel = assoc.level;
+                const assocRevenue = assoc.revenue || 0;
+                const key = `level${assocLevel}Revenue`;
+                levelWiseRevenue[key] = (levelWiseRevenue[key] || 0) + assocRevenue;
+                totalLowerRevenue += assocRevenue;
+
+                // Add revenue from even lower levels
+                for (const k in assoc) {
+                  if (k.startsWith("level") && k.endsWith("Revenue")) {
+                    levelWiseRevenue[k] = (levelWiseRevenue[k] || 0) + assoc[k];
+                    totalLowerRevenue += assoc[k];
+                  }
+                }
               }
             }
           }
-        }
-      }
 
-      // Update associates with commission calculations
-      const updatedAssociates = await Promise.all(
-        associates.map(async (associate) => {
           const fullRevenue = associate.revenue + totalLowerRevenue;
           const isTopLevel = parentAssociateId === null;
           
           let commissionPercent: number;
-          
           if (isTopLevel) {
             // For top level, use global override
             commissionPercent = 
               (await getOverriddenCommissionPercent(associate.associaateId, currentLevel)) ??
               levelData.percent ?? 0;
           } else {
-            // For lower levels, use local override with proper parent ID
-            const localOverride = await getLocalOverride(
-              parentAssociateId!, 
-              associate.associaateId, 
-              currentLevel
-            );
+            // FIXED: Only apply local overrides for direct parent-child relationships (depth 1)
+            // Local overrides should not apply when we're nested deeper in the hierarchy
+            let localOverride = null;
+            if (hierarchyDepth === 1) {
+              // Only check for local override if this is a direct parent-child relationship
+              localOverride = await getLocalOverride(
+                parentAssociateId!,
+                associate.associaateId,
+                currentLevel
+              );
+            }
             commissionPercent = localOverride ?? levelData.percent ?? 0;
           }
 
           const totalCommissionInRupee = parseFloat(
             ((commissionPercent / 100) * fullRevenue).toFixed(2)
           );
-          
           const totalCommissionInPercent = fullRevenue > 0 
             ? parseFloat(((totalCommissionInRupee / fullRevenue) * 100).toFixed(2))
             : 0;
@@ -427,22 +450,39 @@ export const getHighLevelAssociates = async (req: Request, res: Response) => {
             finalRevenue: fullRevenue,
             totalCommissionInRupee,
             totalCommissionInPercent,
-            commissionPercent, // Always include the actual commission percent being used
+            commissionPercent,
           };
+
+          // Add lower levels to this associate if they exist
+          if (lowerLevelsForThisAssociate.length > 0) {
+            result.lowerLevels = lowerLevelsForThisAssociate;
+            result.revenueShared = totalLowerRevenue;
+            result.commissionDistributed = {
+              [`level_${currentLevel}`]: parseFloat(
+                ((commissionPercent / 100) * totalLowerRevenue).toFixed(2)
+              ),
+            };
+          }
 
           return result;
         })
       );
 
-      // Calculate effective percent for this level
+      // FIXED: Only apply level overrides for direct parent-child relationships
       let effectivePercent = levelData.percent;
-      if (parentAssociateId && updatedAssociates.length > 0) {
-        const localOverride = await getLocalOverride(
-          parentAssociateId, 
-          updatedAssociates[0].associaateId, 
-          currentLevel
+      if (parentAssociateId && updatedAssociates.length > 0 && hierarchyDepth === 1) {
+        // Only check for overrides if this is a direct parent-child relationship
+        const overrides = await Promise.all(
+          updatedAssociates.map(associate => 
+            getLocalOverride(parentAssociateId, associate.associaateId, currentLevel)
+          )
         );
-        effectivePercent = localOverride ?? levelData.percent;
+        
+        // If all associates under this level share the same override, apply it
+        const allSameOverride = overrides.every(p => p !== null && p === overrides[0]);
+        if (allSameOverride && overrides[0] !== null) {
+          effectivePercent = overrides[0];
+        }
       }
 
       const result: any = {
@@ -451,32 +491,16 @@ export const getHighLevelAssociates = async (req: Request, res: Response) => {
         associates: updatedAssociates,
       };
 
-      // Add lower levels if they exist
-      const nonEmptyLowerLevels = validLowerLevels.filter(level => 
-        level && level.associates && level.associates.length > 0
-      );
-      
-      if (nonEmptyLowerLevels.length > 0) {
-        result.lowerLevels = nonEmptyLowerLevels;
-        result.revenueShared = totalLowerRevenue;
-        result.commissionDistributed = {
-          [`level_${currentLevel}`]: parseFloat(
-            ((effectivePercent / 100) * totalLowerRevenue).toFixed(2)
-          ),
-        };
-      }
-
       return result;
     };
 
-        // Build the hierarchy starting from top levels
-      const topLevels = await Promise.all(
+    // Build the hierarchy starting from top levels
+    const topLevels = await Promise.all(
       levels
         .filter((lvl) => lvl.level >= 2)
-        .sort((a, b) => a.level - b.level) // ✅ ascending = lowest level first
-        .map((lvl) => buildNestedLevels(lvl.level))
+        .sort((a, b) => a.level - b.level) // Start from highest level
+        .map((lvl) => buildNestedLevels(lvl.level, null, null, 0)) // Start with depth 0
     );
-
 
     // Filter out null results
     const validTopLevels = topLevels.filter(level => level !== null);
@@ -494,223 +518,3 @@ export const getHighLevelAssociates = async (req: Request, res: Response) => {
 
 
 
-
-//imp1
-
-//     const buildNestedLevels = async (currentLevel: number, parentId: string | null = null): any => {
-//       const levelData = levels.find((lvl) => lvl.level === currentLevel);
-//       if (!levelData) return null;
-
-//       const associates = associatesByLevel[currentLevel] || [];
-//       const lowerLevel = await buildNestedLevels(currentLevel - 1, "nested");
-
-//       let totalLowerRevenue = 0;
-//       const levelWiseRevenue: Record<string, number> = {};
-
-//       if (lowerLevel?.associates?.length) {
-//         for (const assoc of lowerLevel.associates) {
-//           const assocLevel = assoc.level;
-//           const assocRevenue = assoc.revenue || 0;
-
-//           const key = `level${assocLevel}Revenue`;
-//           levelWiseRevenue[key] = (levelWiseRevenue[key] || 0) + assocRevenue;
-//           totalLowerRevenue += assocRevenue;
-
-//           for (const k in assoc) {
-//             if (k.startsWith("level") && k.endsWith("Revenue")) {
-//               levelWiseRevenue[k] = (levelWiseRevenue[k] || 0) + assoc[k];
-//               totalLowerRevenue += assoc[k];
-//             }
-//           }
-//         }
-//       }
-//  const updatedAssociates = await Promise.all(
-//   associates.map(async (a) => {
-//     const fullRevenue = a.revenue + totalLowerRevenue;
-//     const isTopLevel = parentId === null;
-
-//       const commissionPercent = isTopLevel
-//         ? (await getOverriddenCommissionPercent(a.associaateId,currentLevel)) ?? levelData.percent ?? 0
-//         : levelData.percent ?? 0;
-
-
-//     const totalCommissionInRupee = parseFloat(
-//       ((commissionPercent / 100) * fullRevenue).toFixed(2)
-//     );
-
-//     const totalCommissionInPercent = parseFloat(
-//       ((totalCommissionInRupee / fullRevenue) * 100).toFixed(2)
-//     );
-
-//     const result: any = {
-//       ...a,
-//       ...levelWiseRevenue,
-//       revenueFromLowerLevels: totalLowerRevenue,
-//       finalRevenue: fullRevenue,
-//       totalCommissionInRupee,
-//       totalCommissionInPercent,
-//     };
-
-//     if (isTopLevel) {
-//       result.commissionPercent = commissionPercent;
-//       result.totalCommissionInPercent = commissionPercent;
-//     }
-//     return result;
-//   })
-// );
-//       const result: any = {
-//         level: currentLevel,
-//         percent: levelData.percent,
-//         associates: updatedAssociates,
-//       };
-
-//       if (lowerLevel) {
-//         result.lowerLevels = [lowerLevel];
-//         result.revenueShared = totalLowerRevenue;
-//         result.commissionDistributed = {
-//           [`level_${currentLevel}`]: parseFloat(
-//             ((levelData.percent / 100) * totalLowerRevenue).toFixed(2)
-//           ),
-//         };
-//       }
-//       return result;
-//     };
-
-
-
-
-
-//     const buildNestedLevels = async (currentLevel: number, parentId: string | null = null): Promise<any> => {
-//       const levelData = levels.find((lvl) => lvl.level === currentLevel);
-//       if (!levelData) return null;
-
-//       const associates = associatesByLevel[currentLevel] || [];
-//       const lowerLevel = await buildNestedLevels(currentLevel - 1, "nested");
-//         // const lowerLevel = await buildNestedLevels(currentLevel - 1, a.associaateId);
-
-//       let totalLowerRevenue = 0;
-//       const levelWiseRevenue: Record<string, number> = {};
-
-//       if (lowerLevel?.associates?.length) {
-//         for (const assoc of lowerLevel.associates) {
-//           const assocLevel = assoc.level;
-//           const assocRevenue = assoc.revenue || 0;
-
-//           const key = `level${assocLevel}Revenue`;
-//           levelWiseRevenue[key] = (levelWiseRevenue[key] || 0) + assocRevenue;
-//           totalLowerRevenue += assocRevenue;
-
-//           for (const k in assoc) {
-//             if (k.startsWith("level") && k.endsWith("Revenue")) {
-//               levelWiseRevenue[k] = (levelWiseRevenue[k] || 0) + assoc[k];
-//               totalLowerRevenue += assoc[k];
-//             }
-//           }
-//         }
-//       }
-
-//  const updatedAssociates = await Promise.all(
-//   associates.map(async (a) => {
-//     const lowerLevel = await buildNestedLevels(currentLevel - 1, a.associaateId);
-
-//     let totalLowerRevenue = 0;
-//     const levelWiseRevenue: Record<string, number> = {};
-
-//     if (lowerLevel?.associates?.length) {
-//       for (const assoc of lowerLevel.associates) {
-//         const assocLevel = assoc.level;
-//         const assocRevenue = assoc.revenue || 0;
-
-//         const key = `level${assocLevel}Revenue`;
-//         levelWiseRevenue[key] = (levelWiseRevenue[key] || 0) + assocRevenue;
-//         totalLowerRevenue += assocRevenue;
-
-//         for (const k in assoc) {
-//           if (k.startsWith("level") && k.endsWith("Revenue")) {
-//             levelWiseRevenue[k] = (levelWiseRevenue[k] || 0) + assoc[k];
-//             totalLowerRevenue += assoc[k];
-//           }
-//         }
-//       }
-//     }
-
-//     const fullRevenue = a.revenue + totalLowerRevenue;
-
-//     const isTopLevel = parentId === null;
-
-//     let commissionPercent;
-//     if (isTopLevel) {
-//       commissionPercent =
-//         (await getOverriddenCommissionPercent(a.associaateId, currentLevel)) ??
-//         levelData.percent ??
-//         0;
-//     } else {
-//       commissionPercent =
-//         (await getLocalOverride(parentId!, a.associaateId, currentLevel)) ??
-//         levelData.percent ??
-//         0;
-//     }
-
-//     const totalCommissionInRupee = parseFloat(
-//       ((commissionPercent / 100) * fullRevenue).toFixed(2)
-//     );
-
-//     const totalCommissionInPercent = parseFloat(
-//       ((totalCommissionInRupee / fullRevenue) * 100).toFixed(2)
-//     );
-
-//     const result: any = {
-//       ...a,
-//       ...levelWiseRevenue,
-//       revenueFromLowerLevels: totalLowerRevenue,
-//       finalRevenue: fullRevenue,
-//       totalCommissionInRupee,
-//       totalCommissionInPercent,
-//     };
-
-//     // if (isTopLevel) {
-//     //   result.commissionPercent = commissionPercent;
-//     //   result.totalCommissionInPercent = commissionPercent;
-//     // }
-
-//     result.commissionPercent = commissionPercent; 
-
-
-//     if (lowerLevel) {
-//       result.lowerLevels = [lowerLevel];
-//     }
-
-//     return result;
-//   })
-// );
-
-
-// const result: any = {
-//   level: currentLevel,
-//   percent: null,
-//   associates: updatedAssociates,
-// };
-
-// // if (parentId === null) {
-// //   result.percent = levelData.percent;
-// // }
-
-
-// const firstAssociate = updatedAssociates[0];
-// if (firstAssociate && typeof firstAssociate.commissionPercent === "number") {
-//   result.percent = firstAssociate.commissionPercent;
-// } else {
-//   result.percent = levelData.percent;
-// }
-
-//       if (lowerLevel) {
-//         result.revenueShared = totalLowerRevenue;
-//         result.commissionDistributed = {
-//           [`level_${currentLevel}`]: parseFloat(
-//             ((levelData.percent / 100) * totalLowerRevenue).toFixed(2)
-//           ),
-//         };
-//       }
-
-//       return result;
-//     };

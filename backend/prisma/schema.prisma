@@ -299,3 +299,11 @@ model CommissionOverride {
 }
 
 
+model CommissionOverrideLocal {
+  id                 String   @id @default(uuid())
+  parentAssociateId  String
+  targetAssociateId  String
+  overrideLevel      Int
+  percentOverride    Int
+  createdAt          DateTime @default(now())
+}

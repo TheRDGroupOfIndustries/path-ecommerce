@@ -41,7 +41,7 @@ const renderNestedLevels = (
         <tr key={`${item.level}-${assoc.id || assocIdx}`}>
           <td className="pl-4 py-2">{assoc.level}</td>
           {/* <td className="py-2">{assoc.associaateName}</td> */}
-          {/* <td className="py-2">{assoc.associaateEmail}</td> */}
+           {/*<td className="py-2">{assoc.associaateEmail}</td> */}
           <td className="py-2 lwuser-commission-amount" style={{ textAlign: "center" }}>
             {isEditing ? (
               <>

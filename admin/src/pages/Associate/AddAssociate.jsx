@@ -93,10 +93,14 @@ const AddAssociate = () => {
 
       // console.log("Referral response:", referralRes);
 
-      // Reset form
-      setSubmitSuccess(true);
-      setFormData({ users: "", level: "", percent: "" });
-      setTimeout(() => setSubmitSuccess(false), 3000);
+          // Reset form
+    setSubmitSuccess(true);
+    setFormData({ users: "", level: "", percent: "" });
+    setTimeout(() => {
+      setSubmitSuccess(false);
+      window.location.href = "/level-users";
+    }, 2000); // Redirect after 3 seconds
+
     } catch (error) {
       console.error("Error submitting associate referral form:", error);
       const errorMsg = error?.response?.data?.error;

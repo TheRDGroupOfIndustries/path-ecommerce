@@ -304,6 +304,6 @@ model CommissionOverrideLocal {
   parentAssociateId  String
   targetAssociateId  String
   overrideLevel      Int
-  percentOverride    Int
+  percentOverride    Float
   createdAt          DateTime @default(now())
 }

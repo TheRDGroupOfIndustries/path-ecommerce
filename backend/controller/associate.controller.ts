@@ -4,7 +4,7 @@ import db from "../client/connect.js";
 export const updateAssociateController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { level, percent } = req.body;
+    const { level, percent,newLevelAssociate } = req.body;
 
     if (!id || !level || !percent) {
       return res.status(400).json({ message: "ID, level, and percent are required" });
@@ -30,7 +30,6 @@ export const updateAssociateController = async (req: Request, res: Response) => 
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 
 export const deleteAssociateController = async (req: Request, res: Response) => {
     try {

@@ -6,18 +6,43 @@ export const getAssociateByUserId = async (userId: string) => {
   });
 };
 
-export const createAssociate = async (userId: string, level: number, percent: number) => {
+// export const createAssociate = async (userId: string, level: number, percent: number) => {
+//   return await db.associate.create({
+//     data: { userId, level, percent,newLevelAssociate }
+//   });
+// };
+
+// export const updateAssociate = async (userId: string, level: number, percent: number) => {
+//   return await db.associate.update({
+//     where: { userId },
+//     data: { level: Number(level), percent: Number(percent),newLevelAssociate }
+//   });
+// };
+
+export const createAssociate = async (
+  userId: string,
+  level: number,
+  percent: number,
+  newLevelAssociate: boolean
+) => {
   return await db.associate.create({
-    data: { userId, level, percent }
+    data: { userId, level, percent, newLevelAssociate }
   });
 };
 
-export const updateAssociate = async (userId: string, level: number, percent: number) => {
+
+export const updateAssociate = async (
+  userId: string,
+  level: number,
+  percent: number,
+  newLevelAssociate: boolean
+) => {
   return await db.associate.update({
     where: { userId },
-    data: { level: Number(level), percent: Number(percent) }
+    data: { level: Number(level), percent: Number(percent), newLevelAssociate }
   });
 };
+
 
 export const deleteAssociate = async (userId: string) => {
   const associate = await db.associate.findUnique({

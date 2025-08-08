@@ -123,13 +123,12 @@ export const patchData = async (url, payload = {}) => {
 };
 
 // PATCH: Promote to Associate
-export const promoteUserToAssociate = async (userId, level, percent) => {
+export const promoteUserToAssociate = async (userId, level, percent, newLevelAssociate) => {
   try {
     const token = localStorage.getItem("token");
-
     const { data } = await axios.patch(
       `${BASE_URL}/users/promote-to-associate/${userId}`,
-      { level, percent },
+      { level, percent, newLevelAssociate }, // Include newLevelAssociate in the payload
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -137,7 +136,6 @@ export const promoteUserToAssociate = async (userId, level, percent) => {
         },
       }
     );
-
     return data;
   } catch (error) {
     console.error("Error promoting user:", error.response?.data || error.message);

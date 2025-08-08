@@ -156,18 +156,19 @@ model Products {
 }
 
 model Associate {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  level     Int
-  percent   Int
-  createdAt DateTime @default(now())
+  id                     String   @id @default(uuid())
+  userId                 String   @unique
+  level                  Int
+  percent                Int
+  newLevelAssociate      Boolean  @default(false)
+  createdAt              DateTime @default(now())
 
   totalCommissionInRupee   Float?   
   totalCommissionInPercent Float? 
 
-
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
 
 model Referral {
   id           String   @id @default(uuid())

@@ -334,3 +334,8 @@ display: flex !important;
 .add-btnnn button:hover{
 background-color: #063587 !important;
 }
+
+.view-btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

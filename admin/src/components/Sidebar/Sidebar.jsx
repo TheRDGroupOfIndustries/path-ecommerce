@@ -84,7 +84,7 @@ const Sidebar = ({ isOpen, toggleSidebar, darkMode }) => {
       icon: CircleUser,
       hasSubmenu: true,
       submenu: [
-        { title: "Add associate", link: "/addAssociate" },
+        { title: "Add associate", link: "/addAssociate?isPrivate=false" },
         { title: "View associate", link: "/viewAssociate" },
       ],
     },

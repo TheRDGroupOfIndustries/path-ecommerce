@@ -243,13 +243,22 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-
 export const promoteToAssociate = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { level, percent } = req.body;
+  let { level, percent, newLevelAssociate } = req.body; // may be string from frontend
 
   if (!level || !percent) {
     return res.status(400).json({ message: "Level and percent are required" });
+  }
+
+  // Convert string "true"/"false" to boolean
+  if (typeof newLevelAssociate === "string") {
+    newLevelAssociate = newLevelAssociate === "true";
+  }
+
+  // If undefined, default to false
+  if (typeof newLevelAssociate !== "boolean") {
+    newLevelAssociate = false;
   }
 
   try {
@@ -262,17 +271,30 @@ export const promoteToAssociate = async (req: Request, res: Response) => {
 
     const existing = await associateModel.getAssociateByUserId(id);
     if (existing) {
-      await associateModel.updateAssociate(id, parseInt(level), parseInt(percent));
+      await associateModel.updateAssociate(
+        id,
+        parseInt(level),
+        parseInt(percent),
+        newLevelAssociate
+      );
     } else {
-      await associateModel.createAssociate(id, parseInt(level), parseInt(percent));
+      await associateModel.createAssociate(
+        id,
+        parseInt(level),
+        parseInt(percent),
+        newLevelAssociate
+      );
     }
 
-    res.status(200).json({ message: "User promoted to Associate and data saved." });
+    res.status(200).json({
+      message: "User promoted to Associate and data saved.",
+    });
   } catch (error) {
     console.error("Error promoting user to associate:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 export const getAllAssociates = async (req: Request, res: Response) => {
   try {

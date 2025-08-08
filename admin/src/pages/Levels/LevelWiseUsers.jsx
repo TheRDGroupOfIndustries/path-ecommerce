@@ -473,7 +473,8 @@ function LevelRow({
                 }
               >
                 <div className="action-buttonss">
-                  <button
+
+                  {/* <button
                     className="view-btn"
                     title="View"
                     onClick={(e) => {
@@ -487,7 +488,28 @@ function LevelRow({
                     }
                   >
                     {expandedRows.includes(rowId) ? <EyeOff /> : <Eye />}
+                  </button> */}
+
+                  <button
+                    className={`view-btn ${
+                      Number(user.totalCommissionInPercent) === 0 ? "view-btn-disabled" : ""
+                    }`}
+                    title="View"
+                    onClick={(e) => {
+                      if (Number(user.totalCommissionInPercent) === 0) return;
+                      e.stopPropagation();
+                      toggleExpand(rowId);
+                    }}
+                    disabled={Number(user.totalCommissionInPercent) === 0}
+                    aria-label={
+                      expandedRows.includes(rowId)
+                        ? "Hide nested users"
+                        : "Show nested users"
+                    }
+                  >
+                    {expandedRows.includes(rowId) ? <EyeOff /> : <Eye />}
                   </button>
+
                   <button
                     className="edit-btn"
                     title="Edit"
@@ -779,7 +801,7 @@ export default function LevelWiseUsers() {
             </div>
           </div>
           <div className="add-btnnn">
-            <Link to="/addAssociate">
+            <Link to="/addAssociate?isPrivate=true">
               <button>Add +</button>
             </Link>
           </div>

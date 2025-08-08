@@ -29,6 +29,7 @@ export const getUsersByRole = async (role: Role) => {
         select: {
           level: true,
           percent: true,
+          newLevelAssociate: true, 
         },
       },
     },

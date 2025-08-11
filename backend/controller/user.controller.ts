@@ -72,7 +72,6 @@ export const createUserController = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     let usedReferral = null;
-    console.log("Referral before update:", usedReferral);
     //  Handle Referral Code
     if (referralCode) {
       usedReferral = await db.referral.findUnique({

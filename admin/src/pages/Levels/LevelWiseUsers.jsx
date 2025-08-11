@@ -1,225 +1,1166 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
-import { Link } from 'react-router-dom';
-import * as XLSX from "xlsx";
-import { saveAs } from 'file-saver';
-import { Check, Eye, EyeOff, Pencil, Printer, X, Search, Trash } from 'lucide-react';
-import "./LevelWiseUsers.css";
-import { deleteData, fetchDataFromApi, patchData } from "../../utils/api";
-import { myContext } from "../../App";
+// import React, { useState, useEffect, useContext, useRef } from "react";
+// import { Link } from 'react-router-dom';
+// import * as XLSX from "xlsx";
+// import { saveAs } from 'file-saver';
+// import { Check, Eye, EyeOff, Pencil, Printer, X, Search, Trash } from 'lucide-react';
+// import "./LevelWiseUsers.css";
+// import { deleteData, fetchDataFromApi, patchData } from "../../utils/api";
+// import { myContext } from "../../App";
+
+// const LevelWiseUsers = () => {
+//   const [levels, setLevels] = useState([]);
+//   const [originalLevels, setOriginalLevels] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [expandedRows, setExpandedRows] = useState([]);
+//   const [searchQuery, setSearchQuery] = useState("");
+//   const context = useContext(myContext);
+
+//   const handleDeleteAssociate = async (associateId) => {
+//     const confirmed = window.confirm(
+//       "Are you sure you want to delete this associate and all related data?"
+//     );
+//     if (!confirmed) return;
+
+//     try {
+//       const res = await deleteData(`/tree/delete/${associateId}`, {
+//         convertToUser: true,
+//       });
+//       if (res.success) {
+//         context.setAlertBox({
+//           open: true,
+//           msg: res.message,
+//           error: false,
+//         });
+//         const removeAssociate = (levels) =>
+//           levels
+//             .map((level) => ({
+//               ...level,
+//               associates: level.associates.filter(
+//                 (assoc) => assoc.id !== associateId
+//               ),
+//               lowerLevels: level.lowerLevels
+//                 ? removeAssociate(level.lowerLevels)
+//                 : [],
+//             }))
+//             .filter(
+//               (level) =>
+//                 level.associates.length > 0 ||
+//                 (level.lowerLevels && level.lowerLevels.length > 0)
+//             );
+//         setLevels((prev) => removeAssociate(prev));
+//         setOriginalLevels((prev) => removeAssociate(prev));
+//         setExpandedRows((prev) => prev.filter((id) => id !== associateId));
+//       } else {
+//         alert("Failed to delete associate: " + res.message);
+//       }
+//     } catch (error) {
+//       console.error("Delete error:", error);
+//       alert("API request failed: " + error.message);
+//     }
+//   };
+
+//   useEffect(() => {
+//     const timer = setTimeout(() => {
+//       if (searchQuery.trim().length === 0 || searchQuery.trim().length > 2) {
+//         handleSearch();
+//       }
+//     }, 300);
+//     return () => clearTimeout(timer);
+//   }, [searchQuery]);
+
+//   const handleSearch = async () => {
+//     const trimmed = searchQuery.trim().toLowerCase();
+//     if (trimmed.length === 0) {
+//       setLevels(originalLevels);
+//       return;
+//     }
+//     try {
+//       setLoading(true);
+//       if (originalLevels.length === 0) {
+//         const res = await fetchDataFromApi("/tree");
+//         setOriginalLevels(res.levels || []);
+//       }
+//       const allLevels =
+//         originalLevels.length > 0
+//           ? originalLevels
+//           : (await fetchDataFromApi("/tree")).levels || [];
+
+//       const filterRecursive = (levels) => {
+//         const result = [];
+//         for (const level of levels) {
+//           const matchedAssociates = level.associates.filter((assoc) => {
+//             const name = assoc.associaateName?.toLowerCase() || "";
+//             const email = assoc.associaateEmail?.toLowerCase() || "";
+//             return name.includes(trimmed) || email.includes(trimmed);
+//           });
+
+//           if (matchedAssociates.length > 0) {
+//             result.push({
+//               ...level,
+//               associates: matchedAssociates,
+//               lowerLevels: level.lowerLevels || [],
+//             });
+//           } else {
+//             const filteredLowerLevels = level.lowerLevels
+//               ? filterRecursive(level.lowerLevels)
+//               : [];
+//             if (filteredLowerLevels.length > 0) {
+//               result.push({
+//                 ...level,
+//                 associates: [],
+//                 lowerLevels: filteredLowerLevels,
+//               });
+//             }
+//           }
+//         }
+//         return result;
+//       };
+
+//       const finalFiltered = filterRecursive(allLevels);
+//       setLevels(finalFiltered);
+//     } catch (error) {
+//       console.error("Search error:", error);
+//       setLevels([]);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     async function load() {
+//       setLoading(true);
+//       try {
+//         const apiRes = await fetchDataFromApi("/tree");
+//         const data = apiRes.levels || [];
+//         setLevels(data);
+//         setOriginalLevels(data);
+//       } catch {
+//         setLevels([]);
+//         setOriginalLevels([]);
+//       } finally {
+//         setLoading(false);
+//       }
+//     }
+//     load();
+//   }, []);
+
+//   const toggleExpand = (rowId) => {
+//     setExpandedRows((prev) =>
+//       prev.includes(rowId) ? prev.filter((id) => id !== rowId) : [...prev, rowId]
+//     );
+//   };
+
+//   const updateCommissionInLevels = (levelsArr, userId, newPercent) =>
+//     levelsArr.map((level) => ({
+//       ...level,
+//       associates: level.associates.map((assoc) =>
+//         assoc.id === userId
+//           ? { ...assoc, totalCommissionInPercent: newPercent }
+//           : assoc
+//       ),
+//       lowerLevels: level.lowerLevels
+//         ? updateCommissionInLevels(level.lowerLevels, userId, newPercent)
+//         : undefined,
+//     }));
+
+//   const handleCommissionUpdate = (userId, newPercent) => {
+//     setLevels((prevLevels) =>
+//       updateCommissionInLevels(prevLevels, userId, newPercent)
+//     );
+//     setOriginalLevels((prevLevels) =>
+//       updateCommissionInLevels(prevLevels, userId, newPercent)
+//     );
+//   };
+
+//   useEffect(() => {
+//     setExpandedRows([]);
+//   }, [levels]);
+
+//   const formatCurrency = (val) =>
+//     val !== undefined && val !== null && !isNaN(val)
+//       ? Number(val).toFixed(2)
+//       : "-";
+
+//   function RenderNestedLevels({ nodes, parentAssociateId, onPercentUpdate }) {
+//     const [editingLevel, setEditingLevel] = useState(null);
+//     const [editedPercent, setEditedPercent] = useState("");
+//     const inputRef = useRef(null);
+//     const context = useContext(myContext);
+
+//     const startEditing = (level, currentPercent) => {
+//       setEditingLevel(level);
+//       setEditedPercent(currentPercent.toString());
+//     };
+
+//     const cancelEditing = () => {
+//       setEditingLevel(null);
+//       setEditedPercent("");
+//     };
+
+//     useEffect(() => {
+//       if (editingLevel !== null && inputRef.current) {
+//         inputRef.current.focus();
+//         inputRef.current.select();
+//       }
+//     }, [editingLevel]);
+
+//     const saveEdit = async (levelItem) => {
+//       if (editedPercent === "" || isNaN(editedPercent)) {
+//         alert("Please enter a valid percentage.");
+//         return;
+//       }
+//       try {
+//         const percentOverride = parseFloat(editedPercent);
+//         const overrideLevel = levelItem.level;
+//         const targetAssociateId =
+//           levelItem.associates && levelItem.associates.length > 0
+//             ? levelItem.associates[0].associaateId
+//             : null;
+
+//         if (!targetAssociateId) {
+//           alert("Target associate ID not found for this level.");
+//           return;
+//         }
+
+//         console.log("sending lowerlevel data", {
+//           parentAssociateId,
+//           targetAssociateId,
+//           overrideLevel,
+//           percentOverride,
+//         });
+
+//         const response = await patchData("/tree/lowerlevel", {
+//           parentAssociateId,
+//           targetAssociateId,
+//           overrideLevel,
+//           percentOverride,
+//         });
+
+//         console.log("response tree/lowerlevel:", response);
+
+//         if (response.success) {
+//           context.setAlertBox({
+//             open: true,
+//             msg: response.message,
+//             error: false,
+//           });
+//           onPercentUpdate(overrideLevel, percentOverride);
+//           setEditingLevel(null);
+//           setEditedPercent("");
+//         } else {
+//           alert(response.message || "Failed to update percent");
+//         }
+//       } catch (error) {
+//         alert("API call failed: " + error.message);
+//       }
+//     };
+
+//     return (
+//       <>
+//         {nodes.map((item) => (
+//           <tr key={`nested-level-${item.level}`}>
+//             <td className="pl-4 py-2">{item.level}</td>
+//             <td
+//               className="py-2 lwuser-commission-amount"
+//               style={{ textAlign: "center" }}
+//             >
+//               {editingLevel === item.level ? (
+//                 <input
+//                   ref={editingLevel === item.level ? inputRef : null}
+//                   type="number"
+//                   min="0"
+//                   max="100"
+//                   step="0.1"
+//                   value={editedPercent}
+//                   onChange={(e) => setEditedPercent(e.target.value)}
+//                   style={{ width: 80 }}
+//                   aria-label={`Edit commission percent for level ${item.level}`}
+//                 />
+//               ) : item.percent !== undefined ? (
+//                 Number(item.percent).toFixed(2)
+//               ) : (
+//                 "-"
+//               )}{" "}
+//               %
+//             </td>
+//             <td style={{ textAlign: "center" }}>
+//               {editingLevel === item.level ? (
+//                 <>
+//                   <button
+//                     onClick={() => saveEdit(item)}
+//                     title="Save"
+//                     aria-label="Save edited commission percent"
+//                     className="btn-save"
+//                     style={{ marginLeft: 6 }}
+//                   >
+//                     <Check size={16} color="#28a745" />
+//                   </button>
+//                   <button
+//                     onClick={cancelEditing}
+//                     title="Cancel"
+//                     aria-label="Cancel editing"
+//                     className="btn-cancel"
+//                     style={{ marginLeft: 6 }}
+//                   >
+//                     <X size={16} color="#dc3545" />
+//                   </button>
+//                 </>
+//               ) : (
+//                 <button
+//                   onClick={() => startEditing(item.level, item.percent)}
+//                   title={`Edit commission percent for level ${item.level}`}
+//                   aria-label={`Edit commission percent for level ${item.level}`}
+//                   className="edit-btn"
+//                 >
+//                   <Pencil size={16} />
+//                 </button>
+//               )}
+//             </td>
+//           </tr>
+//         ))}
+//       </>
+//     );
+//   }
+
+//   function LevelRow({
+//     levelData,
+//     expandedRows,
+//     toggleExpand,
+//     onCommissionUpdate,
+//     onDeleteAssociate,
+//   }) {
+//     const context = useContext(myContext);
+//     const [editingRowId, setEditingRowId] = useState(null);
+//     const [editedCommission, setEditedCommission] = useState("");
+//     const inputRef = useRef(null);
+
+//     const startEditing = (rowId, currentCommission) => {
+//       if (editingRowId === rowId) setEditingRowId(null);
+//       else {
+//         setEditingRowId(rowId);
+//         setEditedCommission(currentCommission ?? "");
+//       }
+//     };
+
+//     const saveEdit = async (user) => {
+//       if (!editedCommission || isNaN(editedCommission)) {
+//         alert("Please enter a valid percentage.");
+//         return;
+//       }
+//       try {
+//         const level = user.level;
+//         const newPercent = Number.parseFloat(editedCommission);
+//         const associateId = user.associaateId;
+
+//         const response = await patchData("/tree/edit", {
+//           level,
+//           newPercent,
+//           associateId,
+//         });
+
+//         if (response.success) {
+//           context.setAlertBox({
+//             open: true,
+//             msg: response.message,
+//             error: false,
+//           });
+//           setEditingRowId(null);
+//           if (onCommissionUpdate) {
+//             onCommissionUpdate(user.id, newPercent);
+//           }
+//         } else {
+//           alert("Failed to update commission: " + response.message);
+//         }
+//       } catch (error) {
+//         alert("API request failed: " + error.message);
+//       }
+//     };
+
+//     const cancelEdit = () => setEditingRowId(null);
+
+//     useEffect(() => {
+//       if (editingRowId !== null && inputRef.current) {
+//         inputRef.current.focus();
+//         inputRef.current.select();
+//       }
+//     }, [editingRowId]);
+
+//     const [nestedLevels, setNestedLevels] = useState([]);
+
+//     useEffect(() => {
+//       // Initialize nestedLevels from user data at mount or levelData update
+//       if (levelData?.associates) {
+//         levelData.associates.forEach((user) => {
+//           if (user.lowerLevels) {
+//             setNestedLevels(user.lowerLevels);
+//           }
+//         });
+//       }
+//     }, [levelData]);
+
+//     const onPercentUpdate = (level, newPercent, userId) => {
+//       setNestedLevels((prevLevels) =>
+//         prevLevels.map((lvl) =>
+//           lvl.level === level ? { ...lvl, percent: newPercent } : lvl
+//         )
+//       );
+//     };
+
+//     // Modified function to flatten user data for Excel, including referral users
+//     const flattenUserDataForExcel = (user, lowerLevels) => {
+//       const associateRows = [
+//         {
+//           Level: user.level,
+//           Name: user.associaateName,
+//           Email: user.associaateEmail,
+//           "Commission (%)": user.totalCommissionInPercent,
+//           "Total Commission (₹)": user.totalCommissionInRupee,
+//           ParentLevel: "-", // Top-level user has no parent
+//         },
+//       ];
+
+//       const referralUserRows = [];
+//       const visitedAssociateIds = new Set();
+//       const visitedReferralUserIds = new Set();
+
+//       visitedAssociateIds.add(user.associaateId); // Mark top-level associate as visited
+
+//   const addReferralUsers = (associate) => {
+//   if (associate.usedByUsers && associate.usedByUsers.purchase) {
+//     associate.usedByUsers.purchase
+//       .sort((a, b) => {
+//         if (a.role === b.role) return 0;
+//         return a.role === "ASSOCIATE" ? -1 : 1; // associates first
+//       })
+//       .forEach(customer => {
+//         if (!visitedReferralUserIds.has(customer.id)) {
+//           visitedReferralUserIds.add(customer.id);
+//           referralUserRows.push({
+//             "Customer ID": customer.id,
+//             "Customer Name": customer.name,
+//             "Customer Email": customer.email,
+//             "Customer Phone": customer.phone,
+//             "Customer Role": customer.role,
+//             "Referred By Associate Name": associate.associaateName,
+//             "Referred By Associate Email": associate.associaateEmail,
+//             "Customer Created At": new Date(customer.createdAt).toLocaleString(),
+//           });
+//         }
+//       });
+//   }
+// };
+
+
+//       // Add referral users for the current top-level associate
+//       addReferralUsers(user);
+
+//       const addNested = (levels, parentLevel) => {
+//         if (!levels) return;
+//         levels.forEach((level) => {
+//           if (Array.isArray(level.associates)) {
+//             level.associates.forEach((assoc) => {
+//               if (!visitedAssociateIds.has(assoc.associaateId)) {
+//                 visitedAssociateIds.add(assoc.associaateId);
+//                 associateRows.push({
+//                   Level: assoc.level,
+//                   Name: assoc.associaateName || "-",
+//                   Email: assoc.associaateEmail || "-",
+//                   "Commission (%)":
+//                     assoc.totalCommissionInPercent !== undefined
+//                       ? Number(assoc.totalCommissionInPercent).toFixed(2)
+//                       : "-",
+//                   "Total Commission (₹)":
+//                     assoc.totalCommissionInRupee !== undefined
+//                       ? Number(assoc.totalCommissionInRupee).toFixed(2)
+//                       : "-",
+//                   ParentLevel: parentLevel,
+//                 });
+//                 // Add referral users for this nested associate
+//                 addReferralUsers(assoc);
+
+//                 // Recurse on this associate’s nested levels if any
+//                 if (assoc.lowerLevels) {
+//                   addNested(assoc.lowerLevels, assoc.level);
+//                 }
+//               }
+//             });
+//           }
+//           // Also recurse further down in the level’s lowerLevels if exists outside associates
+//           if (level.lowerLevels) {
+//             addNested(level.lowerLevels, level.level);
+//           }
+//         });
+//       };
+
+//       addNested(lowerLevels, user.level);
+//       return { associateRows, referralUserRows };
+//     };
+
+//     // Function to generate and download Excel file
+//     const exportReportToExcel = (user, lowerLevels) => {
+//       const { associateRows, referralUserRows } = flattenUserDataForExcel(user, lowerLevels);
+
+//       // Create worksheet for associate data starting at A3
+//       const worksheet = XLSX.utils.json_to_sheet(associateRows, { origin: "A3" });
+
+//       // Add report title at A1 with merging cells across columns A:E (0-based indices 0 to 4)
+//       XLSX.utils.sheet_add_aoa(worksheet,
+//         [[`${user.associaateName}'s Referral Report`]],
+//         { origin: "A1" }
+//       );
+//       worksheet["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
+
+//       // Set column widths for associate data
+//       worksheet["!cols"] = [
+//         { wch: 10 }, // Level
+//         { wch: 25 }, // Name
+//         { wch: 30 }, // Email
+//         { wch: 20 }, // Commission (%)
+//         { wch: 25 }, // Total Commission (₹)
+//         { wch: 15 }, // ParentLevel
+//       ];
+
+//       // Apply styles: Bold header and alignment & wrap for columns for associate data
+//       const associateRange = XLSX.utils.decode_range(worksheet["!ref"]);
+//       for (let C = associateRange.s.c; C <= associateRange.e.c; ++C) {
+//         // Header row styling (at row 3 in Excel => row index 2 zero-based)
+//         const headerCellAddress = XLSX.utils.encode_cell({ c: C, r: 2 });
+//         if (worksheet[headerCellAddress]) {
+//           worksheet[headerCellAddress].s = {
+//             font: { bold: true, color: { rgb: "000000" } },
+//             alignment: {
+//               horizontal: "center",
+//               vertical: "center",
+//               wrapText: true,
+//             },
+//           };
+//         }
+//         // Apply alignment & wrap text to all data rows (starting from row 4, index 3)
+//         for (let R = 3; R <= associateRange.e.r; ++R) {
+//           const cellAddress = XLSX.utils.encode_cell({ c: C, r: R });
+//           if (worksheet[cellAddress]) {
+//             // Center align numeric columns, left align text columns
+//             const isNumericColumn = C === 0 || C === 3 || C === 4; // Level, Commission, Total
+//             worksheet[cellAddress].s = {
+//               alignment: {
+//                 horizontal: isNumericColumn ? "center" : "left",
+//                 vertical: "center",
+//                 wrapText: true,
+//               },
+//             };
+//           }
+//         }
+//       }
+
+//       // Add Referral Users section if data exists
+//       if (referralUserRows.length > 0) {
+//         const startRowForReferralUsers = associateRange.e.r + 3; // 2 empty rows + 1 for heading
+
+//         // Add "Referral Users" heading
+//         XLSX.utils.sheet_add_aoa(worksheet, [["Referral Users"]], { origin: `A${startRowForReferralUsers}` });
+//         worksheet["!merges"].push({ s: { r: startRowForReferralUsers - 1, c: 0 }, e: { r: startRowForReferralUsers - 1, c: 7 } }); // Merge heading
+
+//         // Add referral user data
+//         XLSX.utils.sheet_add_json(worksheet, referralUserRows, { origin: `A${startRowForReferralUsers + 1}` });
+
+//         // Adjust column widths for referral user data if needed (assuming max 8 columns for now)
+//         const referralUserCols = [
+//           { wch: 35 }, // Customer ID
+//           { wch: 25 }, // Customer Name
+//           { wch: 30 }, // Customer Email
+//           { wch: 20 }, // Customer Phone
+//           { wch: 20 },  // Customer Role
+//           { wch: 25 }, // Customer Created At
+//           { wch: 25 }, // Referred By Associate Name
+//           { wch: 30 }, // Referred By Associate Email
+//         ];
+//         // Ensure !cols array is large enough
+//         if (!worksheet["!cols"]) worksheet["!cols"] = [];
+//         for(let i = 0; i < referralUserCols.length; i++) {
+//           if (!worksheet["!cols"][i] || worksheet["!cols"][i].wch < referralUserCols[i].wch) {
+//             worksheet["!cols"][i] = referralUserCols[i];
+//           }
+//         }
+
+//         // Apply styles for referral user data
+//         const referralUserRange = XLSX.utils.decode_range(worksheet["!ref"]); // Re-decode range after adding new data
+//         const referralUserHeaderRow = startRowForReferralUsers; // 1-based
+//         const referralUserDataStartRow = startRowForReferralUsers + 1; // 1-based
+
+//         for (let C = 0; C < referralUserCols.length; ++C) { // Iterate through columns of referral data
+//           // Header row styling
+//           const headerCellAddress = XLSX.utils.encode_cell({ c: C, r: referralUserHeaderRow });
+//           if (worksheet[headerCellAddress]) {
+//             worksheet[headerCellAddress].s = {
+//               font: { bold: true, color: { rgb: "000000" } },
+//               alignment: {
+//                 horizontal: "center",
+//                 vertical: "center",
+//                 wrapText: true,
+//               },
+//             };
+//           }
+//           // Data rows styling
+//           for (let R = referralUserDataStartRow; R <= referralUserRange.e.r; ++R) {
+//             const cellAddress = XLSX.utils.encode_cell({ c: C, r: R });
+//             if (worksheet[cellAddress]) {
+//               worksheet[cellAddress].s = {
+//                 alignment: {
+//                   horizontal: "left",
+//                   vertical: "center",
+//                   wrapText: true,
+//                 },
+//               };
+//             }
+//           }
+//         }
+//       }
+
+//       // Create a new workbook and append the styled worksheet
+//       const workbook = XLSX.utils.book_new();
+//       XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+//       // Write workbook to binary array buffer and trigger file download
+//       const excelBuffer = XLSX.write(workbook, {
+//         bookType: "xlsx",
+//         type: "array",
+//         cellStyles: true,
+//       });
+//       const blob = new Blob([excelBuffer], {
+//         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+//       });
+//       saveAs(blob, `${user.associaateName}_Referral_Report.xlsx`);
+//     };
+
+//     if (!levelData?.associates || levelData.associates.length === 0) return null;
+
+//     return (
+//       <>
+//         {levelData.associates.map((user) => {
+//           const rowId = user.id;
+//           const originalNestedLevels = user.lowerLevels || [];
+//           const hasNested = originalNestedLevels.length > 0;
+//           const isEditing = editingRowId === rowId;
+
+//           return (
+//             <React.Fragment key={rowId}>
+//               <tr
+//                 className="lwuser-main-row"
+//                 style={{ cursor: "default" }}
+//                 tabIndex={undefined}
+//                 aria-expanded={expandedRows.includes(rowId)}
+//               >
+//                 <td style={{ textAlign: "center" }}>{user.level}</td>
+//                 <td><strong>{user.associaateName}</strong></td>
+//                 <td>{user.associaateEmail}</td>
+//                 <td style={{ textAlign: "center" }}>
+//                   {isEditing ? (
+//                     <>
+//                       <input
+//                         type="number"
+//                         ref={inputRef}
+//                         min="0"
+//                         max="100"
+//                         step="0.1"
+//                         className="commission-inputs"
+//                         value={editedCommission}
+//                         onChange={(e) => setEditedCommission(e.target.value)}
+//                         onKeyDown={(e) => {
+//                           if (e.key === "Enter") saveEdit(user);
+//                           else if (e.key === "Escape") cancelEdit();
+//                         }}
+//                         style={{ width: 60 }}
+//                         aria-label={`Edit commission percentage for ${user.associaateName}`}
+//                       />
+//                       <button
+//                         onClick={() => saveEdit(user)}
+//                         className="btn-save"
+//                         aria-label="Save main commission edit"
+//                         title="Save"
+//                       >
+//                         <Check color="#28a745" size={18} />
+//                       </button>
+//                       <button
+//                         onClick={cancelEdit}
+//                         className="btn-cancel"
+//                         aria-label="Cancel main commission edit"
+//                         title="Cancel"
+//                       >
+//                         <X color="#dc3545" size={18} />
+//                       </button>
+//                     </>
+//                   ) : (
+//                     <span className="lwuser-commission-amount">{formatCurrency(user.totalCommissionInPercent)} %</span>
+//                   )}
+//                 </td>
+//                 <td
+//                   style={{
+//                     textAlign: "center",
+//                     cursor: hasNested ? "pointer" : "default",
+//                   }}
+//                   tabIndex={hasNested ? 0 : undefined}
+//                   role={hasNested ? "button" : undefined}
+//                   aria-pressed={hasNested ? expandedRows.includes(rowId) : undefined}
+//                   aria-label={
+//                     hasNested
+//                       ? expandedRows.includes(rowId)
+//                         ? "Collapse details"
+//                         : "Expand details"
+//                       : undefined
+//                   }
+//                   onClick={hasNested ? () => toggleExpand(rowId) : undefined}
+//                   onKeyDown={
+//                     hasNested
+//                       ? (e) => {
+//                           if (e.key === "Enter" || e.key === " ") {
+//                             e.preventDefault();
+//                             toggleExpand(rowId);
+//                           }
+//                         }
+//                       : undefined
+//                   }
+//                 >
+//                   <div className="action-buttonss">
+//                     <button
+//                       className={`view-btn ${Number(user.totalCommissionInPercent) === 0 ? "view-btn-disabled" : ""}`}
+//                       title="View"
+//                       onClick={(e) => {
+//                         if (Number(user.totalCommissionInPercent) === 0) return;
+//                         e.stopPropagation();
+//                         toggleExpand(rowId);
+//                       }}
+//                       disabled={Number(user.totalCommissionInPercent) === 0}
+//                       aria-label={
+//                         expandedRows.includes(rowId)
+//                           ? "Hide nested users"
+//                           : "Show nested users"
+//                       }
+//                     >
+//                       {expandedRows.includes(rowId) ? <EyeOff /> : <Eye />}
+//                     </button>
+//                     <button
+//                       className="edit-btn"
+//                       title="Edit"
+//                       onClick={(e) => {
+//                         e.stopPropagation();
+//                         startEditing(rowId, user.totalCommissionInPercent);
+//                       }}
+//                       aria-label={`Edit commission for ${user.associaateName}`}
+//                     >
+//                       <Pencil />
+//                     </button>
+//                     <button
+//                       className="report-btn"
+//                       title="Generate report"
+//                       onClick={(e) => {
+//                         e.stopPropagation();
+//                         const confirmed = window.confirm(
+//                           `Do you want to download ${user.associaateName}'s referral report as Excel?`
+//                         );
+//                         if (confirmed)
+//                           exportReportToExcel(user, originalNestedLevels);
+//                       }}
+//                       aria-label={`Generate report for ${user.associaateName}`}
+//                     >
+//                       <Printer />
+//                     </button>
+//                     <button
+//                       className="delete-btn"
+//                       title="Delete"
+//                       onClick={(e) => {
+//                         e.stopPropagation();
+//                         onDeleteAssociate(user.id);
+//                       }}
+//                       aria-label={`Delete commission for ${user.associaateName}`}
+//                     >
+//                       <Trash />
+//                     </button>
+//                   </div>
+//                 </td>
+//               </tr>
+//               {expandedRows.includes(rowId) &&
+//                 originalNestedLevels.length > 0 && (
+//                   <tr>
+//                     <td colSpan={3} className="p-0">
+//                       <div className="lwuser-nested-table-wrapper overflow-x-auto">
+//                         <table className="min-w-full text-left">
+//                           <thead>
+//                             <tr>
+//                               <th className="px-4 py-2">Level</th>
+//                               <th className="px-4 py-2">Percent (%)</th>
+//                               <th className="px-4 py-2">Action</th>
+//                             </tr>
+//                           </thead>
+//                           <tbody>
+//                             <RenderNestedLevels
+//                               nodes={originalNestedLevels}
+//                               parentAssociateId={user.associaateId}
+//                               onPercentUpdate={(level, percent) => {
+//                                 // Update nested levels percent locally
+//                                 const updatedNestedLevels =
+//                                   originalNestedLevels.map((lvl) =>
+//                                     lvl.level === level
+//                                       ? { ...lvl, percent }
+//                                       : lvl
+//                                   );
+//                                 // Directly update user.lowerLevels for next renders
+//                                 user.lowerLevels = updatedNestedLevels;
+//                                 onPercentUpdate(level, percent, user.id);
+//                               }}
+//                             />
+//                           </tbody>
+//                         </table>
+//                       </div>
+//                     </td>
+//                   </tr>
+//                 )}
+//             </React.Fragment>
+//           );
+//         })}
+//       </>
+//     );
+//   }
+
+//   if (loading) {
+//     return (
+//       <div className="loading-container">
+//         <p>Loading users...</p>
+//         <img src="SPC.png" alt="Loading..." className="loading-logo" />
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="lwuser-container" role="main">
+//       <header className="lwuser-page-header">
+//         <h1>Level-wise Users</h1>
+//         <p>Referral network with associates and their nested referrals.</p>
+//         <div className="header-flex">
+//           <div className="search-section2">
+//             <div className="search-container2">
+//               <input
+//                 type="text"
+//                 placeholder="Search associate name..."
+//                 className="search-input2"
+//                 value={searchQuery}
+//                 onChange={(e) => setSearchQuery(e.target.value)}
+//                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+//                 aria-label="Search associate name"
+//               />
+//               <button className="search-button2" onClick={handleSearch} aria-label="Search">
+//                 <Search size={18} />
+//               </button>
+//             </div>
+//           </div>
+//           <div className="add-btnnn">
+//             <Link to="/addAssociate?isPrivate=true">
+//               <button>Add +</button>
+//             </Link>
+//           </div>
+//         </div>
+//       </header>
+//       <div className="lwuser-table-container">
+//         <div
+//           className="lwuser-table-wrapper"
+//           tabIndex={0}
+//           aria-label="Referral network table"
+//         >
+//           <table
+//             className="lwuser-table"
+//             role="table"
+//             aria-describedby="table-desc"
+//           >
+//             <caption id="table-desc" className="lwuser-sr-only">
+//               Referral network, all levels and their nested associates.
+//             </caption>
+//             <thead>
+//               <tr>
+//                 <th>Level</th>
+//                 <th>Name</th>
+//                 <th>Email</th>
+//                 <th>Commission (%)</th>
+//                 <th>Action</th>
+//               </tr>
+//             </thead>
+//             <tbody>
+//               {levels && levels.length > 0 ? (
+//                 levels.map((lvl) => (
+//                   <LevelRow
+//                     key={`${lvl.level}-top`}
+//                     levelData={lvl}
+//                     expandedRows={expandedRows}
+//                     toggleExpand={toggleExpand}
+//                     onCommissionUpdate={handleCommissionUpdate}
+//                     onDeleteAssociate={handleDeleteAssociate}
+//                   />
+//                 ))
+//               ) : (
+//                 <tr>
+//                   <td colSpan={5} className="lwuser-no-nested-users">
+//                     No associates found.
+//                   </td>
+//                 </tr>
+//               )}
+//             </tbody>
+//           </table>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default LevelWiseUsers;
+
+
+import React, { useState, useEffect, useContext, useRef } from "react"
+import { Link } from "react-router-dom"
+import * as XLSX from "xlsx"
+import { saveAs } from "file-saver"
+import { Check, Eye, EyeOff, Pencil, Printer, X, Search, Trash } from "lucide-react"
+import "./LevelWiseUsers.css"
+import { deleteData, fetchDataFromApi, patchData } from "../../utils/api"
+import { myContext } from "../../App"
 
 const LevelWiseUsers = () => {
-  const [levels, setLevels] = useState([]);
-  const [originalLevels, setOriginalLevels] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [expandedRows, setExpandedRows] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const context = useContext(myContext);
+  const [levels, setLevels] = useState([])
+  const [originalLevels, setOriginalLevels] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [expandedRows, setExpandedRows] = useState([])
+  const [searchQuery, setSearchQuery] = useState("")
+  const context = useContext(myContext)
 
   const handleDeleteAssociate = async (associateId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this associate and all related data?"
-    );
-    if (!confirmed) return;
+    const confirmed = window.confirm("Are you sure you want to delete this associate and all related data?")
+    if (!confirmed) return
 
     try {
       const res = await deleteData(`/tree/delete/${associateId}`, {
         convertToUser: true,
-      });
+      })
       if (res.success) {
         context.setAlertBox({
           open: true,
           msg: res.message,
           error: false,
-        });
+        })
         const removeAssociate = (levels) =>
           levels
             .map((level) => ({
               ...level,
-              associates: level.associates.filter(
-                (assoc) => assoc.id !== associateId
-              ),
-              lowerLevels: level.lowerLevels
-                ? removeAssociate(level.lowerLevels)
-                : [],
+              associates: level.associates.filter((assoc) => assoc.id !== associateId),
+              lowerLevels: level.lowerLevels ? removeAssociate(level.lowerLevels) : [],
             }))
-            .filter(
-              (level) =>
-                level.associates.length > 0 ||
-                (level.lowerLevels && level.lowerLevels.length > 0)
-            );
-        setLevels((prev) => removeAssociate(prev));
-        setOriginalLevels((prev) => removeAssociate(prev));
-        setExpandedRows((prev) => prev.filter((id) => id !== associateId));
+            .filter((level) => level.associates.length > 0 || (level.lowerLevels && level.lowerLevels.length > 0))
+        setLevels((prev) => removeAssociate(prev))
+        setOriginalLevels((prev) => removeAssociate(prev))
+        setExpandedRows((prev) => prev.filter((id) => id !== associateId))
       } else {
-        alert("Failed to delete associate: " + res.message);
+        context.setAlertBox({
+          open: true,
+          msg: "Failed to delete associate: " + res.message,
+          error: true,
+        })
       }
     } catch (error) {
-      console.error("Delete error:", error);
-      alert("API request failed: " + error.message);
+      console.error("Delete error:", error)
+      context.setAlertBox({
+        open: true,
+        msg: "API request failed: " + error.message,
+        error: true,
+      })
     }
-  };
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchQuery.trim().length === 0 || searchQuery.trim().length > 2) {
-        handleSearch();
+        handleSearch()
       }
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
 
   const handleSearch = async () => {
-    const trimmed = searchQuery.trim().toLowerCase();
+    const trimmed = searchQuery.trim().toLowerCase()
     if (trimmed.length === 0) {
-      setLevels(originalLevels);
-      return;
+      setLevels(originalLevels)
+      return
     }
     try {
-      setLoading(true);
+      setLoading(true)
       if (originalLevels.length === 0) {
-        const res = await fetchDataFromApi("/tree");
-        setOriginalLevels(res.levels || []);
+        const res = await fetchDataFromApi("/tree")
+        setOriginalLevels(res.levels || [])
       }
-      const allLevels =
-        originalLevels.length > 0
-          ? originalLevels
-          : (await fetchDataFromApi("/tree")).levels || [];
+      const allLevels = originalLevels.length > 0 ? originalLevels : (await fetchDataFromApi("/tree")).levels || []
 
       const filterRecursive = (levels) => {
-        const result = [];
+        const result = []
         for (const level of levels) {
           const matchedAssociates = level.associates.filter((assoc) => {
-            const name = assoc.associaateName?.toLowerCase() || "";
-            const email = assoc.associaateEmail?.toLowerCase() || "";
-            return name.includes(trimmed) || email.includes(trimmed);
-          });
+            const name = assoc.associaateName?.toLowerCase() || ""
+            const email = assoc.associaateEmail?.toLowerCase() || ""
+            return name.includes(trimmed) || email.includes(trimmed)
+          })
 
           if (matchedAssociates.length > 0) {
             result.push({
               ...level,
               associates: matchedAssociates,
               lowerLevels: level.lowerLevels || [],
-            });
+            })
           } else {
-            const filteredLowerLevels = level.lowerLevels
-              ? filterRecursive(level.lowerLevels)
-              : [];
+            const filteredLowerLevels = level.lowerLevels ? filterRecursive(level.lowerLevels) : []
             if (filteredLowerLevels.length > 0) {
               result.push({
                 ...level,
                 associates: [],
                 lowerLevels: filteredLowerLevels,
-              });
+              })
             }
           }
         }
-        return result;
-      };
+        return result
+      }
 
-      const finalFiltered = filterRecursive(allLevels);
-      setLevels(finalFiltered);
+      const finalFiltered = filterRecursive(allLevels)
+      setLevels(finalFiltered)
     } catch (error) {
-      console.error("Search error:", error);
-      setLevels([]);
+      console.error("Search error:", error)
+      setLevels([])
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
     async function load() {
-      setLoading(true);
+      setLoading(true)
       try {
-        const apiRes = await fetchDataFromApi("/tree");
-        const data = apiRes.levels || [];
-        setLevels(data);
-        setOriginalLevels(data);
+        const apiRes = await fetchDataFromApi("/tree")
+        const data = apiRes.levels || []
+        setLevels(data)
+        setOriginalLevels(data)
       } catch {
-        setLevels([]);
-        setOriginalLevels([]);
+        setLevels([])
+        setOriginalLevels([])
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
-    load();
-  }, []);
+    load()
+  }, [])
 
   const toggleExpand = (rowId) => {
-    setExpandedRows((prev) =>
-      prev.includes(rowId) ? prev.filter((id) => id !== rowId) : [...prev, rowId]
-    );
-  };
+    setExpandedRows((prev) => (prev.includes(rowId) ? prev.filter((id) => id !== rowId) : [...prev, rowId]))
+  }
 
   const updateCommissionInLevels = (levelsArr, userId, newPercent) =>
     levelsArr.map((level) => ({
       ...level,
       associates: level.associates.map((assoc) =>
-        assoc.id === userId
-          ? { ...assoc, totalCommissionInPercent: newPercent }
-          : assoc
+        assoc.id === userId ? { ...assoc, totalCommissionInPercent: newPercent } : assoc,
       ),
-      lowerLevels: level.lowerLevels
-        ? updateCommissionInLevels(level.lowerLevels, userId, newPercent)
-        : undefined,
-    }));
+      lowerLevels: level.lowerLevels ? updateCommissionInLevels(level.lowerLevels, userId, newPercent) : undefined,
+    }))
 
-  const handleCommissionUpdate = (userId, newPercent) => {
-    setLevels((prevLevels) =>
-      updateCommissionInLevels(prevLevels, userId, newPercent)
-    );
-    setOriginalLevels((prevLevels) =>
-      updateCommissionInLevels(prevLevels, userId, newPercent)
-    );
-  };
+  // Renamed for clarity: updates the main associate's commission
+  const handleMainAssociateCommissionUpdate = (userId, newPercent) => {
+    setLevels((prevLevels) => updateCommissionInLevels(prevLevels, userId, newPercent))
+    setOriginalLevels((prevLevels) => updateCommissionInLevels(prevLevels, userId, newPercent))
+  }
+
+  // New function to update nested level percentages
+  const updateNestedLevelPercent = (mainAssociateId, nestedLevelNum, newPercent) => {
+    const updateLevelsRecursive = (levelsArr) =>
+      levelsArr.map((level) => ({
+        ...level,
+        associates: level.associates
+          ? level.associates.map((assoc) => {
+              if (assoc.associaateId === mainAssociateId) {
+                // Found the main associate whose lowerLevels need updating
+                const updatedLowerLevels = assoc.lowerLevels
+                  ? assoc.lowerLevels.map((lowerLvl) =>
+                      lowerLvl.level === nestedLevelNum ? { ...lowerLvl, percent: newPercent } : lowerLvl,
+                    )
+                  : []
+                return { ...assoc, lowerLevels: updatedLowerLevels }
+              } else if (assoc.lowerLevels) {
+                // Recurse into lower levels of other associates if needed
+                return {
+                  ...assoc,
+                  lowerLevels: updateLevelsRecursive(assoc.lowerLevels),
+                }
+              }
+              return assoc
+            })
+          : [], // If level.associates is undefined/null, default to an empty array
+        lowerLevels: level.lowerLevels ? updateLevelsRecursive(level.lowerLevels) : [],
+      }))
+
+    setLevels((prev) => updateLevelsRecursive(prev))
+    setOriginalLevels((prev) => updateLevelsRecursive(prev))
+  }
 
   useEffect(() => {
-    setExpandedRows([]);
-  }, [levels]);
+    setExpandedRows([])
+  }, [levels])
 
-  const formatCurrency = (val) =>
-    val !== undefined && val !== null && !isNaN(val)
-      ? Number(val).toFixed(2)
-      : "-";
+  const formatCurrency = (val) => (val !== undefined && val !== null && !isNaN(val) ? Number(val).toFixed(2) : "-")
 
   function RenderNestedLevels({ nodes, parentAssociateId, onPercentUpdate }) {
-    const [editingLevel, setEditingLevel] = useState(null);
-    const [editedPercent, setEditedPercent] = useState("");
-    const inputRef = useRef(null);
-    const context = useContext(myContext);
+    const [editingLevel, setEditingLevel] = useState(null)
+    const [editedPercent, setEditedPercent] = useState("")
+    const inputRef = useRef(null)
+    const context = useContext(myContext)
 
     const startEditing = (level, currentPercent) => {
-      setEditingLevel(level);
-      setEditedPercent(currentPercent.toString());
-    };
+      setEditingLevel(level)
+      setEditedPercent(currentPercent.toString())
+    }
 
     const cancelEditing = () => {
-      setEditingLevel(null);
-      setEditedPercent("");
-    };
+      setEditingLevel(null)
+      setEditedPercent("")
+    }
 
     useEffect(() => {
       if (editingLevel !== null && inputRef.current) {
-        inputRef.current.focus();
-        inputRef.current.select();
+        inputRef.current.focus()
+        inputRef.current.select()
       }
-    }, [editingLevel]);
+    }, [editingLevel])
 
     const saveEdit = async (levelItem) => {
       if (editedPercent === "" || isNaN(editedPercent)) {
-        alert("Please enter a valid percentage.");
-        return;
+        context.setAlertBox({
+          open: true,
+          msg: "Please enter a valid percentage.",
+          error: true,
+        })
+        return
       }
       try {
-        const percentOverride = parseFloat(editedPercent);
-        const overrideLevel = levelItem.level;
-        const targetAssociateId =
-          levelItem.associates && levelItem.associates.length > 0
-            ? levelItem.associates[0].associaateId
-            : null;
+        const percentOverride = Number.parseFloat(editedPercent)
+        const overrideLevel = levelItem.level
+
+        // CORRECTED LOGIC FOR targetAssociateId extraction
+        let targetAssociateId = null
+        if (levelItem.associates && levelItem.associates.length > 0) {
+          // Case for regular nested levels with 'associates' array
+          targetAssociateId = levelItem.associates[0].associaateId
+        } else if (levelItem.associateId && levelItem.associateId.length > 0) {
+          // Case for newLevelAssociate where 'associateId' is an array of IDs
+          targetAssociateId = levelItem.associateId[0]
+        }
 
         if (!targetAssociateId) {
-          alert("Target associate ID not found for this level.");
-          return;
+          context.setAlertBox({
+            open: true,
+            msg: "Target associate ID not found for this level. Cannot save.",
+            error: true,
+          })
+          return
         }
 
         console.log("sending lowerlevel data", {
@@ -227,43 +1168,49 @@ const LevelWiseUsers = () => {
           targetAssociateId,
           overrideLevel,
           percentOverride,
-        });
+        })
 
         const response = await patchData("/tree/lowerlevel", {
           parentAssociateId,
           targetAssociateId,
           overrideLevel,
           percentOverride,
-        });
+        })
 
-        console.log("response tree/lowerlevel:", response);
+        console.log("response tree/lowerlevel:", response)
 
         if (response.success) {
           context.setAlertBox({
             open: true,
             msg: response.message,
             error: false,
-          });
-          onPercentUpdate(overrideLevel, percentOverride);
-          setEditingLevel(null);
-          setEditedPercent("");
+          })
+          // Call the prop function to update the parent state
+          onPercentUpdate(overrideLevel, percentOverride)
+          setEditingLevel(null)
+          setEditedPercent("")
         } else {
-          alert(response.message || "Failed to update percent");
+          context.setAlertBox({
+            open: true,
+            msg: response.message || "Failed to update percent",
+            error: true,
+          })
         }
       } catch (error) {
-        alert("API call failed: " + error.message);
+        context.setAlertBox({
+          open: true,
+          msg: "API call failed: " + error.message,
+          error: true,
+        })
       }
-    };
+    }
 
     return (
       <>
         {nodes.map((item) => (
           <tr key={`nested-level-${item.level}`}>
             <td className="pl-4 py-2">{item.level}</td>
-            <td
-              className="py-2 lwuser-commission-amount"
-              style={{ textAlign: "center" }}
-            >
+            <td className="py-2 lwuser-commission-amount" style={{ textAlign: "center" }}>
               {editingLevel === item.level ? (
                 <input
                   ref={editingLevel === item.level ? inputRef : null}
@@ -319,92 +1266,84 @@ const LevelWiseUsers = () => {
           </tr>
         ))}
       </>
-    );
+    )
   }
 
   function LevelRow({
     levelData,
     expandedRows,
     toggleExpand,
-    onCommissionUpdate,
+    onMainAssociateCommissionUpdate, // Renamed prop
+    onNestedLevelPercentUpdate, // New prop
     onDeleteAssociate,
   }) {
-    const context = useContext(myContext);
-    const [editingRowId, setEditingRowId] = useState(null);
-    const [editedCommission, setEditedCommission] = useState("");
-    const inputRef = useRef(null);
+    const context = useContext(myContext)
+    const [editingRowId, setEditingRowId] = useState(null)
+    const [editedCommission, setEditedCommission] = useState("")
+    const inputRef = useRef(null)
 
     const startEditing = (rowId, currentCommission) => {
-      if (editingRowId === rowId) setEditingRowId(null);
+      if (editingRowId === rowId) setEditingRowId(null)
       else {
-        setEditingRowId(rowId);
-        setEditedCommission(currentCommission ?? "");
+        setEditingRowId(rowId)
+        setEditedCommission(currentCommission ?? "")
       }
-    };
+    }
 
     const saveEdit = async (user) => {
       if (!editedCommission || isNaN(editedCommission)) {
-        alert("Please enter a valid percentage.");
-        return;
+        context.setAlertBox({
+          open: true,
+          msg: "Please enter a valid percentage.",
+          error: true,
+        })
+        return
       }
       try {
-        const level = user.level;
-        const newPercent = Number.parseFloat(editedCommission);
-        const associateId = user.associaateId;
+        const level = user.level
+        const newPercent = Number.parseFloat(editedCommission)
+        const associateId = user.associaateId
 
         const response = await patchData("/tree/edit", {
           level,
           newPercent,
           associateId,
-        });
+        })
 
         if (response.success) {
           context.setAlertBox({
             open: true,
             msg: response.message,
             error: false,
-          });
-          setEditingRowId(null);
-          if (onCommissionUpdate) {
-            onCommissionUpdate(user.id, newPercent);
+          })
+          setEditingRowId(null)
+          if (onMainAssociateCommissionUpdate) {
+            onMainAssociateCommissionUpdate(user.id, newPercent)
           }
         } else {
-          alert("Failed to update commission: " + response.message);
+          context.setAlertBox({
+            open: true,
+            msg: "Failed to update commission: " + response.message,
+            error: true,
+          })
         }
       } catch (error) {
-        alert("API request failed: " + error.message);
+        context.setAlertBox({
+          open: true,
+          msg: "API request failed: " + error.message,
+          error: true,
+        })
       }
-    };
+    }
 
-    const cancelEdit = () => setEditingRowId(null);
+    const cancelEdit = () => setEditingRowId(null)
 
     useEffect(() => {
       if (editingRowId !== null && inputRef.current) {
-        inputRef.current.focus();
-        inputRef.current.select();
+        inputRef.current.focus()
+        inputRef.current.select()
       }
-    }, [editingRowId]);
-
-    const [nestedLevels, setNestedLevels] = useState([]);
-
-    useEffect(() => {
-      // Initialize nestedLevels from user data at mount or levelData update
-      if (levelData?.associates) {
-        levelData.associates.forEach((user) => {
-          if (user.lowerLevels) {
-            setNestedLevels(user.lowerLevels);
-          }
-        });
-      }
-    }, [levelData]);
-
-    const onPercentUpdate = (level, newPercent, userId) => {
-      setNestedLevels((prevLevels) =>
-        prevLevels.map((lvl) =>
-          lvl.level === level ? { ...lvl, percent: newPercent } : lvl
-        )
-      );
-    };
+    }, [editingRowId])
 
     // Modified function to flatten user data for Excel, including referral users
     const flattenUserDataForExcel = (user, lowerLevels) => {
@@ -417,50 +1356,49 @@ const LevelWiseUsers = () => {
           "Total Commission (₹)": user.totalCommissionInRupee,
           ParentLevel: "-", // Top-level user has no parent
         },
-      ];
+      ]
 
-      const referralUserRows = [];
-      const visitedAssociateIds = new Set();
-      const visitedReferralUserIds = new Set();
+      const referralUserRows = []
+      const visitedAssociateIds = new Set()
+      const visitedReferralUserIds = new Set()
 
-      visitedAssociateIds.add(user.associaateId); // Mark top-level associate as visited
+      visitedAssociateIds.add(user.associaateId) // Mark top-level associate as visited
 
-  const addReferralUsers = (associate) => {
-  if (associate.usedByUsers && associate.usedByUsers.purchase) {
-    associate.usedByUsers.purchase
-      .sort((a, b) => {
-        if (a.role === b.role) return 0;
-        return a.role === "ASSOCIATE" ? -1 : 1; // associates first
-      })
-      .forEach(customer => {
-        if (!visitedReferralUserIds.has(customer.id)) {
-          visitedReferralUserIds.add(customer.id);
-          referralUserRows.push({
-            "Customer ID": customer.id,
-            "Customer Name": customer.name,
-            "Customer Email": customer.email,
-            "Customer Phone": customer.phone,
-            "Customer Role": customer.role,
-            "Referred By Associate Name": associate.associaateName,
-            "Referred By Associate Email": associate.associaateEmail,
-            "Customer Created At": new Date(customer.createdAt).toLocaleString(),
-          });
+      const addReferralUsers = (associate) => {
+        if (associate.usedByUsers && associate.usedByUsers.purchase) {
+          associate.usedByUsers.purchase
+            .sort((a, b) => {
+              if (a.role === b.role) return 0
+              return a.role === "ASSOCIATE" ? -1 : 1 // associates first
+            })
+            .forEach((customer) => {
+              if (!visitedReferralUserIds.has(customer.id)) {
+                visitedReferralUserIds.add(customer.id)
+                referralUserRows.push({
+                  "Customer ID": customer.id,
+                  "Customer Name": customer.name,
+                  "Customer Email": customer.email,
+                  "Customer Phone": customer.phone,
+                  "Customer Role": customer.role,
+                  "Referred By Associate Name": associate.associaateName,
+                  "Referred By Associate Email": associate.associaateEmail,
+                  "Customer Created At": new Date(customer.createdAt).toLocaleString(),
+                })
+              }
+            })
         }
-      });
-  }
-};
-
+      }
 
       // Add referral users for the current top-level associate
-      addReferralUsers(user);
+      addReferralUsers(user)
 
       const addNested = (levels, parentLevel) => {
-        if (!levels) return;
+        if (!levels) return
         levels.forEach((level) => {
           if (Array.isArray(level.associates)) {
             level.associates.forEach((assoc) => {
               if (!visitedAssociateIds.has(assoc.associaateId)) {
-                visitedAssociateIds.add(assoc.associaateId);
+                visitedAssociateIds.add(assoc.associaateId)
                 associateRows.push({
                   Level: assoc.level,
                   Name: assoc.associaateName || "-",
@@ -470,45 +1408,40 @@ const LevelWiseUsers = () => {
                       ? Number(assoc.totalCommissionInPercent).toFixed(2)
                       : "-",
                   "Total Commission (₹)":
-                    assoc.totalCommissionInRupee !== undefined
-                      ? Number(assoc.totalCommissionInRupee).toFixed(2)
-                      : "-",
+                    assoc.totalCommissionInRupee !== undefined ? Number(assoc.totalCommissionInRupee).toFixed(2) : "-",
                   ParentLevel: parentLevel,
-                });
+                })
                 // Add referral users for this nested associate
-                addReferralUsers(assoc);
+                addReferralUsers(assoc)
 
                 // Recurse on this associate’s nested levels if any
                 if (assoc.lowerLevels) {
-                  addNested(assoc.lowerLevels, assoc.level);
+                  addNested(assoc.lowerLevels, assoc.level)
                 }
               }
-            });
+            })
           }
           // Also recurse further down in the level’s lowerLevels if exists outside associates
           if (level.lowerLevels) {
-            addNested(level.lowerLevels, level.level);
+            addNested(level.lowerLevels, level.level)
           }
-        });
-      };
+        })
+      }
 
-      addNested(lowerLevels, user.level);
-      return { associateRows, referralUserRows };
-    };
+      addNested(lowerLevels, user.level)
+      return { associateRows, referralUserRows }
+    }
 
     // Function to generate and download Excel file
     const exportReportToExcel = (user, lowerLevels) => {
-      const { associateRows, referralUserRows } = flattenUserDataForExcel(user, lowerLevels);
+      const { associateRows, referralUserRows } = flattenUserDataForExcel(user, lowerLevels)
 
       // Create worksheet for associate data starting at A3
-      const worksheet = XLSX.utils.json_to_sheet(associateRows, { origin: "A3" });
+      const worksheet = XLSX.utils.json_to_sheet(associateRows, { origin: "A3" })
 
       // Add report title at A1 with merging cells across columns A:E (0-based indices 0 to 4)
-      XLSX.utils.sheet_add_aoa(worksheet,
-        [[`${user.associaateName}'s Referral Report`]],
-        { origin: "A1" }
-      );
-      worksheet["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
+      XLSX.utils.sheet_add_aoa(worksheet, [[`${user.associaateName}'s Referral Report`]], { origin: "A1" })
+      worksheet["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }]
 
       // Set column widths for associate data
       worksheet["!cols"] = [
@@ -518,13 +1451,13 @@ const LevelWiseUsers = () => {
         { wch: 20 }, // Commission (%)
         { wch: 25 }, // Total Commission (₹)
         { wch: 15 }, // ParentLevel
-      ];
+      ]
 
       // Apply styles: Bold header and alignment & wrap for columns for associate data
-      const associateRange = XLSX.utils.decode_range(worksheet["!ref"]);
+      const associateRange = XLSX.utils.decode_range(worksheet["!ref"])
       for (let C = associateRange.s.c; C <= associateRange.e.c; ++C) {
         // Header row styling (at row 3 in Excel => row index 2 zero-based)
-        const headerCellAddress = XLSX.utils.encode_cell({ c: C, r: 2 });
+        const headerCellAddress = XLSX.utils.encode_cell({ c: C, r: 2 })
         if (worksheet[headerCellAddress]) {
           worksheet[headerCellAddress].s = {
             font: { bold: true, color: { rgb: "000000" } },
@@ -533,35 +1466,38 @@ const LevelWiseUsers = () => {
               vertical: "center",
               wrapText: true,
             },
-          };
+          }
         }
         // Apply alignment & wrap text to all data rows (starting from row 4, index 3)
         for (let R = 3; R <= associateRange.e.r; ++R) {
-          const cellAddress = XLSX.utils.encode_cell({ c: C, r: R });
+          const cellAddress = XLSX.utils.encode_cell({ c: C, r: R })
           if (worksheet[cellAddress]) {
             // Center align numeric columns, left align text columns
-            const isNumericColumn = C === 0 || C === 3 || C === 4; // Level, Commission, Total
+            const isNumericColumn = C === 0 || C === 3 || C === 4 // Level, Commission, Total
             worksheet[cellAddress].s = {
               alignment: {
                 horizontal: isNumericColumn ? "center" : "left",
                 vertical: "center",
                 wrapText: true,
               },
-            };
+            }
           }
         }
       }
 
       // Add Referral Users section if data exists
       if (referralUserRows.length > 0) {
-        const startRowForReferralUsers = associateRange.e.r + 3; // 2 empty rows + 1 for heading
+        const startRowForReferralUsers = associateRange.e.r + 3 // 2 empty rows + 1 for heading
 
         // Add "Referral Users" heading
-        XLSX.utils.sheet_add_aoa(worksheet, [["Referral Users"]], { origin: `A${startRowForReferralUsers}` });
-        worksheet["!merges"].push({ s: { r: startRowForReferralUsers - 1, c: 0 }, e: { r: startRowForReferralUsers - 1, c: 7 } }); // Merge heading
+        XLSX.utils.sheet_add_aoa(worksheet, [["Referral Users"]], { origin: `A${startRowForReferralUsers}` })
+        worksheet["!merges"].push({
+          s: { r: startRowForReferralUsers - 1, c: 0 },
+          e: { r: startRowForReferralUsers - 1, c: 7 },
+        }) // Merge heading
 
         // Add referral user data
-        XLSX.utils.sheet_add_json(worksheet, referralUserRows, { origin: `A${startRowForReferralUsers + 1}` });
+        XLSX.utils.sheet_add_json(worksheet, referralUserRows, { origin: `A${startRowForReferralUsers + 1}` })
 
         // Adjust column widths for referral user data if needed (assuming max 8 columns for now)
         const referralUserCols = [
@@ -569,27 +1505,28 @@ const LevelWiseUsers = () => {
           { wch: 25 }, // Customer Name
           { wch: 30 }, // Customer Email
           { wch: 20 }, // Customer Phone
-          { wch: 20 },  // Customer Role
+          { wch: 20 }, // Customer Role
           { wch: 25 }, // Customer Created At
           { wch: 25 }, // Referred By Associate Name
           { wch: 30 }, // Referred By Associate Email
-        ];
+        ]
         // Ensure !cols array is large enough
-        if (!worksheet["!cols"]) worksheet["!cols"] = [];
-        for(let i = 0; i < referralUserCols.length; i++) {
+        if (!worksheet["!cols"]) worksheet["!cols"] = []
+        for (let i = 0; i < referralUserCols.length; i++) {
           if (!worksheet["!cols"][i] || worksheet["!cols"][i].wch < referralUserCols[i].wch) {
-            worksheet["!cols"][i] = referralUserCols[i];
+            worksheet["!cols"][i] = referralUserCols[i]
           }
         }
 
         // Apply styles for referral user data
-        const referralUserRange = XLSX.utils.decode_range(worksheet["!ref"]); // Re-decode range after adding new data
-        const referralUserHeaderRow = startRowForReferralUsers; // 1-based
-        const referralUserDataStartRow = startRowForReferralUsers + 1; // 1-based
+        const referralUserRange = XLSX.utils.decode_range(worksheet["!ref"]) // Re-decode range after adding new data
+        const referralUserHeaderRow = startRowForReferralUsers // 1-based
+        const referralUserDataStartRow = startRowForReferralUsers + 1 // 1-based
 
-        for (let C = 0; C < referralUserCols.length; ++C) { // Iterate through columns of referral data
+        for (let C = 0; C < referralUserCols.length; ++C) {
+          // Iterate through columns of referral data
           // Header row styling
-          const headerCellAddress = XLSX.utils.encode_cell({ c: C, r: referralUserHeaderRow });
+          const headerCellAddress = XLSX.utils.encode_cell({ c: C, r: referralUserHeaderRow })
           if (worksheet[headerCellAddress]) {
             worksheet[headerCellAddress].s = {
               font: { bold: true, color: { rgb: "000000" } },
@@ -598,11 +1535,11 @@ const LevelWiseUsers = () => {
                 vertical: "center",
                 wrapText: true,
               },
-            };
+            }
           }
           // Data rows styling
           for (let R = referralUserDataStartRow; R <= referralUserRange.e.r; ++R) {
-            const cellAddress = XLSX.utils.encode_cell({ c: C, r: R });
+            const cellAddress = XLSX.utils.encode_cell({ c: C, r: R })
             if (worksheet[cellAddress]) {
               worksheet[cellAddress].s = {
                 alignment: {
@@ -610,37 +1547,37 @@ const LevelWiseUsers = () => {
                   vertical: "center",
                   wrapText: true,
                 },
-              };
+              }
             }
           }
         }
       }
 
       // Create a new workbook and append the styled worksheet
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Report")
 
       // Write workbook to binary array buffer and trigger file download
       const excelBuffer = XLSX.write(workbook, {
         bookType: "xlsx",
         type: "array",
         cellStyles: true,
-      });
+      })
       const blob = new Blob([excelBuffer], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
-      });
-      saveAs(blob, `${user.associaateName}_Referral_Report.xlsx`);
-    };
+      })
+      saveAs(blob, `${user.associaateName}_Referral_Report.xlsx`)
+    }
 
-    if (!levelData?.associates || levelData.associates.length === 0) return null;
+    if (!levelData?.associates || levelData.associates.length === 0) return null
 
     return (
       <>
         {levelData.associates.map((user) => {
-          const rowId = user.id;
-          const originalNestedLevels = user.lowerLevels || [];
-          const hasNested = originalNestedLevels.length > 0;
-          const isEditing = editingRowId === rowId;
+          const rowId = user.id
+          const originalNestedLevels = user.lowerLevels || []
+          const hasNested = originalNestedLevels.length > 0
+          const isEditing = editingRowId === rowId
 
           return (
             <React.Fragment key={rowId}>
@@ -651,7 +1588,9 @@ const LevelWiseUsers = () => {
                 aria-expanded={expandedRows.includes(rowId)}
               >
                 <td style={{ textAlign: "center" }}>{user.level}</td>
-                <td><strong>{user.associaateName}</strong></td>
+                <td>
+                  <strong>{user.associaateName}</strong>
+                </td>
                 <td>{user.associaateEmail}</td>
                 <td style={{ textAlign: "center" }}>
                   {isEditing ? (
@@ -666,8 +1605,8 @@ const LevelWiseUsers = () => {
                         value={editedCommission}
                         onChange={(e) => setEditedCommission(e.target.value)}
                         onKeyDown={(e) => {
-                          if (e.key === "Enter") saveEdit(user);
-                          else if (e.key === "Escape") cancelEdit();
+                          if (e.key === "Enter") saveEdit(user)
+                          else if (e.key === "Escape") cancelEdit()
                         }}
                         style={{ width: 60 }}
                         aria-label={`Edit commission percentage for ${user.associaateName}`}
@@ -702,19 +1641,15 @@ const LevelWiseUsers = () => {
                   role={hasNested ? "button" : undefined}
                   aria-pressed={hasNested ? expandedRows.includes(rowId) : undefined}
                   aria-label={
-                    hasNested
-                      ? expandedRows.includes(rowId)
-                        ? "Collapse details"
-                        : "Expand details"
-                      : undefined
+                    hasNested ? (expandedRows.includes(rowId) ? "Collapse details" : "Expand details") : undefined
                   }
                   onClick={hasNested ? () => toggleExpand(rowId) : undefined}
                   onKeyDown={
                     hasNested
                       ? (e) => {
                           if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            toggleExpand(rowId);
+                            e.preventDefault()
+                            toggleExpand(rowId)
                           }
                         }
                       : undefined
@@ -725,16 +1660,12 @@ const LevelWiseUsers = () => {
                       className={`view-btn ${Number(user.totalCommissionInPercent) === 0 ? "view-btn-disabled" : ""}`}
                       title="View"
                       onClick={(e) => {
-                        if (Number(user.totalCommissionInPercent) === 0) return;
-                        e.stopPropagation();
-                        toggleExpand(rowId);
+                        if (Number(user.totalCommissionInPercent) === 0) return
+                        e.stopPropagation()
+                        toggleExpand(rowId)
                       }}
                       disabled={Number(user.totalCommissionInPercent) === 0}
-                      aria-label={
-                        expandedRows.includes(rowId)
-                          ? "Hide nested users"
-                          : "Show nested users"
-                      }
+                      aria-label={expandedRows.includes(rowId) ? "Hide nested users" : "Show nested users"}
                     >
                       {expandedRows.includes(rowId) ? <EyeOff /> : <Eye />}
                     </button>
@@ -742,8 +1673,8 @@ const LevelWiseUsers = () => {
                       className="edit-btn"
                       title="Edit"
                       onClick={(e) => {
-                        e.stopPropagation();
-                        startEditing(rowId, user.totalCommissionInPercent);
+                        e.stopPropagation()
+                        startEditing(rowId, user.totalCommissionInPercent)
                       }}
                       aria-label={`Edit commission for ${user.associaateName}`}
                     >
@@ -753,12 +1684,11 @@ const LevelWiseUsers = () => {
                       className="report-btn"
                       title="Generate report"
                       onClick={(e) => {
-                        e.stopPropagation();
+                        e.stopPropagation()
                         const confirmed = window.confirm(
-                          `Do you want to download ${user.associaateName}'s referral report as Excel?`
-                        );
-                        if (confirmed)
-                          exportReportToExcel(user, originalNestedLevels);
+                          `Do you want to download ${user.associaateName}'s referral report as Excel?`,
+                        )
+                        if (confirmed) exportReportToExcel(user, originalNestedLevels)
                       }}
                       aria-label={`Generate report for ${user.associaateName}`}
                     >
@@ -768,8 +1698,8 @@ const LevelWiseUsers = () => {
                       className="delete-btn"
                       title="Delete"
                       onClick={(e) => {
-                        e.stopPropagation();
-                        onDeleteAssociate(user.id);
+                        e.stopPropagation()
+                        onDeleteAssociate(user.id)
                       }}
                       aria-label={`Delete commission for ${user.associaateName}`}
                     >
@@ -778,47 +1708,38 @@ const LevelWiseUsers = () => {
                   </div>
                 </td>
               </tr>
-              {expandedRows.includes(rowId) &&
-                originalNestedLevels.length > 0 && (
-                  <tr>
-                    <td colSpan={3} className="p-0">
-                      <div className="lwuser-nested-table-wrapper overflow-x-auto">
-                        <table className="min-w-full text-left">
-                          <thead>
-                            <tr>
-                              <th className="px-4 py-2">Level</th>
-                              <th className="px-4 py-2">Percent (%)</th>
-                              <th className="px-4 py-2">Action</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <RenderNestedLevels
-                              nodes={originalNestedLevels}
-                              parentAssociateId={user.associaateId}
-                              onPercentUpdate={(level, percent) => {
-                                // Update nested levels percent locally
-                                const updatedNestedLevels =
-                                  originalNestedLevels.map((lvl) =>
-                                    lvl.level === level
-                                      ? { ...lvl, percent }
-                                      : lvl
-                                  );
-                                // Directly update user.lowerLevels for next renders
-                                user.lowerLevels = updatedNestedLevels;
-                                onPercentUpdate(level, percent, user.id);
-                              }}
-                            />
-                          </tbody>
-                        </table>
-                      </div>
-                    </td>
-                  </tr>
-                )}
+              {expandedRows.includes(rowId) && originalNestedLevels.length > 0 && (
+                <tr>
+                  <td colSpan={3} className="p-0">
+                    <div className="lwuser-nested-table-wrapper overflow-x-auto">
+                      <table className="min-w-full text-left">
+                        <thead>
+                          <tr>
+                            <th className="px-4 py-2">Level</th>
+                            <th className="px-4 py-2">Percent (%)</th>
+                            <th className="px-4 py-2">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <RenderNestedLevels
+                            nodes={originalNestedLevels}
+                            parentAssociateId={user.associaateId}
+                            onPercentUpdate={(level, percent) => {
+                              // Call the prop function passed from LevelWiseUsers to update the main state
+                              onNestedLevelPercentUpdate(user.associaateId, level, percent)
+                            }}
+                          />
+                        </tbody>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+              )}
             </React.Fragment>
-          );
+          )
         })}
       </>
-    );
+    )
   }
 
   if (loading) {
@@ -827,7 +1748,7 @@ const LevelWiseUsers = () => {
         <p>Loading users...</p>
         <img src="SPC.png" alt="Loading..." className="loading-logo" />
       </div>
-    );
+    )
   }
 
   return (
@@ -860,16 +1781,8 @@ const LevelWiseUsers = () => {
         </div>
       </header>
       <div className="lwuser-table-container">
-        <div
-          className="lwuser-table-wrapper"
-          tabIndex={0}
-          aria-label="Referral network table"
-        >
-          <table
-            className="lwuser-table"
-            role="table"
-            aria-describedby="table-desc"
-          >
+        <div className="lwuser-table-wrapper" tabIndex={0} aria-label="Referral network table">
+          <table className="lwuser-table" role="table" aria-describedby="table-desc">
             <caption id="table-desc" className="lwuser-sr-only">
               Referral network, all levels and their nested associates.
             </caption>
@@ -890,7 +1803,8 @@ const LevelWiseUsers = () => {
                     levelData={lvl}
                     expandedRows={expandedRows}
                     toggleExpand={toggleExpand}
-                    onCommissionUpdate={handleCommissionUpdate}
+                    onMainAssociateCommissionUpdate={handleMainAssociateCommissionUpdate} // Pass renamed prop
+                    onNestedLevelPercentUpdate={updateNestedLevelPercent} // Pass new prop
                     onDeleteAssociate={handleDeleteAssociate}
                   />
                 ))
@@ -906,10 +1820,12 @@ const LevelWiseUsers = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default LevelWiseUsers;
+export default LevelWiseUsers
+
+
 
 
 

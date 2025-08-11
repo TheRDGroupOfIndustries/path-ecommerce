@@ -916,7 +916,7 @@ import React, { useState, useEffect, useContext, useRef } from "react"
 import { Link } from "react-router-dom"
 import * as XLSX from "xlsx"
 import { saveAs } from "file-saver"
-import { Check, Eye, EyeOff, Pencil, Printer, X, Search, Trash } from "lucide-react"
+import { Check, Eye, EyeOff, Pencil, Printer, X, Search, Trash, Loader } from "lucide-react"
 import "./LevelWiseUsers.css"
 import { deleteData, fetchDataFromApi, patchData } from "../../utils/api"
 import { myContext } from "../../App"
@@ -1113,7 +1113,7 @@ const LevelWiseUsers = () => {
     const [editedPercent, setEditedPercent] = useState("")
     const inputRef = useRef(null)
     const context = useContext(myContext)
-
+    const [editLoading, setEditLoading] = useState(false)
     const startEditing = (level, currentPercent) => {
       setEditingLevel(level)
       setEditedPercent(currentPercent.toString())
@@ -1141,6 +1141,7 @@ const LevelWiseUsers = () => {
         return
       }
       try {
+        setEditLoading(true)
         const percentOverride = Number.parseFloat(editedPercent)
         const overrideLevel = levelItem.level
 
@@ -1203,6 +1204,9 @@ const LevelWiseUsers = () => {
           error: true,
         })
       }
+      finally {
+    setEditLoading(false) 
+  }
     }
 
     return (
@@ -1221,6 +1225,7 @@ const LevelWiseUsers = () => {
                   value={editedPercent}
                   onChange={(e) => setEditedPercent(e.target.value)}
                   style={{ width: 80 }}
+                   disabled={editLoading}
                   aria-label={`Edit commission percent for level ${item.level}`}
                 />
               ) : item.percent !== undefined ? (
@@ -1239,8 +1244,9 @@ const LevelWiseUsers = () => {
                     aria-label="Save edited commission percent"
                     className="btn-save"
                     style={{ marginLeft: 6 }}
+                     disabled={editLoading}
                   >
-                    <Check size={16} color="#28a745" />
+                  {editLoading?<Loader color="#28a745" size={18} />:<Check color="#28a745" size={18} />}
                   </button>
                   <button
                     onClick={cancelEditing}
@@ -1281,7 +1287,7 @@ const LevelWiseUsers = () => {
     const [editingRowId, setEditingRowId] = useState(null)
     const [editedCommission, setEditedCommission] = useState("")
     const inputRef = useRef(null)
-
+    const [editLoading, setEditLoading] = useState(false)
     const startEditing = (rowId, currentCommission) => {
       if (editingRowId === rowId) setEditingRowId(null)
       else {
@@ -1300,6 +1306,7 @@ const LevelWiseUsers = () => {
         return
       }
       try {
+          setEditLoading(true)
         const level = user.level
         const newPercent = Number.parseFloat(editedCommission)
         const associateId = user.associaateId
@@ -1333,7 +1340,9 @@ const LevelWiseUsers = () => {
           msg: "API request failed: " + error.message,
           error: true,
         })
-      }
+      }finally {
+        setEditLoading(false)
+  }
     }
 
     const cancelEdit = () => setEditingRowId(null)
@@ -1609,6 +1618,7 @@ const LevelWiseUsers = () => {
                           else if (e.key === "Escape") cancelEdit()
                         }}
                         style={{ width: 60 }}
+                         disabled={editLoading}
                         aria-label={`Edit commission percentage for ${user.associaateName}`}
                       />
                       <button
@@ -1616,8 +1626,9 @@ const LevelWiseUsers = () => {
                         className="btn-save"
                         aria-label="Save main commission edit"
                         title="Save"
+                         disabled={editLoading}
                       >
-                        <Check color="#28a745" size={18} />
+                         {editLoading?<Loader color="#28a745" size={18} />:<Check color="#28a745" size={18} />}
                       </button>
                       <button
                         onClick={cancelEdit}

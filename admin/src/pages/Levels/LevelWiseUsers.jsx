@@ -425,25 +425,31 @@ const LevelWiseUsers = () => {
 
       visitedAssociateIds.add(user.associaateId); // Mark top-level associate as visited
 
-      // Function to add referral users for a given associate
-      const addReferralUsers = (associate) => {
-        if (associate.usedByUsers && associate.usedByUsers.purchase) {
-          associate.usedByUsers.purchase.forEach(customer => {
-            if (!visitedReferralUserIds.has(customer.id)) {
-              visitedReferralUserIds.add(customer.id);
-              referralUserRows.push({
-                "Customer ID": customer.id,
-                "Customer Name": customer.name,
-                "Customer Email": customer.email,
-                "Customer Phone": customer.phone,
-                "Referred By Associate Name": associate.associaateName,
-                "Referred By Associate Email": associate.associaateEmail,
-                "Customer Created At": new Date(customer.createdAt).toLocaleString(),
-              });
-            }
+  const addReferralUsers = (associate) => {
+  if (associate.usedByUsers && associate.usedByUsers.purchase) {
+    associate.usedByUsers.purchase
+      .sort((a, b) => {
+        if (a.role === b.role) return 0;
+        return a.role === "ASSOCIATE" ? -1 : 1; // associates first
+      })
+      .forEach(customer => {
+        if (!visitedReferralUserIds.has(customer.id)) {
+          visitedReferralUserIds.add(customer.id);
+          referralUserRows.push({
+            "Customer ID": customer.id,
+            "Customer Name": customer.name,
+            "Customer Email": customer.email,
+            "Customer Phone": customer.phone,
+            "Customer Role": customer.role,
+            "Referred By Associate Name": associate.associaateName,
+            "Referred By Associate Email": associate.associaateEmail,
+            "Customer Created At": new Date(customer.createdAt).toLocaleString(),
           });
         }
-      };
+      });
+  }
+};
+
 
       // Add referral users for the current top-level associate
       addReferralUsers(user);
@@ -563,6 +569,7 @@ const LevelWiseUsers = () => {
           { wch: 25 }, // Customer Name
           { wch: 30 }, // Customer Email
           { wch: 20 }, // Customer Phone
+          { wch: 20 },  // Customer Role
           { wch: 25 }, // Customer Created At
           { wch: 25 }, // Referred By Associate Name
           { wch: 30 }, // Referred By Associate Email

@@ -38,7 +38,6 @@ export const searchAssociates = async (req: Request, res: Response) => {
   }
 };
 
-
 export const getOverriddenCommissionPercent = async (
   associateId: string,
   level: number
@@ -65,38 +64,40 @@ export const getHighLevelAssociates = async (req: Request, res: Response) => {
     const levels = await db.commissionLevel.findMany({
       orderBy: { level: "asc" },
     });
-    const referrals = await db.referral.findMany({
-      include: {
-        createdFor: {
-          select: { id: true, name: true, email: true, phone: true },
-        },
-        usedByUsers: {
+  const referrals = await db.referral.findMany({
+  include: {
+    createdFor: {
+      select: { id: true, name: true, email: true, phone: true, role: true },
+    },
+    usedByUsers: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        createdAt: true,
+        role: true, 
+      },
+    },
+    transactions: {
+      select: {
+        userId: true,
+        commission: true,
+        price: true,
+        user: {
           select: {
             id: true,
             name: true,
             email: true,
             phone: true,
             createdAt: true,
-          },
-        },
-        transactions: {
-          select: {
-            userId: true,
-            commission: true,
-            price: true,
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                phone: true,
-                createdAt: true,
-              },
-            },
+            role: true, 
           },
         },
       },
-    });
+    },
+  },
+});
 
     const referralUsageMap: Record<string, { purchase: any[] }> = {};
     for (const ref of referrals) {
@@ -329,7 +330,6 @@ export const getHighLevelAssociates = async (req: Request, res: Response) => {
   }
 };
 
-
 export const updateCommissionPercent = async (req: Request, res: Response) => {
   const { associateId, level, newPercent } = req.body;
 
@@ -362,7 +362,6 @@ export const updateCommissionPercent = async (req: Request, res: Response) => {
     return res.status(500).json({ success: false, message: "Database update failed" });
   }
 };
-
 
 const getLocalOverride = async (
   parentAssociateId: string,
@@ -430,7 +429,6 @@ export const updateLevelPercent = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal server error." });
   }
 };
-
 
 export const deleteAssociateById = async (req: Request, res: Response) => {
   const associateId = req.params.id;

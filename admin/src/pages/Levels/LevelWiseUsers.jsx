@@ -1765,7 +1765,7 @@ const LevelWiseUsers = () => {
   return (
     <div className="lwuser-container" role="main">
       <header className="lwuser-page-header">
-        <h1>Level-wise Users</h1>
+        <h1>Level-wise Commission</h1>
         <p>Referral network with associates and their nested referrals.</p>
         <div className="header-flex">
           <div className="search-section2">

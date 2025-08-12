@@ -1587,7 +1587,7 @@ const LevelWiseUsers = () => {
           const originalNestedLevels = user.lowerLevels || []
           const hasNested = originalNestedLevels.length > 0
           const isEditing = editingRowId === rowId
-
+          
           return (
             <React.Fragment key={rowId}>
               <tr
@@ -1598,7 +1598,9 @@ const LevelWiseUsers = () => {
               >
                 <td style={{ textAlign: "center" }}>{user.level}</td>
                 <td>
-                  <strong>{user.associaateName}</strong>
+                  <strong>{user.associaateName} {user.newLevelAssociate && (
+                  <span className="new-badge">NEW</span>
+                      )}</strong>
                 </td>
                 <td>{user.associaateEmail}</td>
                 <td style={{ textAlign: "center" }}>
